@@ -1,0 +1,36 @@
+
+> comm-style-assessment@0.1.0 build
+> next build
+
+  ▲ Next.js 14.2.35
+  - Environments: .env
+
+   Creating an optimized production build ...
+ ✓ Compiled successfully
+   Linting and checking validity of types ...
+   Collecting page data ...
+   Generating static pages (0/9) ...
+   Generating static pages (2/9) 
+   Generating static pages (4/9) 
+   Generating static pages (6/9) 
+ ✓ Generating static pages (9/9)
+   Finalizing page optimization ...
+   Collecting build traces ...
+
+Route (app)                              Size     First Load JS
+┌ ƒ /                                    3.14 kB         105 kB
+├ ƒ /_not-found                          873 B          88.1 kB
+├ ƒ /api/auth/[...nextauth]              0 B                0 B
+├ ƒ /guide                               6.36 kB         102 kB
+├ ƒ /history                             834 B           100 kB
+├ ƒ /profile                             834 B           100 kB
+├ ƒ /questionnaire                       10.6 kB         112 kB
+└ ƒ /questionnaire/result/[id]           834 B           100 kB
++ First Load JS shared by all            87.3 kB
+  ├ chunks/117-7206e9c8286183bc.js       31.7 kB
+  ├ chunks/fd9d1056-d0409bb3ea69b1d4.js  53.6 kB
+  └ other shared chunks (total)          1.89 kB
+
+
+ƒ  (Dynamic)  server-rendered on demand
+
