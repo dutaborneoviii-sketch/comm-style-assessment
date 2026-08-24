@@ -13,34 +13,39 @@ export const { auth, signIn, signOut, handlers } = NextAuth({
     Credentials({
       name: 'Credentials',
       credentials: {
-        email: { label: "Email", type: "email" },
+        npp: { label: "NPP", type: "text" },
         password: { label: "Password", type: "password" }
       },
       async authorize(credentials) {
-        if (!credentials?.email || !credentials?.password) return null;
-        
-        const user = await prisma.user.findUnique({
-          where: { email: credentials.email as string }
-        });
+        try {
+          console.log("Authorize called with credentials:", credentials);
+          if (!credentials?.npp || !credentials?.password) return null;
+          
+          const user = await prisma.user.findUnique({
+            where: { npp: credentials.npp as string }
+          });
+          
+          console.log("User found:", user);
 
-        if (!user || !user.password) {
-            // For demo purposes, auto-register if doesn't exist
-            const hashedPassword = await bcrypt.hash(credentials.password as string, 10);
-            const newUser = await prisma.user.create({
-                data: {
-                    email: credentials.email as string,
-                    password: hashedPassword,
-                    name: (credentials.email as string).split('@')[0],
-                    department: "Engineering"
-                }
-            });
-            return newUser;
+          if (!user || !user.password) {
+              throw new Error("NPP atau password salah.");
+          }
+
+          if (user.status === 'PENDING') {
+              throw new Error("Anda belum bisa login sebelum Administrator melakukan approval akses. Silahkan Menghubungi Administrator");
+          }
+          if (user.status === 'INACTIVE') {
+              throw new Error("Hak akses user nonaktif. Silahkan menghubungi Administrator");
+          }
+
+          const passwordsMatch = await bcrypt.compare(credentials.password as string, user.password);
+          if (passwordsMatch) return user;
+          
+          throw new Error("NPP atau password salah.");
+        } catch (error) {
+          console.error("Error in authorize:", error);
+          throw error;
         }
-
-        const passwordsMatch = await bcrypt.compare(credentials.password as string, user.password);
-        if (passwordsMatch) return user;
-        
-        return null;
       },
     }),
   ],

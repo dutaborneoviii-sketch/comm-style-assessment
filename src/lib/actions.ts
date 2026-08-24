@@ -11,13 +11,26 @@ export async function authenticate(formData: FormData) {
     });
   } catch (error) {
     if (error instanceof AuthError) {
+      const customMessage = (error as any).cause?.err?.message;
+      if (customMessage && customMessage !== 'CredentialsSignin' && customMessage !== 'CallbackRouteError') {
+        return { error: customMessage };
+      }
+
       switch (error.type) {
         case 'CredentialsSignin':
           return { error: 'Kredensial tidak valid.' };
         default:
+          console.error("Auth error:", error);
           return { error: 'Terjadi kesalahan.' };
       }
     }
+    
+    // Check if it's a redirect error from next/navigation, we should throw it so NextJS can handle redirect
+    if (error && typeof error === 'object' && 'digest' in error && (error as any).digest?.startsWith('NEXT_REDIRECT')) {
+      throw error;
+    }
+    
+    console.error("Unknown authenticate error:", error);
     throw error;
   }
 }
@@ -25,6 +38,7 @@ export async function authenticate(formData: FormData) {
 import { prisma } from "@/lib/prisma";
 import { calculateStyle, AnswerCounts } from "@/lib/scoring";
 import { redirect } from "next/navigation";
+import { sendAssessmentToGoogleSheets } from "@/lib/google-sheets";
 
 export async function submitAssessment(counts: AnswerCounts) {
   const session = await auth();
@@ -45,6 +59,18 @@ export async function submitAssessment(counts: AnswerCounts) {
     }
   });
 
+  // Call Google Sheets API in background (no await so it doesn't block redirection, or await it if you want)
+  sendAssessmentToGoogleSheets({
+    userId: session.user.id,
+    countA: counts.A,
+    countB: counts.B,
+    countC: counts.C,
+    countD: counts.D,
+    primaryStyle: result.primaryStyle,
+    secondaryStyle: result.secondaryStyle,
+    isCombination: result.isCombination,
+  }).catch(e => console.error("Google Sheets Sync Error:", e));
+
   redirect(`/questionnaire/result/${assessment.id}`);
 }
 
@@ -58,7 +84,9 @@ export async function updateQuestion(
   if (!session?.user?.id) throw new Error("Unauthorized");
   
   const user = await prisma.user.findUnique({ where: { id: session.user.id } });
-  if (user?.role !== "ADMIN") throw new Error("Forbidden");
+  const isAdmin = user?.role === "ADMIN";
+  const isAllowedAsdep = user?.position === "Asisten Deputi" && user?.department === "Bidang SDM, Umum dan Komunikasi (SDMUK)";
+  if (!isAdmin && !isAllowedAsdep) throw new Error("Forbidden");
 
   // Update question text
   await prisma.question.update({
@@ -85,7 +113,9 @@ export async function uploadQuestionsExcel(formData: FormData) {
   if (!session?.user?.id) throw new Error("Unauthorized");
   
   const user = await prisma.user.findUnique({ where: { id: session.user.id } });
-  if (user?.role !== "ADMIN") throw new Error("Forbidden");
+  const isAdmin = user?.role === "ADMIN";
+  const isAllowedAsdep = user?.position === "Asisten Deputi" && user?.department === "Bidang SDM, Umum dan Komunikasi (SDMUK)";
+  if (!isAdmin && !isAllowedAsdep) throw new Error("Forbidden");
 
   const file = formData.get('file') as File | null;
   if (!file) throw new Error("No file provided");
@@ -134,3 +164,4 @@ export async function uploadQuestionsExcel(formData: FormData) {
   revalidatePath('/admin/questions');
   revalidatePath('/questionnaire');
 }
+

@@ -1,0 +1,168 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlserver"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String          @id @default(cuid())
+  name          String?
+  npp           String?         @unique
+  email         String?         @unique
+  emailVerified DateTime?
+  image         String?
+  password      String?
+  department    String?
+  position      String?
+  accounts      Account[]
+  sessions      Session[]
+  assessments   Assessment[]
+  coachLogs     CoachingLog[] @relation("CoachLogs")
+  coacheeLogs   CoachingLog[] @relation("CoacheeLogs")
+  role          String          @default("USER")
+  status        String          @default("PENDING")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model CoachingLog {
+  id          String   @id @default(cuid())
+  coachId     String
+  coacheeId   String
+  date        DateTime
+  title       String
+  notes       String
+  actionItems ActionItem[]
+  response    String?
+  nextSessionDate DateTime?
+  isClosed    Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  coach       User     @relation("CoachLogs", fields: [coachId], references: [id], onDelete: Cascade)
+  coachee     User     @relation("CoacheeLogs", fields: [coacheeId], references: [id], onDelete: Cascade)
+}
+
+model ActionItem {
+  id             String      @id @default(cuid())
+  coachingLogId  String
+  text           String
+  dueDate        DateTime?
+  followUpNotes  String?
+  evidenceUrl    String?
+  evidenceName   String?
+  
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+  
+  coachingLog    CoachingLog @relation(fields: [coachingLogId], references: [id], onDelete: Cascade)
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+ 
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+ 
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+ 
+  @@unique([provider, providerAccountId])
+}
+ 
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+ 
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+ 
+model VerificationToken {
+  identifier String
+  token      String
+  expires    DateTime
+ 
+  @@unique([identifier, token])
+}
+
+model Assessment {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  countA    Int
+  countB    Int
+  countC    Int
+  countD    Int
+  
+  primaryStyle String
+  secondaryStyle String?
+  isCombination Boolean @default(false)
+  
+  createdAt DateTime @default(now())
+}
+
+model Question {
+  id        String   @id @default(cuid())
+  order     Int
+  text      String
+  isActive  Boolean  @default(true)
+  options   Option[]
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Option {
+  id         String   @id @default(cuid())
+  questionId String
+  question   Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  letter     String   // A, B, C, D
+  text       String
+}
+
+model FeatureFlag {
+  id          String   @id @default(cuid())
+  featureKey  String   // e.g. "panduan_komunikasi"
+  roleGroup   String   // e.g. "Staf", "Asisten Deputi", "Deputi Direksi Wilayah"
+  enabled     Boolean  @default(false)
+  label       String   // Display name, e.g. "Panduan Gaya Komunikasi"
+  description String   @default("")
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([featureKey, roleGroup])
+}
+
+model SystemSetting {
+  id        String   @id @default(cuid())
+  key       String   @unique // e.g. "assessment_cooldown_months"
+  value     String   // e.g. "3"
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+
+model CommunicationDictionary {
+  id        String   @id // e.g. "directive", "dirAna"
+  content   String   // JSON string
+  updatedAt DateTime @updatedAt
+}

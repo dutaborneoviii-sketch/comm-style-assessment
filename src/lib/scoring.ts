@@ -24,12 +24,18 @@ export function calculateStyle(counts: AnswerCounts): StyleResult {
   const [top1, score1] = sorted[0];
   const [top2, score2] = sorted[1];
 
-  const total = Object.values(counts).reduce((a, b) => a + b, 0);
-  const difference = score1 - score2;
+  const TOTAL_QUESTIONS = 30;
   
-  // Kombinasi hanya terjadi jika perbedaan skor tipis (<= 25% dari total pertanyaan)
-  // DAN skor kedua tidak nol (artinya memang ada kecenderungan ke gaya tersebut).
-  if (difference <= (total * 0.25) && score2 > 0) {
+  // Calculate percentage (Score / 30 * 100)
+  const percent1 = (score1 / TOTAL_QUESTIONS) * 100;
+  const percent2 = (score2 / TOTAL_QUESTIONS) * 100;
+  
+  // Calculate difference
+  const difference = percent1 - percent2;
+
+  // JIKA selisih persentase Peringkat 1 dan Peringkat 2 KURANG DARI ATAU SAMA DENGAN (<=) 8%, 
+  // MAKA Gaya Komunikasi Final adalah KOMBINASI
+  if (difference <= 8 && score2 > 0) {
     return {
       primaryStyle: STYLE_MAP[top1],
       secondaryStyle: STYLE_MAP[top2],
@@ -37,6 +43,8 @@ export function calculateStyle(counts: AnswerCounts): StyleResult {
     };
   }
 
+  // JIKA selisih persentase Peringkat 1 dan Peringkat 2 LEBIH DARI (>) 8%, 
+  // MAKA Gaya Komunikasi Final diambil HANYA dari yang tertinggi
   return {
     primaryStyle: STYLE_MAP[top1],
     secondaryStyle: null,
@@ -51,12 +59,67 @@ export const STYLE_COLORS: Record<string, string> = {
   "Analytical (Analytical / The Thinker)": "bg-indigo-500 text-white",
 };
 
+// Alias map: nilai lama di DB (nama pendek Bahasa Indonesia) → kunci lengkap
+export const STYLE_ALIAS: Record<string, string> = {
+  "Direktif": "Directive (Direct / The Driver)",
+  "Ekspresif": "Expressive (Expressive / The Initiator)",
+  "Harmonis": "Harmonious (Relater / The Amiable)",
+  "Analitis": "Analytical (Analytical / The Thinker)",
+  // Possible old English short keys
+  "Directive": "Directive (Direct / The Driver)",
+  "Expressive": "Expressive (Expressive / The Initiator)",
+  "Harmonious": "Harmonious (Relater / The Amiable)",
+  "Analytical": "Analytical (Analytical / The Thinker)",
+};
+
 export const STYLE_DESCRIPTIONS: Record<string, string> = {
   "Directive (Direct / The Driver)": "Fokus utama Anda adalah efisiensi, aksi, dan pencapaian target (hasil akhir).",
   "Expressive (Expressive / The Initiator)": "Fokus utama Anda adalah visi, inovasi, kolaborasi aktif, dan gambaran besar (big picture).",
   "Harmonious (Relater / The Amiable)": "Fokus utama Anda adalah keselarasan tim, empati, keandalan, dan lingkungan kerja yang suportif.",
   "Analytical (Analytical / The Thinker)": "Fokus utama Anda adalah akurasi, struktur, logika berlandaskan data, dan proses yang benar."
 };
+
+// Safe lookup: supports both full keys and old short-name keys
+export function resolveStyleKey(style: string): string {
+  return STYLE_ALIAS[style] ?? style;
+}
+
+export function getStyleDescription(style: string): string {
+  if (!style) return "";
+  if (style.includes(" + ")) {
+    const [primary, secondary] = style.split(" + ");
+    const desc1 = STYLE_DESCRIPTIONS[resolveStyleKey(primary)]?.replace("Fokus utama Anda adalah ", "").replace(".", "") || "";
+    const desc2 = STYLE_DESCRIPTIONS[resolveStyleKey(secondary)]?.replace("Fokus utama Anda adalah ", "").replace(".", "") || "";
+    if (desc1 && desc2) return `Fokus utama Anda adalah ${desc1} serta ${desc2}.`;
+  }
+  return STYLE_DESCRIPTIONS[resolveStyleKey(style)] ?? "";
+}
+
+export function getStyleTrait(style: string): string {
+  if (!style) return "";
+  if (style.includes(" + ")) {
+    const [primary, secondary] = style.split(" + ");
+    const trait1 = STYLE_TRAITS[resolveStyleKey(primary)]?.replace(".", "") || "";
+    const trait2 = STYLE_TRAITS[resolveStyleKey(secondary)]?.replace(".", "") || "";
+    if (trait1 && trait2) return `${trait1} & ${trait2}.`;
+  }
+  return STYLE_TRAITS[resolveStyleKey(style)] ?? "";
+}
+
+export function getStyleAdvice(style: string): string {
+  if (!style) return "";
+  if (style.includes(" + ")) {
+    const [primary, secondary] = style.split(" + ");
+    const adv1 = STYLE_ADVICE[resolveStyleKey(primary)] || "";
+    const adv2 = STYLE_ADVICE[resolveStyleKey(secondary)] || "";
+    if (adv1 && adv2) return `${adv1} Di sisi lain, ${adv2}`;
+  }
+  return STYLE_ADVICE[resolveStyleKey(style)] ?? "";
+}
+
+export function getStyleColor(style: string): string {
+  return STYLE_COLORS[resolveStyleKey(style)] ?? "bg-gray-500 text-white";
+}
 
 export const STYLE_TRAITS: Record<string, string> = {
   "Directive (Direct / The Driver)": "Lugas, berorientasi pada penyelesaian masalah, tidak menyukai birokrasi yang panjang.",

@@ -77,11 +77,11 @@ export function UploadExcel() {
   };
 
   return (
-    <div className="bg-white dark:bg-zinc-950 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
+    <div className="bg-white dark:bg-zinc-950 text-slate-800 dark:text-slate-200 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
       <div className="flex flex-col md:flex-row gap-6 items-start md:items-center justify-between">
         <div className="space-y-1 max-w-xl">
           <h2 className="text-lg font-bold flex items-center gap-2">
-            <FileSpreadsheet className="w-5 h-5 text-[#1eb88a]" />
+            <FileSpreadsheet className="w-5 h-5 text-[#57BC90]" />
             Impor dari Excel
           </h2>
           <p className="text-sm text-muted-foreground mt-1">
@@ -94,7 +94,7 @@ export function UploadExcel() {
           <Button 
             variant="outline" 
             onClick={downloadTemplate}
-            className="border-[#1eb88a] text-[#16966f] hover:bg-[#1eb88a]/10"
+            className="border-[#57BC90] text-[#57BC90] hover:bg-[#57BC90]/10"
           >
             <DownloadCloud className="w-4 h-4 mr-2" />
             Unduh Template
@@ -110,7 +110,7 @@ export function UploadExcel() {
           <Button 
             onClick={() => fileInputRef.current?.click()}
             disabled={isUploading}
-            className="bg-[#0a3161] hover:bg-[#082244] text-white shadow-md shadow-[#0a3161]/20"
+            className="bg-[#015249] hover:bg-[#013b34] text-white shadow-md shadow-[#015249]/20"
           >
             {isUploading ? (
               <Loader2 className="w-4 h-4 mr-2 animate-spin" />

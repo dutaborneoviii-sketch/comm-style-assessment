@@ -71,4 +71,42 @@
   .glass-card {
     @apply bg-white/70 dark:bg-gray-950/50 backdrop-blur-lg border border-white/40 dark:border-white/10 shadow-lg dark:shadow-2xl transition-all duration-300;
   }
+  
+  @keyframes float-slow {
+    0%, 100% {
+      transform: translate(0, 0) scale(1);
+    }
+    50% {
+      transform: translate(40px, -60px) scale(1.2);
+    }
+  }
+  @keyframes float-medium {
+    0%, 100% {
+      transform: translate(0, 0) scale(1.1);
+    }
+    50% {
+      transform: translate(-50px, 40px) scale(0.85);
+    }
+  }
+  
+  @keyframes fade-in-zoom {
+    from {
+      opacity: 0;
+      transform: scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+  
+  .animate-float-slow {
+    animation: float-slow 25s infinite ease-in-out;
+  }
+  .animate-float-medium {
+    animation: float-medium 18s infinite ease-in-out;
+  }
+  .animate-fade-in-zoom {
+    animation: fade-in-zoom 0.2s ease-out forwards;
+  }
 }

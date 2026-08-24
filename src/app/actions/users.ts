@@ -1,0 +1,444 @@
+"use server";
+
+import { auth } from "@/auth";
+import { prisma } from "@/lib/prisma";
+import bcrypt from "bcryptjs";
+import { revalidatePath } from "next/cache";
+
+export async function getUsers() {
+  const session = await auth();
+  if (!session?.user?.id) throw new Error("Unauthorized");
+  
+  const currentUser = await prisma.user.findUnique({ where: { id: session.user.id } });
+  if (currentUser?.role !== "ADMIN") throw new Error("Forbidden");
+
+  return prisma.user.findMany({
+    orderBy: { createdAt: "desc" },
+    select: {
+      id: true,
+      npp: true,
+      name: true,
+      email: true,
+      department: true,
+      position: true,
+      role: true,
+      status: true,
+      createdAt: true,
+    }
+  });
+}
+
+export async function approveUser(id: string) {
+  const session = await auth();
+  if (!session?.user?.id) throw new Error("Unauthorized");
+  
+  const currentUser = await prisma.user.findUnique({ where: { id: session.user.id } });
+  if (currentUser?.role !== "ADMIN") throw new Error("Forbidden");
+
+  try {
+    await prisma.user.update({
+      where: { id },
+      data: { status: 'APPROVED' }
+    });
+    
+    revalidatePath("/admin/users");
+    return { success: true };
+  } catch (error: any) {
+    console.error("Error approving user:", error);
+    return { error: "Gagal menyetujui pengguna." };
+  }
+}
+
+export async function toggleUserStatus(id: string, currentStatus: string) {
+  const session = await auth();
+  if (!session?.user?.id) throw new Error("Unauthorized");
+  
+  const currentUser = await prisma.user.findUnique({ where: { id: session.user.id } });
+  if (currentUser?.role !== "ADMIN") throw new Error("Forbidden");
+
+  // Prevent admin from deactivating themselves
+  if (id === session.user.id) {
+    return { error: "Anda tidak dapat menonaktifkan akun Anda sendiri." };
+  }
+
+  const newStatus = currentStatus === 'APPROVED' ? 'INACTIVE' : 'APPROVED';
+
+  try {
+    await prisma.user.update({
+      where: { id },
+      data: { status: newStatus }
+    });
+    
+    revalidatePath("/admin/users");
+    return { success: true, newStatus };
+  } catch (error: any) {
+    console.error("Error toggling user status:", error);
+    return { error: "Gagal mengubah status pengguna." };
+  }
+}
+
+export async function createUser(data: any) {
+  const session = await auth();
+  if (!session?.user?.id) throw new Error("Unauthorized");
+  
+  const currentUser = await prisma.user.findUnique({ where: { id: session.user.id } });
+  if (currentUser?.role !== "ADMIN") throw new Error("Forbidden");
+
+  // Basic validation
+  if (!data.npp) throw new Error("NPP is required");
+  
+  // Check if NPP already exists
+  const existingUser = await prisma.user.findUnique({ where: { npp: data.npp } });
+  if (existingUser) {
+    return { error: "NPP sudah digunakan oleh pengguna lain." };
+  }
+
+  // Set default password if none provided
+  const passwordToHash = data.password || "password123";
+  const hashedPassword = await bcrypt.hash(passwordToHash, 10);
+
+  try {
+    const newUser = await prisma.user.create({
+      data: {
+        npp: data.npp,
+        name: data.name || `User ${data.npp}`,
+        email: data.email || null,
+        password: hashedPassword,
+        department: data.department || null,
+        position: data.position || null,
+        role: data.role || "USER",
+      }
+    });
+    
+    revalidatePath("/admin/users");
+    return { success: true, user: newUser };
+  } catch (error: any) {
+    console.error("Error creating user:", error);
+    return { error: "Gagal membuat pengguna." };
+  }
+}
+
+export async function updateUser(id: string, data: any) {
+  const session = await auth();
+  if (!session?.user?.id) throw new Error("Unauthorized");
+  
+  const currentUser = await prisma.user.findUnique({ where: { id: session.user.id } });
+  if (currentUser?.role !== "ADMIN") throw new Error("Forbidden");
+
+  try {
+    const updateData: any = {
+      npp: data.npp,
+      name: data.name,
+      email: data.email || null,
+      department: data.department,
+      position: data.position,
+      role: data.role,
+    };
+
+    if (data.password && data.password.trim() !== "") {
+      updateData.password = await bcrypt.hash(data.password, 10);
+    }
+
+    await prisma.user.update({
+      where: { id },
+      data: updateData
+    });
+    
+    revalidatePath("/admin/users");
+    return { success: true };
+  } catch (error: any) {
+    console.error("Error updating user:", error);
+    return { error: "Gagal memperbarui pengguna." };
+  }
+}
+
+export async function deleteUser(id: string) {
+  const session = await auth();
+  if (!session?.user?.id) return { error: "Sesi tidak valid. Silakan login ulang." };
+  
+  const currentUser = await prisma.user.findUnique({ where: { id: session.user.id } });
+  if (currentUser?.role !== "ADMIN") return { error: "Akses ditolak. Hanya admin yang dapat menghapus pengguna." };
+
+  // Prevent admin from deleting themselves
+  if (id === session.user.id) {
+    return { error: "Anda tidak dapat menghapus akun Anda sendiri." };
+  }
+
+  try {
+    await prisma.user.delete({
+      where: { id }
+    });
+    
+    revalidatePath("/admin/users");
+    return { success: true };
+  } catch (error: any) {
+    console.error("Error deleting user:", error);
+    return { error: "Gagal menghapus pengguna." };
+  }
+}
+
+function generateRandomPassword(): string {
+  const uppercaseChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  const lowercaseChars = "abcdefghijklmnopqrstuvwxyz";
+  const numberChars = "0123456789";
+  const specialChars = "!@#$%^&*()_+-=[]{}|;:,.<>?";
+
+  let password = "";
+  password += uppercaseChars[Math.floor(Math.random() * uppercaseChars.length)];
+  password += lowercaseChars[Math.floor(Math.random() * lowercaseChars.length)];
+  password += numberChars[Math.floor(Math.random() * numberChars.length)];
+  password += specialChars[Math.floor(Math.random() * specialChars.length)];
+
+  const allChars = uppercaseChars + lowercaseChars + numberChars + specialChars;
+  for (let i = 4; i < 10; i++) {
+    password += allChars[Math.floor(Math.random() * allChars.length)];
+  }
+
+  return password.split('').sort(() => 0.5 - Math.random()).join('');
+}
+
+import { sendResetPasswordEmail } from '@/lib/mailer';
+
+export async function changeSelfPassword(formData: FormData) {
+  const session = await auth();
+  if (!session?.user?.id) return { error: "Sesi tidak valid. Silakan login ulang." };
+  
+  const oldPassword = formData.get("oldPassword") as string;
+  const newPassword = formData.get("newPassword") as string;
+  const confirmPassword = formData.get("confirmPassword") as string;
+
+  if (!oldPassword || !newPassword || !confirmPassword) {
+    return { error: "Semua kolom password harus diisi." };
+  }
+
+  if (newPassword !== confirmPassword) {
+    return { error: "Password baru dan konfirmasi tidak cocok." };
+  }
+
+  if (newPassword.length < 8) {
+    return { error: "Password baru harus memiliki minimal 8 karakter." };
+  }
+
+  const user = await prisma.user.findUnique({ where: { id: session.user.id } });
+  if (!user || !user.password) {
+    return { error: "Pengguna tidak ditemukan atau tidak memiliki password." };
+  }
+
+  const isValidPassword = await bcrypt.compare(oldPassword, user.password);
+  if (!isValidPassword) {
+    return { error: "Password lama yang Anda masukkan salah." };
+  }
+
+  try {
+    const hashedNewPassword = await bcrypt.hash(newPassword, 10);
+    await prisma.user.update({
+      where: { id: session.user.id },
+      data: { password: hashedNewPassword }
+    });
+    return { success: true };
+  } catch (error: any) {
+    console.error("Error changing self password:", error);
+    return { error: "Gagal mengubah password. Silakan coba lagi." };
+  }
+}
+
+export async function forgotPassword(formData: FormData) {
+  const npp = formData.get("npp") as string;
+  if (!npp) return { error: "NPP wajib diisi." };
+
+  const targetUser = await prisma.user.findUnique({ where: { npp } });
+  if (!targetUser) {
+    // We shouldn't reveal if the NPP exists or not for security, but usually internal apps do.
+    return { error: "Pengguna dengan NPP tersebut tidak ditemukan." };
+  }
+
+  if (!targetUser.email) {
+    return { error: "Pengguna tidak memiliki email terdaftar. Silakan hubungi Administrator." };
+  }
+
+  const rawPassword = generateRandomPassword();
+  const hashedPassword = await bcrypt.hash(rawPassword, 10);
+
+  try {
+    await prisma.user.update({
+      where: { npp },
+      data: { password: hashedPassword }
+    });
+
+    const emailResult = await sendResetPasswordEmail(targetUser.email, targetUser.name, rawPassword);
+    
+    if (emailResult.success) {
+      return { success: true, message: `Password baru telah dikirim ke email: ${targetUser.email}` };
+    } else {
+      return { error: "Gagal mengirim email. Silakan hubungi Administrator." };
+    }
+  } catch (error: any) {
+    console.error("Error in forgotPassword:", error);
+    return { error: "Terjadi kesalahan pada sistem." };
+  }
+}
+
+export async function resetUserPassword(id: string) {
+  const session = await auth();
+  if (!session?.user?.id) return { error: "Sesi tidak valid. Silakan login ulang." };
+  
+  const currentUser = await prisma.user.findUnique({ where: { id: session.user.id } });
+  if (currentUser?.role !== "ADMIN") return { error: "Akses ditolak. Hanya admin yang dapat mereset password." };
+
+  const targetUser = await prisma.user.findUnique({ where: { id } });
+  if (!targetUser) return { error: "Pengguna tidak ditemukan." };
+
+  const rawPassword = generateRandomPassword();
+  const hashedPassword = await bcrypt.hash(rawPassword, 10);
+
+  try {
+    await prisma.user.update({
+      where: { id },
+      data: { password: hashedPassword }
+    });
+
+    let emailSent = false;
+    if (targetUser.email) {
+      const emailResult = await sendResetPasswordEmail(targetUser.email, targetUser.name, rawPassword);
+      emailSent = emailResult.success;
+    }
+
+    revalidatePath("/admin/users");
+    return { success: true, password: rawPassword, emailSent, hasEmail: !!targetUser.email };
+  } catch (error: any) {
+    console.error("Error resetting password:", error);
+    return { error: "Gagal meriset password." };
+  }
+}
+
+export async function resetUserAssessment(id: string) {
+  const session = await auth();
+  if (!session?.user?.id) return { error: "Sesi tidak valid. Silakan login ulang." };
+  
+  const currentUser = await prisma.user.findUnique({ where: { id: session.user.id } });
+  if (currentUser?.role !== "ADMIN") return { error: "Akses ditolak. Hanya admin yang dapat mereset asesmen." };
+
+  try {
+    const deleteResult = await prisma.assessment.deleteMany({
+      where: { userId: id }
+    });
+
+    revalidatePath("/admin/users");
+    return { success: true, count: deleteResult.count };
+  } catch (error: any) {
+    console.error("Error resetting assessment:", error);
+    return { error: "Gagal mereset asesmen pengguna." };
+  }
+}
+
+import * as XLSX from "xlsx";
+
+export async function migrateUsers(base64Data: string) {
+  const session = await auth();
+  if (!session?.user?.id) return { error: "Sesi tidak valid. Silakan login ulang." };
+  
+  const currentUser = await prisma.user.findUnique({ where: { id: session.user.id } });
+  if (currentUser?.role !== "ADMIN") return { error: "Akses ditolak. Hanya admin yang dapat mengimpor pengguna." };
+
+  try {
+    const buffer = Buffer.from(base64Data, "base64");
+    const workbook = XLSX.read(buffer, { type: "buffer" });
+    const sheetName = workbook.SheetNames[0];
+    const sheet = workbook.Sheets[sheetName];
+    const rows = XLSX.utils.sheet_to_json<any>(sheet);
+
+    if (rows.length === 0) {
+      return { error: "File excel kosong atau tidak valid." };
+    }
+
+    const results: { name: string; npp: string; email: string; department: string; position: string; role: string; passwordGenerated: string; status: "SUCCESS" | "FAILED"; message?: string }[] = [];
+
+    for (const row of rows) {
+      const npp = String(row.npp || row.NPP || "").trim();
+      const name = String(row.name || row.nama || row.Nama || "").trim();
+      const email = String(row.email || row.Email || "").trim();
+      const department = String(row.department || row.bidang || row.Bidang || "").trim();
+      const position = String(row.position || row.jabatan || row.Jabatan || "").trim();
+      const role = String(row.role || row.peran || row.Peran || "USER").trim().toUpperCase();
+
+      if (!npp) {
+        results.push({
+          name: name || "-",
+          npp: "-",
+          email: email || "-",
+          department: department || "-",
+          position: position || "-",
+          role: role || "USER",
+          passwordGenerated: "-",
+          status: "FAILED",
+          message: "NPP kosong"
+        });
+        continue;
+      }
+
+      // Check if user already exists
+      const existingUser = await prisma.user.findUnique({ where: { npp } });
+      if (existingUser) {
+        results.push({
+          name: name || existingUser.name || "-",
+          npp,
+          email: email || existingUser.email || "-",
+          department: department || existingUser.department || "-",
+          position: position || existingUser.position || "-",
+          role: role || existingUser.role || "USER",
+          passwordGenerated: "-",
+          status: "FAILED",
+          message: "NPP sudah terdaftar"
+        });
+        continue;
+      }
+
+      const generatedPassword = generateRandomPassword();
+      const hashedPassword = await bcrypt.hash(generatedPassword, 10);
+
+      try {
+        await prisma.user.create({
+          data: {
+            npp,
+            name: name || `User ${npp}`,
+            email: email || null,
+            password: hashedPassword,
+            department: department || null,
+            position: position || null,
+            role: (role === "ADMIN" || role === "USER") ? role : "USER",
+            status: "APPROVED"
+          }
+        });
+
+        results.push({
+          name: name || `User ${npp}`,
+          npp,
+          email: email || "-",
+          department: department || "-",
+          position: position || "-",
+          role: role === "ADMIN" ? "ADMIN" : "USER",
+          passwordGenerated: generatedPassword,
+          status: "SUCCESS"
+        });
+      } catch (err: any) {
+        results.push({
+          name: name || "-",
+          npp,
+          email: email || "-",
+          department: department || "-",
+          position: position || "-",
+          role: role || "USER",
+          passwordGenerated: "-",
+          status: "FAILED",
+          message: "Error database: " + err.message
+        });
+      }
+    }
+
+    revalidatePath("/admin/users");
+    return { success: true, results };
+  } catch (err: any) {
+    console.error("Migration error:", err);
+    return { error: "Terjadi kesalahan memproses file excel: " + err.message };
+  }
+}

@@ -1,31 +1,91 @@
 import { AuthForm } from "@/components/auth-form";
+import { auth } from "@/auth";
+import { redirect } from "next/navigation";
+import { CheckCircle2 } from "lucide-react";
+import Image from "next/image";
+import { prisma } from "@/lib/prisma";
 
-export default function Home() {
+export default async function Home() {
+  const session = await auth();
+  if (session?.user) {
+    redirect("/profile");
+  }
+
+  const departments = await prisma.department.findMany({
+    where: { name: { not: 'GLOBAL' } },
+    orderBy: { name: 'asc' }
+  });
+
   return (
-    <div className="flex min-h-[calc(100vh-4rem)] flex-col items-center justify-center p-4 md:p-24 relative overflow-hidden">
-      {/* Background Decorative Blobs */}
-      <div className="absolute top-0 left-0 w-full h-full overflow-hidden -z-10">
-        <div className="absolute -top-40 -right-40 w-96 h-96 bg-primary/20 rounded-full blur-3xl opacity-50 mix-blend-multiply animate-pulse" />
-        <div className="absolute top-40 -left-40 w-96 h-96 bg-emerald-500/20 rounded-full blur-3xl opacity-50 mix-blend-multiply animate-pulse" style={{ animationDelay: "2s" }} />
-      </div>
+    <div className="min-h-screen w-full flex flex-col lg:flex-row bg-slate-50 dark:bg-slate-950">
+      
+      {/* Left Column: Branding with Gradient Background */}
+      <div className="w-full lg:w-[55%] xl:w-3/5 bg-gradient-to-br from-[#015249] via-[#57BC90] to-[#77C9D4] text-white px-6 py-12 lg:p-16 xl:p-24 flex flex-col justify-center relative shadow-2xl lg:shadow-[20px_0_50px_rgba(0,0,0,0.1)] z-10 lg:rounded-br-[80px]">
+        
+        <div className="w-full max-w-2xl mx-auto lg:mx-0 space-y-6">
+          <div className="flex flex-col items-center lg:items-start w-full text-center lg:text-left">
 
-      <div className="z-10 max-w-5xl w-full items-center justify-between font-mono text-sm">
-        <div className="flex flex-col items-center justify-center gap-10 text-center px-4 sm:px-8">
-          <div className="space-y-6 max-w-3xl">
-            <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-primary via-indigo-500 to-purple-600 drop-shadow-sm pb-2 leading-tight">
-              Temukan Gaya Komunikasi Anda
+            
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-black tracking-tighter leading-[1.1] mb-6 drop-shadow-md">
+              Membangun SDM<br className="hidden sm:block" /> Unggul
             </h1>
-            <p className="text-muted-foreground text-lg md:text-xl font-light leading-relaxed max-w-2xl mx-auto px-2">
-              Memahami cara Anda berkomunikasi adalah langkah pertama menuju kolaborasi yang lebih baik. 
-              Masuk untuk memulai asesmen dan lihat profil personal Anda.
+            <p className="text-blue-50 text-lg sm:text-xl lg:text-2xl font-medium leading-relaxed max-w-none mx-auto lg:mx-0 drop-shadow-sm whitespace-nowrap">
+              Melalui Coaching yang Terarah, Terukur, dan Berkelanjutan.
             </p>
-          </div>
-          <div className="w-full max-w-sm relative">
-            <div className="absolute -inset-1 bg-gradient-to-r from-primary to-purple-600 rounded-xl blur opacity-25" />
-            <div className="relative">
-              <AuthForm />
+            
+            <div className="mt-8 bg-white/10 backdrop-blur-md border border-white/20 shadow-2xl rounded-2xl p-5 lg:p-6 inline-block transform hover:-translate-y-1 transition-all duration-300">
+              <p className="italic font-bold text-white text-xl lg:text-2xl tracking-tight drop-shadow-sm">
+                "Membimbing Hari Ini, Meningkatkan Kinerja Esok Hari."
+              </p>
             </div>
           </div>
+ 
+          <div className="hidden lg:grid grid-cols-1 gap-4 pt-10">
+            <div className="flex items-center gap-4 p-4 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 hover:bg-white/20 transition-all shadow-sm max-w-md">
+              <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-white/20 flex items-center justify-center border border-white/10">
+                <CheckCircle2 className="w-6 h-6 text-white" />
+              </div>
+              <div>
+                <h3 className="font-bold text-white text-base">Coaching Guidance & Strategy</h3>
+                <p className="text-sm text-white/80 mt-0.5">Panduan taktik interaksi & strategi coaching personal.</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-4 p-4 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 hover:bg-white/20 transition-all shadow-sm max-w-md">
+              <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-white/20 flex items-center justify-center border border-white/10">
+                <CheckCircle2 className="w-6 h-6 text-white" />
+              </div>
+              <div>
+                <h3 className="font-bold text-white text-base">Monitoring Sesi & Rencana Aksi</h3>
+                <p className="text-sm text-white/80 mt-0.5">Log pencatatan berkala dan pelacakan komitmen.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+ 
+      <div className="w-full lg:w-[45%] xl:w-2/5 flex flex-col items-center justify-center p-6 py-16 lg:p-12 relative bg-slate-50 dark:bg-slate-950 z-0 overflow-hidden">
+        {/* Realistic Water Texture Overlay */}
+        <div 
+          className="absolute inset-0 pointer-events-none z-0 opacity-70 mix-blend-multiply dark:mix-blend-screen dark:opacity-30" 
+          style={{ 
+            backgroundImage: `url("/water-texture.jpg")`, 
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+          }}
+        ></div>
+        <div className="absolute inset-0 bg-gradient-to-b from-white/40 via-transparent to-slate-50 dark:from-slate-950/40 dark:to-slate-950 z-0 pointer-events-none"></div>
+        <div className="mt-16 -mb-12 flex justify-center w-full z-10 relative">
+          <Image 
+            src="/logo-belian.png" 
+            alt="Logo Belian" 
+            width={350} 
+            height={110}
+            className="w-full max-w-[280px] lg:max-w-[340px] h-auto object-contain"
+            priority
+          />
+        </div>
+        <div className="w-full max-w-md">
+          <AuthForm departments={departments} />
         </div>
       </div>
     </div>

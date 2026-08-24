@@ -1,0 +1,1838 @@
+{
+  "Department": [
+    {
+      "name": "TI Wilayah"
+    },
+    {
+      "name": "GLOBAL"
+    },
+    {
+      "name": "Bidang SDM, Umum dan Komunikasi (SDMUK)"
+    },
+    {
+      "name": "Bidang Jaminan Pelayanan Kesehatan (JPK)"
+    },
+    {
+      "name": "Bidang Kepesertaan dan Mutu Layanan (KML)"
+    },
+    {
+      "name": "Bidang Perencanaan dan Keuangan (PK)"
+    }
+  ],
+  "User": [
+    {
+      "id": "cmr5ou0ht0000pktsacija74v",
+      "name": "JHON PIHAWI'AN",
+      "npp": "10030",
+      "email": "pihawian54@gmail.com",
+      "emailVerified": null,
+      "image": null,
+      "password": "$2b$10$Xr8AZEZ9KatUyoGgnlkYbu0giKPDEPWsYd/KJBCsZr6dWdbTEcVcq",
+      "department": "TI Wilayah",
+      "position": "Staf Pelaksana",
+      "role": "ADMIN",
+      "status": "APPROVED",
+      "createdAt": "2026-07-04T01:32:55.169Z",
+      "updatedAt": "2026-08-18T11:47:04.428Z"
+    },
+    {
+      "id": "cms5mx2g50000v2uyame0aro6",
+      "name": "WAHYU NUR IMAN",
+      "npp": "08222",
+      "email": null,
+      "emailVerified": null,
+      "image": null,
+      "password": "$2b$10$RxCa04YHaby.vigFCNf98e2knxRn7lA67SyEe0eRhLKBvPoPPKbei",
+      "department": "Bidang Jaminan Pelayanan Kesehatan (JPK)",
+      "position": "Staf Pelaksana",
+      "role": "USER",
+      "status": "APPROVED",
+      "createdAt": "2026-07-29T05:19:00.773Z",
+      "updatedAt": "2026-08-19T01:04:34.693Z"
+    },
+    {
+      "id": "cms5mx2i00001v2uy5pxum6qg",
+      "name": "GHASSAN MOCHAMMAD",
+      "npp": "09596",
+      "email": null,
+      "emailVerified": null,
+      "image": null,
+      "password": "$2b$10$qvyNqR1J8OqqiIIIW1kQcuFy4WfufAD5xXYL2vNZFnS5tQ.w6MG0e",
+      "department": "Bidang Kepesertaan dan Mutu Layanan (KML)",
+      "position": "Staf Pelaksana",
+      "role": "USER",
+      "status": "APPROVED",
+      "createdAt": "2026-07-29T05:19:00.840Z",
+      "updatedAt": "2026-08-19T02:02:09.406Z"
+    },
+    {
+      "id": "cms5mx2js0002v2uyeaabr2pp",
+      "name": "ARTIE RAINI ALAMI",
+      "npp": "10216",
+      "email": null,
+      "emailVerified": null,
+      "image": null,
+      "password": "$2b$10$N49IvZECE5vmebQ8PpQlLu7L6D3Tp3VJYX1cF42bKK1l0xF8O.Twi",
+      "department": "Bidang SDM, Umum dan Komunikasi (SDMUK)",
+      "position": "Staf Pelaksana",
+      "role": "USER",
+      "status": "APPROVED",
+      "createdAt": "2026-07-29T05:19:00.905Z",
+      "updatedAt": "2026-08-19T01:04:34.686Z"
+    },
+    {
+      "id": "cms5mx2lk0003v2uy2l5ys3ri",
+      "name": "SEPTINA HERDIA MIRADANI",
+      "npp": "06000",
+      "email": null,
+      "emailVerified": null,
+      "image": null,
+      "password": "$2b$10$jJEwEAEFHfkeUSpwrq.qm.5jH48tQ.Vp3dX4lZNx7I0zulONk.g06",
+      "department": "Bidang Perencanaan dan Keuangan (PK)",
+      "position": "Staf Pelaksana",
+      "role": "USER",
+      "status": "APPROVED",
+      "createdAt": "2026-07-29T05:19:00.969Z",
+      "updatedAt": "2026-08-19T02:02:09.414Z"
+    },
+    {
+      "id": "cms5mx2nc0004v2uytm419u03",
+      "name": "FRIDA AGUSTINA AFIFAH",
+      "npp": "250498",
+      "email": "pihawian.jh13@gmail.com",
+      "emailVerified": null,
+      "image": null,
+      "password": "$2b$10$4DNrHv7HSSd3LdCbzlG14OJVqlIwY0jOFsaogh8w39AJQSfREjpxq",
+      "department": "Bidang SDM, Umum dan Komunikasi (SDMUK)",
+      "position": "PATT/PTT",
+      "role": "USER",
+      "status": "APPROVED",
+      "createdAt": "2026-07-29T05:19:01.033Z",
+      "updatedAt": "2026-08-19T01:04:34.686Z"
+    },
+    {
+      "id": "cms5mx2p40005v2uyazvfyl1q",
+      "name": "IVAN  RAVIAN",
+      "npp": "02984",
+      "email": null,
+      "emailVerified": null,
+      "image": null,
+      "password": "$2b$10$1039SLSP7J3J4rCISDkxd.v4jI8X689T/0NfywBi8737mbmQV3hNq",
+      "department": "Bidang Kepesertaan dan Mutu Layanan (KML)",
+      "position": "Asisten Deputi",
+      "role": "USER",
+      "status": "APPROVED",
+      "createdAt": "2026-07-29T05:19:01.097Z",
+      "updatedAt": "2026-08-19T02:02:09.406Z"
+    },
+    {
+      "id": "cms5mx2qx0006v2uy5tkgcvnl",
+      "name": "MOCHAMAD ABDUL KOHAR",
+      "npp": "10005",
+      "email": null,
+      "emailVerified": null,
+      "image": null,
+      "password": "$2b$10$fInxzB20tJeKb9C973IY..C51i5HLRHKUMpGvCGHbth7tiFgLH.kO",
+      "department": "Bidang Perencanaan dan Keuangan (PK)",
+      "position": "Staf Pelaksana",
+      "role": "USER",
+      "status": "APPROVED",
+      "createdAt": "2026-07-29T05:19:01.162Z",
+      "updatedAt": "2026-08-19T02:02:09.414Z"
+    },
+    {
+      "id": "cms5mx2sp0007v2uy8h4j1pmz",
+      "name": "MUHAMMAD  QODRIANA",
+      "npp": "09888",
+      "email": null,
+      "emailVerified": null,
+      "image": null,
+      "password": "$2b$10$J5Aug7m1I0lgyj4rSfTJsu.DDl746rpRpxvRsbzpBiip1d/GLPzrq",
+      "department": "Bidang SDM, Umum dan Komunikasi (SDMUK)",
+      "position": "Staf Pelaksana",
+      "role": "USER",
+      "status": "APPROVED",
+      "createdAt": "2026-07-29T05:19:01.226Z",
+      "updatedAt": "2026-08-19T01:04:34.686Z"
+    },
+    {
+      "id": "cms5mx2uh0008v2uyjc890f82",
+      "name": "LIVIA PUSPA DEWI",
+      "npp": "04081",
+      "email": null,
+      "emailVerified": null,
+      "image": null,
+      "password": "$2b$10$pUe2/LQVJendZj8K1kdsbupXUpNpTA28rnEGfho774Kt05i9GQfTe",
+      "department": "Bidang Jaminan Pelayanan Kesehatan (JPK)",
+      "position": "Staf Pelaksana",
+      "role": "USER",
+      "status": "APPROVED",
+      "createdAt": "2026-07-29T05:19:01.290Z",
+      "updatedAt": "2026-08-19T01:04:34.693Z"
+    },
+    {
+      "id": "cms5mx2w90009v2uy028whtmd",
+      "name": "DETA  PERMATASARI",
+      "npp": "06019",
+      "email": null,
+      "emailVerified": null,
+      "image": null,
+      "password": "$2b$10$o.pmqSh.RbFfONsZD77bK.TB/eHizFgGSiaPGZnbapuvNibvM7vXq",
+      "department": "Bidang Kepesertaan dan Mutu Layanan (KML)",
+      "position": "Staf Pelaksana",
+      "role": "USER",
+      "status": "APPROVED",
+      "createdAt": "2026-07-29T05:19:01.354Z",
+      "updatedAt": "2026-08-19T02:02:09.406Z"
+    },
+    {
+      "id": "cms5mx2y2000av2uyiplvelwk",
+      "name": "FITRI  SULISTIYANTINI",
+      "npp": "02855",
+      "email": null,
+      "emailVerified": null,
+      "image": null,
+      "password": "$2b$10$iED6JVD.MRsg5.3dRLmmuu2M2ajfCl/e0VoLqjxJKWNq3rUsPPY9G",
+      "department": "Bidang Perencanaan dan Keuangan (PK)",
+      "position": "Staf Pelaksana",
+      "role": "USER",
+      "status": "APPROVED",
+      "createdAt": "2026-07-29T05:19:01.418Z",
+      "updatedAt": "2026-08-19T02:02:09.414Z"
+    },
+    {
+      "id": "cms5mx2zv000bv2uyk9vl2ymn",
+      "name": "RIZKIA NUR MAULIDA",
+      "npp": "07230",
+      "email": null,
+      "emailVerified": null,
+      "image": null,
+      "password": "$2b$10$RX0.Uch8TNZPcVQ090Veke3yV30u4mamVqcj8vGNij6EfTKuCl4B2",
+      "department": "Bidang SDM, Umum dan Komunikasi (SDMUK)",
+      "position": "Staf Pelaksana",
+      "role": "USER",
+      "status": "APPROVED",
+      "createdAt": "2026-07-29T05:19:01.484Z",
+      "updatedAt": "2026-08-19T01:04:34.686Z"
+    },
+    {
+      "id": "cms5mx31o000cv2uyfclwdb7t",
+      "name": "MUHTAR ALI EVAN",
+      "npp": "03227",
+      "email": null,
+      "emailVerified": null,
+      "image": null,
+      "password": "$2b$10$k9OJlNT4LFbt5TTdXN.XP.Q51.tYRyUvk4pEZG7VI.7tzvOtZgdCS",
+      "department": "Bidang Perencanaan dan Keuangan (PK)",
+      "position": "Asisten Deputi",
+      "role": "USER",
+      "status": "APPROVED",
+      "createdAt": "2026-07-29T05:19:01.548Z",
+      "updatedAt": "2026-08-19T02:02:09.414Z"
+    },
+    {
+      "id": "cms5mx33f000dv2uyqxom7bh8",
+      "name": "SARI WAHYU ILHAM",
+      "npp": "02122",
+      "email": null,
+      "emailVerified": null,
+      "image": null,
+      "password": "$2b$10$9eKmhWZwoQ190.AI9fqk1.OXvEfduPAcntZGc/HGfFaMiQP2rgUmK",
+      "department": "Bidang Kepesertaan dan Mutu Layanan (KML)",
+      "position": "Asisten Manager",
+      "role": "USER",
+      "status": "APPROVED",
+      "createdAt": "2026-07-29T05:19:01.612Z",
+      "updatedAt": "2026-08-19T02:02:09.406Z"
+    },
+    {
+      "id": "cms5mx357000ev2uy3qqk9dse",
+      "name": "ARBAYAH  ROPIKA",
+      "npp": "02879",
+      "email": null,
+      "emailVerified": null,
+      "image": null,
+      "password": "$2b$10$.1OMZLpBCshaZ2ETMCNCEen7KCJjYxzUQ1ZTkwbJS85tIPtD6x3Pu",
+      "department": "Bidang Kepesertaan dan Mutu Layanan (KML)",
+      "position": "Asisten Manager",
+      "role": "USER",
+      "status": "APPROVED",
+      "createdAt": "2026-07-29T05:19:01.676Z",
+      "updatedAt": "2026-08-19T02:02:09.406Z"
+    },
+    {
+      "id": "cms5mx36z000fv2uyugkbp2b9",
+      "name": "NURLIA  AFYANTI",
+      "npp": "03301",
+      "email": null,
+      "emailVerified": null,
+      "image": null,
+      "password": "$2b$10$xwC237W55GhwDmTaNmFGteQSFrbtwNEetrN14O5u1F98f2Ldf7YlO",
+      "department": "Bidang Jaminan Pelayanan Kesehatan (JPK)",
+      "position": "Asisten Manager",
+      "role": "USER",
+      "status": "APPROVED",
+      "createdAt": "2026-07-29T05:19:01.739Z",
+      "updatedAt": "2026-08-19T01:04:34.693Z"
+    },
+    {
+      "id": "cms5mx38q000gv2uyixgl6wvx",
+      "name": "IRFAN  GUNAWAN",
+      "npp": "08644",
+      "email": null,
+      "emailVerified": null,
+      "image": null,
+      "password": "$2b$10$YFqL5c5FV1STEA4mb9bGQeS8abAS3OhEUpbn0Q0gljoCaJZ00tDW6",
+      "department": "Bidang Jaminan Pelayanan Kesehatan (JPK)",
+      "position": "Asisten Manager",
+      "role": "USER",
+      "status": "APPROVED",
+      "createdAt": "2026-07-29T05:19:01.803Z",
+      "updatedAt": "2026-08-19T01:04:34.693Z"
+    },
+    {
+      "id": "cms5mx3aj000hv2uyticbzdrx",
+      "name": "MASNITA ELVIDA SINAGA",
+      "npp": "08234",
+      "email": null,
+      "emailVerified": null,
+      "image": null,
+      "password": "$2b$10$.avJ2/x942/d/QXv4Oy/C.M08i39bRlokefpgx0sAVPbmhQ9Q7auK",
+      "department": "Bidang Kepesertaan dan Mutu Layanan (KML)",
+      "position": "Staf Pelaksana",
+      "role": "USER",
+      "status": "APPROVED",
+      "createdAt": "2026-07-29T05:19:01.868Z",
+      "updatedAt": "2026-08-19T02:02:09.406Z"
+    },
+    {
+      "id": "cms5mx3cb000iv2uy89qqkllb",
+      "name": "AGUNG  PRIYONO",
+      "npp": "02966",
+      "email": "agung.priyono@bpjs-kesehatan.go.id",
+      "emailVerified": null,
+      "image": null,
+      "password": "$2b$10$3NdqNy2QqnInUX6olwZPEuS1CFyf43g0VwfemhxVc0b4qIa7X970S",
+      "department": "Bidang SDM, Umum dan Komunikasi (SDMUK)",
+      "position": "Asisten Deputi",
+      "role": "USER",
+      "status": "APPROVED",
+      "createdAt": "2026-07-29T05:19:01.932Z",
+      "updatedAt": "2026-08-19T01:04:34.686Z"
+    },
+    {
+      "id": "cms5mx3e3000jv2uyuvhcqkrh",
+      "name": "DOLY SILADO SIJABAT",
+      "npp": "08935",
+      "email": null,
+      "emailVerified": null,
+      "image": null,
+      "password": "$2b$10$3nnNJk9QdniBHd8MG6zKUu8x1gwr7Zu0.I1lo0a/8aBgsNIDpyHOW",
+      "department": "Bidang Perencanaan dan Keuangan (PK)",
+      "position": "Staf Pelaksana",
+      "role": "USER",
+      "status": "APPROVED",
+      "createdAt": "2026-07-29T05:19:01.996Z",
+      "updatedAt": "2026-08-19T02:02:09.414Z"
+    },
+    {
+      "id": "cms5mx3fv000kv2uydd8wg47y",
+      "name": "SYARIFAH NURHASANAH",
+      "npp": "06015",
+      "email": null,
+      "emailVerified": null,
+      "image": null,
+      "password": "$2b$10$LpnX2zqVNYb8C/4NOG.nDuJXL81JBH.1ZQWlBmDEBinTSX3rmqSA6",
+      "department": "TI Wilayah",
+      "position": "Staf Pelaksana",
+      "role": "ADMIN",
+      "status": "APPROVED",
+      "createdAt": "2026-07-29T05:19:02.059Z",
+      "updatedAt": "2026-07-30T00:54:27.350Z"
+    },
+    {
+      "id": "cms5mx3hn000lv2uyhxg4a9ii",
+      "name": "RINA ARIYANTI",
+      "npp": "07229",
+      "email": null,
+      "emailVerified": null,
+      "image": null,
+      "password": "$2b$10$Pby7zlUWHjo3tGXkoeMfdeb2xxpcyoLgPuXjbEEsC1HISHJSp0M4K",
+      "department": "TI Wilayah",
+      "position": "Staf Pelaksana",
+      "role": "ADMIN",
+      "status": "APPROVED",
+      "createdAt": "2026-07-29T05:19:02.123Z",
+      "updatedAt": "2026-07-30T00:54:41.291Z"
+    },
+    {
+      "id": "cms5mx3je000mv2uy653t7yyc",
+      "name": "FITRA RIZKI RAMDHANI",
+      "npp": "09970",
+      "email": null,
+      "emailVerified": null,
+      "image": null,
+      "password": "$2b$10$nQhUixHqXi87RKds/WAKtewCAvwbK0o55VEBEpgKuLx6OpW4AgNo.",
+      "department": "TI Wilayah",
+      "position": "Staf Pelaksana",
+      "role": "ADMIN",
+      "status": "APPROVED",
+      "createdAt": "2026-07-29T05:19:02.187Z",
+      "updatedAt": "2026-07-30T00:55:01.873Z"
+    },
+    {
+      "id": "cms5mx3l6000nv2uykrknecco",
+      "name": "MOHD KHALIS ANRA",
+      "npp": "07948",
+      "email": null,
+      "emailVerified": null,
+      "image": null,
+      "password": "$2b$10$WjuWz/cvZn/pS33/iYuaWu/QLV6RsCvO0cvyXieSomW/wBII74.mK",
+      "department": "TI Wilayah",
+      "position": "Asisten Manager",
+      "role": "ADMIN",
+      "status": "APPROVED",
+      "createdAt": "2026-07-29T05:19:02.251Z",
+      "updatedAt": "2026-07-30T00:55:13.670Z"
+    },
+    {
+      "id": "cmssdsimq00d014niyrljlof1",
+      "name": "HERMAN DINATA MIHARDJA",
+      "npp": "02473",
+      "email": null,
+      "emailVerified": null,
+      "image": null,
+      "password": "$2b$10$viE8qKmwvSCRJ0HHsoQmIuzfFMFNG71ERlcU77cup8CZfp9QGuFRG",
+      "department": "Bidang SDM, Umum dan Komunikasi (SDMUK)",
+      "position": "Deputi Direksi Wilayah",
+      "role": "USER",
+      "status": "APPROVED",
+      "createdAt": "2026-08-14T03:22:13.971Z",
+      "updatedAt": "2026-08-19T01:04:34.686Z"
+    },
+    {
+      "id": "cmsssx3tw00f0fnyfp7m1xyul",
+      "name": "HANDI WIDYATNO",
+      "npp": "06900",
+      "email": "handi.widyatno@bpjs-kesehatan.go.id",
+      "emailVerified": null,
+      "image": null,
+      "password": "$2b$10$7nmASw8Q/TrGpqeCEdBIz.9PuAfO./KIe0r/kqff7HlGgGi1c1lTS",
+      "department": "Bidang SDM, Umum dan Komunikasi (SDMUK)",
+      "position": "Asisten Manager",
+      "role": "USER",
+      "status": "APPROVED",
+      "createdAt": "2026-08-14T10:25:42.308Z",
+      "updatedAt": "2026-08-19T01:04:34.686Z"
+    },
+    {
+      "id": "cmswszjyv01mibp3742es0rx7",
+      "name": "FRIZKY ARLIND",
+      "npp": "07797",
+      "email": "frizky.arlind@bpjs-kesehatan.go.id",
+      "emailVerified": null,
+      "image": null,
+      "password": "$2b$10$AY.PGTD79dSgM4oyK7kmK.5l1p0DLJe9TrBrGpRNj0m.e63iOQwfK",
+      "department": "Bidang Jaminan Pelayanan Kesehatan (JPK)",
+      "position": "Asisten Deputi",
+      "role": "USER",
+      "status": "APPROVED",
+      "createdAt": "2026-08-17T05:38:41.239Z",
+      "updatedAt": "2026-08-19T01:04:34.693Z"
+    }
+  ],
+  "CoachingLog": [
+    {
+      "id": "cmssmccux00a1i48jjbkxl5zx",
+      "coachId": "cms5mx3cb000iv2uy89qqkllb",
+      "coacheeId": "cms5mx2nc0004v2uytm419u03",
+      "date": "2026-08-14T00:00:00.000Z",
+      "title": "Pengujian Pertama Sesi Coaching",
+      "notes": "**Goal**\nTes entri Pertama : \nDari IDP/Target, apa yang ingin dibahas bersama saya di pertemuan ini adalah \nBagaimana perkembangan kamu (dari sesi sebelumnya)\nApa yang ingin Anda dapatkan sebagai hasilnya di akhir sesi ini\n\n**Reality**\nTes isi uraian dari semua pertanyaa : \nBagaimana situasinya sekarang? Apa yang sudah berhasil\nApa tantangannya? Apa yang jadi hambatan\nDari skala 1-10, seberapa ideal kondisi sekarang\n\n**Options**\nUraian dari semua pertanyaan : \nApa yang perlu berubah? Apa yang akan kamu lakukan berbeda\nOpsi/alternatif solusi apa saja yang tersedia\nKeputusan apa yang perlu kamu buat\n\n**Will**\nKesimpulan hasil coaching pertama : \nApa tindak lanjut dari sesi ini? Apa rencana tindakan kamu\nKapan kamu akan memulainya\nApa yang perlu diantisipasi, jika ada hal-hal yang berpotensi menghalangi\nApa rangkuman kamu atas hasil sesi kita",
+      "response": null,
+      "nextSessionDate": "2026-08-16T00:00:00.000Z",
+      "isClosed": true,
+      "isDraft": false,
+      "createdAt": "2026-08-14T07:21:36.538Z",
+      "updatedAt": "2026-08-14T13:49:05.869Z"
+    },
+    {
+      "id": "cmswo156t00d5knrov3w2io2d",
+      "coachId": "cms5mx3cb000iv2uy89qqkllb",
+      "coacheeId": "cmsssx3tw00f0fnyfp7m1xyul",
+      "date": "2026-08-17T00:00:00.000Z",
+      "title": "peningkatan capaian KPI",
+      "notes": "**Goal**\nmeningkatkan jumlah produksi live tiktok menjadi 8 kali per bulan dari agustus s.d desember 2026\n\n**Reality**\n1. saat ini jumlah produksi tiktok per bulan masih jauh dibawah target\n2. penentuan tema masih tergantung kesediaan bidang lain\n3. waktu banyak tersita untuk melakukan pekerjaan diluar tanggung jawab utama terutama pelayanan kunjungan tamu\n\n**Options**\n1. perlu adanya bank tema dan pembuatan jadwal produksi yang melibatkan bidang lain\n2. perlu pengaturan dan pembagian tugas pendampingan tamu dengan bidang lain sehingga tidak harus semua tamu dihandle bidang SDMUK\n\n**Will**\n1. penyusunan bank tema sekaligus penentuan jadwal produksi yang melibatkan bidang lain.\n2. pembagian tugas pendampingan tamu dengan bidang lain. memerlukan peran atasan dan pimpinan satuan kerja",
+      "response": null,
+      "nextSessionDate": null,
+      "isClosed": true,
+      "isDraft": false,
+      "createdAt": "2026-08-17T03:19:57.318Z",
+      "updatedAt": "2026-08-17T04:04:50.300Z"
+    },
+    {
+      "id": "cmszjrtf803519yemg5n9kzg6",
+      "coachId": "cms5mx3cb000iv2uy89qqkllb",
+      "coacheeId": "cmsssx3tw00f0fnyfp7m1xyul",
+      "date": "2026-08-19T00:00:00.000Z",
+      "title": "tes sesi 2",
+      "notes": "**Goal**\ntes\n\n**Reality**\ntes\n\n**Options**\ntes\n\n**Will**\ntes",
+      "response": null,
+      "nextSessionDate": "2026-08-20T00:00:00.000Z",
+      "isClosed": false,
+      "isDraft": false,
+      "createdAt": "2026-08-19T03:44:02.228Z",
+      "updatedAt": "2026-08-19T03:44:02.228Z"
+    }
+  ],
+  "ActionItem": [
+    {
+      "id": "cmssmccux00a2i48jjkx5oc83",
+      "coachingLogId": "cmssmccux00a1i48jjbkxl5zx",
+      "text": "Renaksi Pertama",
+      "dueDate": "2026-08-16T00:00:00.000Z",
+      "followUpNotes": "Eviden pertama pengujian",
+      "evidenceUrl": "/uploads/e213f89d-3a6f-4dc8-bda5-4e4c03327248-COGNIT.jpg",
+      "evidenceName": "COGNIT.jpg",
+      "createdAt": "2026-08-14T07:21:36.538Z",
+      "updatedAt": "2026-08-14T13:45:24.551Z"
+    },
+    {
+      "id": "cmssmccux00a3i48ji9fw302c",
+      "coachingLogId": "cmssmccux00a1i48jjbkxl5zx",
+      "text": "Renaksi Kedua",
+      "dueDate": "2026-08-16T00:00:00.000Z",
+      "followUpNotes": "Eviden kedua pengujian",
+      "evidenceUrl": "/uploads/1ce89852-0a14-4f38-aff1-93405f07f30b-COGNIT.jpg",
+      "evidenceName": "COGNIT.jpg",
+      "createdAt": "2026-08-14T07:21:36.538Z",
+      "updatedAt": "2026-08-14T13:45:40.356Z"
+    },
+    {
+      "id": "cmswoknrt00m8knroed6autzr",
+      "coachingLogId": "cmswo156t00d5knrov3w2io2d",
+      "text": "penyusunan bank tema live tiktok",
+      "dueDate": "2026-08-20T00:00:00.000Z",
+      "followUpNotes": "Telah disusun 40 tema Live Tiktok sd Desember 2026",
+      "evidenceUrl": null,
+      "evidenceName": null,
+      "createdAt": "2026-08-17T03:35:07.865Z",
+      "updatedAt": "2026-08-17T03:38:39.085Z"
+    },
+    {
+      "id": "cmswoknrt00m9knrocje8pqm9",
+      "coachingLogId": "cmswo156t00d5knrov3w2io2d",
+      "text": "pembuatan jadwal produksi live tiktok berdasarkan kesediaan waktu seluruh bidang sesuai tema",
+      "dueDate": "2026-08-31T00:00:00.000Z",
+      "followUpNotes": "Telah disusun jadwal PIC Live Tiktok melibatkan bidang lain sd Desember 2026",
+      "evidenceUrl": null,
+      "evidenceName": null,
+      "createdAt": "2026-08-17T03:35:07.865Z",
+      "updatedAt": "2026-08-17T03:39:11.664Z"
+    },
+    {
+      "id": "cmszjrtf803529yemzt4yiz5d",
+      "coachingLogId": "cmszjrtf803519yemg5n9kzg6",
+      "text": "satu",
+      "dueDate": "2026-08-28T00:00:00.000Z",
+      "followUpNotes": null,
+      "evidenceUrl": null,
+      "evidenceName": null,
+      "createdAt": "2026-08-19T03:44:02.228Z",
+      "updatedAt": "2026-08-19T03:44:02.228Z"
+    }
+  ],
+  "Account": [],
+  "Session": [],
+  "VerificationToken": [],
+  "Assessment": [
+    {
+      "id": "cms7a45kr0011isqsd0bzuq2m",
+      "userId": "cms5mx2nc0004v2uytm419u03",
+      "countA": 3,
+      "countB": 12,
+      "countC": 9,
+      "countD": 6,
+      "primaryStyle": "Expressive (Expressive / The Initiator)",
+      "secondaryStyle": null,
+      "isCombination": false,
+      "createdAt": "2026-07-30T08:56:08.764Z"
+    },
+    {
+      "id": "cmswl877r013jpptbq348e59n",
+      "userId": "cmsssx3tw00f0fnyfp7m1xyul",
+      "countA": 10,
+      "countB": 6,
+      "countC": 9,
+      "countD": 5,
+      "primaryStyle": "Directive (Direct / The Driver)",
+      "secondaryStyle": "Harmonious (Relater / The Amiable)",
+      "isCombination": true,
+      "createdAt": "2026-08-17T02:01:27.687Z"
+    }
+  ],
+  "Question": [
+    {
+      "id": "cmr560s750017youtm034cvgk",
+      "order": 1,
+      "text": "Saat memulai proyek baru bersama tim, prioritas pertama Anda adalah",
+      "isActive": true,
+      "createdAt": "2026-07-03T16:46:18.303Z",
+      "updatedAt": "2026-07-03T16:46:18.303Z"
+    },
+    {
+      "id": "cmr560s75001cyout52v4r45y",
+      "order": 2,
+      "text": "Ketika Anda menulis email penting kepada rekan kerja, gaya penulisan Anda cenderung:",
+      "isActive": true,
+      "createdAt": "2026-07-03T16:46:18.303Z",
+      "updatedAt": "2026-07-03T16:46:18.303Z"
+    },
+    {
+      "id": "cmr560s76001hyoutubx8yikv",
+      "order": 3,
+      "text": "Dalam sebuah rapat yang pembahasannya mulai melebar dari topik, Anda biasanya:",
+      "isActive": true,
+      "createdAt": "2026-07-03T16:46:18.303Z",
+      "updatedAt": "2026-07-03T16:46:18.303Z"
+    },
+    {
+      "id": "cmr560s76001myouttmb0yb7s",
+      "order": 4,
+      "text": "Jika terjadi perbedaan pendapat yang tajam dengan rekan kerja, pendekatan Anda adalah:",
+      "isActive": true,
+      "createdAt": "2026-07-03T16:46:18.303Z",
+      "updatedAt": "2026-07-03T16:46:18.303Z"
+    },
+    {
+      "id": "cmr560s76001ryouthowlj1du",
+      "order": 5,
+      "text": "Saat harus mempresentasikan sebuah laporan di hadapan manajemen, Anda fokus pada:",
+      "isActive": true,
+      "createdAt": "2026-07-03T16:46:18.303Z",
+      "updatedAt": "2026-07-03T16:46:18.303Z"
+    },
+    {
+      "id": "cmr560s76001wyoutkiy43pcv",
+      "order": 6,
+      "text": "Ketika Anda menerima instruksi pekerjaan yang dirasa kurang spesifik, Anda akan:",
+      "isActive": true,
+      "createdAt": "2026-07-03T16:46:18.303Z",
+      "updatedAt": "2026-07-03T16:46:18.303Z"
+    },
+    {
+      "id": "cmr560s770021youtgc38bkzj",
+      "order": 7,
+      "text": "Saat menghadapi tenggat waktu (deadline) yang sangat ketat, Anda cenderung:",
+      "isActive": true,
+      "createdAt": "2026-07-03T16:46:18.303Z",
+      "updatedAt": "2026-07-03T16:46:18.303Z"
+    },
+    {
+      "id": "cmr560s770026yout5oymvljs",
+      "order": 8,
+      "text": "Ketika Anda harus memberikan masukan konstruktif (feedback) kepada rekan kerja:",
+      "isActive": true,
+      "createdAt": "2026-07-03T16:46:18.303Z",
+      "updatedAt": "2026-07-03T16:46:18.303Z"
+    },
+    {
+      "id": "cmr560s77002byoutjawmfl14",
+      "order": 9,
+      "text": "Sebaliknya, saat Anda menerima masukan evaluatif dari atasan, reaksi Anda adalah:",
+      "isActive": true,
+      "createdAt": "2026-07-03T16:46:18.303Z",
+      "updatedAt": "2026-07-03T16:46:18.303Z"
+    },
+    {
+      "id": "cmr560s77002gyout8as35pwi",
+      "order": 10,
+      "text": "Dalam sesi curah pendapat (brainstorming), peran yang paling sering Anda ambil adalah:",
+      "isActive": true,
+      "createdAt": "2026-07-03T16:46:18.303Z",
+      "updatedAt": "2026-07-03T16:46:18.303Z"
+    },
+    {
+      "id": "cmr560s77002lyout0kdn8ytf",
+      "order": 11,
+      "text": "Jika Anda mengirim pesan singkat (chat) terkait pekerjaan, formatnya biasanya:",
+      "isActive": true,
+      "createdAt": "2026-07-03T16:46:18.303Z",
+      "updatedAt": "2026-07-03T16:46:18.303Z"
+    },
+    {
+      "id": "cmr560s78002qyoutl9f23snb",
+      "order": 12,
+      "text": "Saat muncul masalah mendadak yang memengaruhi jadwal proyek, Anda akan:",
+      "isActive": true,
+      "createdAt": "2026-07-03T16:46:18.303Z",
+      "updatedAt": "2026-07-03T16:46:18.303Z"
+    },
+    {
+      "id": "cmr560s78002vyoutrl4tw8f9",
+      "order": 13,
+      "text": "Ketika melihat rekan kerja mengalami kesulitan dan bekerja lebih lambat, Anda cenderung:",
+      "isActive": true,
+      "createdAt": "2026-07-03T16:46:18.303Z",
+      "updatedAt": "2026-07-03T16:46:18.303Z"
+    },
+    {
+      "id": "cmr560s780030youtneyfrv10",
+      "order": 14,
+      "text": "Jika Anda harus menjelaskan ide yang sangat kompleks, pendekatan Anda adalah:",
+      "isActive": true,
+      "createdAt": "2026-07-03T16:46:18.303Z",
+      "updatedAt": "2026-07-03T16:46:18.303Z"
+    },
+    {
+      "id": "cmr560s780035youtnf3xtgns",
+      "order": 15,
+      "text": "Saat menghadapi klien atau pemangku kepentingan yang menyampaikan keluhan, Anda akan:",
+      "isActive": true,
+      "createdAt": "2026-07-03T16:46:18.303Z",
+      "updatedAt": "2026-07-03T16:46:18.303Z"
+    },
+    {
+      "id": "cmr560s78003ayoutf53d7ajw",
+      "order": 16,
+      "text": "Ketika Anda harus mendelegasikan tugas kepada anggota tim, Anda biasanya:",
+      "isActive": true,
+      "createdAt": "2026-07-03T16:46:18.303Z",
+      "updatedAt": "2026-07-03T16:46:18.303Z"
+    },
+    {
+      "id": "cmr560s78003fyoutxck1v93d",
+      "order": 17,
+      "text": "Jika anggota tim Anda melakukan kesalahan operasional, pendekatan Anda adalah:",
+      "isActive": true,
+      "createdAt": "2026-07-03T16:46:18.303Z",
+      "updatedAt": "2026-07-03T16:46:18.303Z"
+    },
+    {
+      "id": "cmr560s79003kyoutxnt4gc4p",
+      "order": 18,
+      "text": "Saat perusahaan menerapkan kebijakan baru secara tiba-tiba, Anda bereaksi dengan:",
+      "isActive": true,
+      "createdAt": "2026-07-03T16:46:18.303Z",
+      "updatedAt": "2026-07-03T16:46:18.303Z"
+    },
+    {
+      "id": "cmr560s79003pyouts165spns",
+      "order": 19,
+      "text": "Ketika Anda harus meminta bantuan lintas departemen, Anda akan:",
+      "isActive": true,
+      "createdAt": "2026-07-03T16:46:18.303Z",
+      "updatedAt": "2026-07-03T16:46:18.303Z"
+    },
+    {
+      "id": "cmr560s79003uyout8s5gimae",
+      "order": 20,
+      "text": "Cara Anda merayakan keberhasilan tim setelah menyelesaikan proyek besar adalah:",
+      "isActive": true,
+      "createdAt": "2026-07-03T16:46:18.303Z",
+      "updatedAt": "2026-07-03T16:46:18.303Z"
+    },
+    {
+      "id": "cmr560s79003zyoutozmk94qp",
+      "order": 21,
+      "text": "Saat menyusun laporan progres kerja berkala, Anda lebih suka:",
+      "isActive": true,
+      "createdAt": "2026-07-03T16:46:18.303Z",
+      "updatedAt": "2026-07-03T16:46:18.303Z"
+    },
+    {
+      "id": "cmr560s790044youtnievwvho",
+      "order": 22,
+      "text": "Jika ada pembicaraan di luar topik saat diskusi sedang berlangsung, Anda akan:",
+      "isActive": true,
+      "createdAt": "2026-07-03T16:46:18.303Z",
+      "updatedAt": "2026-07-03T16:46:18.303Z"
+    },
+    {
+      "id": "cmr560s790049youtnjyccip1",
+      "order": 23,
+      "text": "Lingkungan kerja yang menurut Anda paling ideal untuk produktivitas adalah:",
+      "isActive": true,
+      "createdAt": "2026-07-03T16:46:18.303Z",
+      "updatedAt": "2026-07-03T16:46:18.303Z"
+    },
+    {
+      "id": "cmr560s7a004eyout2gfn1wmr",
+      "order": 24,
+      "text": "Saat harus membuat keputusan yang memiliki risiko tinggi, dasar pertimbangan Anda adalah:",
+      "isActive": true,
+      "createdAt": "2026-07-03T16:46:18.303Z",
+      "updatedAt": "2026-07-03T16:46:18.303Z"
+    },
+    {
+      "id": "cmr560s7a004jyoutr57h8acx",
+      "order": 25,
+      "text": "Jika usulan strategi Anda belum bisa diterima oleh manajemen, Anda cenderung:",
+      "isActive": true,
+      "createdAt": "2026-07-03T16:46:18.303Z",
+      "updatedAt": "2026-07-03T16:46:18.303Z"
+    },
+    {
+      "id": "cmr560s7a004oyoutqb1eataa",
+      "order": 26,
+      "text": "Ketika ditugaskan menyiapkan agenda kegiatan internal divisi, langkah pertama Anda:",
+      "isActive": true,
+      "createdAt": "2026-07-03T16:46:18.303Z",
+      "updatedAt": "2026-07-03T16:46:18.303Z"
+    },
+    {
+      "id": "cmr560s7a004tyoutetelcqon",
+      "order": 27,
+      "text": "Saat melakukan diskusi 1-on-1 rutin dengan atasan, fokus utama Anda adalah:",
+      "isActive": true,
+      "createdAt": "2026-07-03T16:46:18.303Z",
+      "updatedAt": "2026-07-03T16:46:18.303Z"
+    },
+    {
+      "id": "cmr560s7a004yyout9u3qbb3s",
+      "order": 28,
+      "text": "Jika Anda menyadari Anda telah keliru menyampaikan informasi ke tim, Anda akan:",
+      "isActive": true,
+      "createdAt": "2026-07-03T16:46:18.303Z",
+      "updatedAt": "2026-07-03T16:46:18.303Z"
+    },
+    {
+      "id": "cmr560s7a0053youtq66ycxcu",
+      "order": 29,
+      "text": "Mendapatkan tugas baru yang sangat kompleks dan belum familier membuat Anda:",
+      "isActive": true,
+      "createdAt": "2026-07-03T16:46:18.303Z",
+      "updatedAt": "2026-07-03T16:46:18.303Z"
+    },
+    {
+      "id": "cmr560s7b0058youtzhdiy1fw",
+      "order": 30,
+      "text": "Cara Anda memastikan rutinitas penutupan hari kerja berjalan efektif biasanya adalah:",
+      "isActive": true,
+      "createdAt": "2026-07-03T16:46:18.303Z",
+      "updatedAt": "2026-07-03T16:46:18.303Z"
+    }
+  ],
+  "Option": [
+    {
+      "id": "cmr560s750018youth4u08v37",
+      "questionId": "cmr560s750017youtm034cvgk",
+      "letter": "A",
+      "text": "Menyelaraskan tujuan akhir agar tim bisa segera mengambil langkah pertama."
+    },
+    {
+      "id": "cmr560s750019yout3va729pp",
+      "questionId": "cmr560s750017youtm034cvgk",
+      "letter": "B",
+      "text": "Membangun visi bersama agar seluruh tim memiliki motivasi yang sama."
+    },
+    {
+      "id": "cmr560s75001ayoutxg43522u",
+      "questionId": "cmr560s750017youtm034cvgk",
+      "letter": "C",
+      "text": "Memastikan setiap anggota memahami perannya dan merasa didukung secara tim."
+    },
+    {
+      "id": "cmr560s75001byoute9aa99lr",
+      "questionId": "cmr560s750017youtm034cvgk",
+      "letter": "D",
+      "text": "Menyusun kerangka kerja awal berdasarkan informasi atau data yang tersedia."
+    },
+    {
+      "id": "cmr560s75001dyout626de374",
+      "questionId": "cmr560s75001cyout52v4r45y",
+      "letter": "A",
+      "text": "Mengutamakan pesan yang ringkas dan memprioritaskan poin tindakan (action items)."
+    },
+    {
+      "id": "cmr560s75001eyoutnyrrq396",
+      "questionId": "cmr560s75001cyout52v4r45y",
+      "letter": "B",
+      "text": "Menulis dengan gaya bahasa yang mengalir dan menarik agar pesan mudah diterima."
+    },
+    {
+      "id": "cmr560s75001fyoutyrq1c0ad",
+      "questionId": "cmr560s75001cyout52v4r45y",
+      "letter": "C",
+      "text": "Menyertakan sapaan hangat dan memperhatikan nada bicara agar terasa kolaboratif."
+    },
+    {
+      "id": "cmr560s75001gyouta2de2rwb",
+      "questionId": "cmr560s75001cyout52v4r45y",
+      "letter": "D",
+      "text": "Memastikan struktur tulisan logis dengan informasi pendukung yang komprehensif."
+    },
+    {
+      "id": "cmr560s76001iyoutmwjau1ih",
+      "questionId": "cmr560s76001hyoutubx8yikv",
+      "letter": "A",
+      "text": "Mengusulkan agar diskusi dikembalikan pada agenda utama yang harus diselesaikan."
+    },
+    {
+      "id": "cmr560s76001jyout26vjlh67",
+      "questionId": "cmr560s76001hyoutubx8yikv",
+      "letter": "B",
+      "text": "Mengajukan sudut pandang baru yang mungkin bisa menjembatani kebuntuan diskusi."
+    },
+    {
+      "id": "cmr560s76001kyoutrb0yoccw",
+      "questionId": "cmr560s76001hyoutubx8yikv",
+      "letter": "C",
+      "text": "Membantu menyatukan kesamaan pandangan dari pihak-pihak yang berbeda pendapat."
+    },
+    {
+      "id": "cmr560s76001lyoutvyp0rnlv",
+      "questionId": "cmr560s76001hyoutubx8yikv",
+      "letter": "D",
+      "text": "Meminta waktu sejenak untuk meninjau kembali fakta-fakta yang relevan dengan topik."
+    },
+    {
+      "id": "cmr560s76001nyoutc3le5uqw",
+      "questionId": "cmr560s76001myouttmb0yb7s",
+      "letter": "A",
+      "text": "Menginisiasi diskusi agar masalah dapat diurai dan diputuskan secara objektif dan cepat."
+    },
+    {
+      "id": "cmr560s76001oyoutx7ljg2e5",
+      "questionId": "cmr560s76001myouttmb0yb7s",
+      "letter": "B",
+      "text": "Mengajak berdiskusi di suasana yang lebih rileks untuk menemukan titik temu yang inovatif."
+    },
+    {
+      "id": "cmr560s76001pyouthpg6f18v",
+      "questionId": "cmr560s76001myouttmb0yb7s",
+      "letter": "C",
+      "text": "Mendengarkan perspektif rekan kerja terlebih dahulu untuk benar-benar memahami posisinya."
+    },
+    {
+      "id": "cmr560s76001qyout196ziwih",
+      "questionId": "cmr560s76001myouttmb0yb7s",
+      "letter": "D",
+      "text": "Menelusuri kronologi perbedaan secara terstruktur untuk menemukan kejelasan secara faktual."
+    },
+    {
+      "id": "cmr560s76001syoutapmndj0i",
+      "questionId": "cmr560s76001ryouthowlj1du",
+      "letter": "A",
+      "text": "Pencapaian utama dan rekomendasi tindakan (next steps) yang spesifik."
+    },
+    {
+      "id": "cmr560s76001tyout9fnzxo4c",
+      "questionId": "cmr560s76001ryouthowlj1du",
+      "letter": "B",
+      "text": "Narasi atau konteks di balik pencapaian agar presentasi lebih menggugah."
+    },
+    {
+      "id": "cmr560s76001uyoutur66jaaa",
+      "questionId": "cmr560s76001ryouthowlj1du",
+      "letter": "C",
+      "text": "Sesi interaktif untuk mengakomodasi umpan balik dan masukan dari manajemen."
+    },
+    {
+      "id": "cmr560s76001vyout87igl2bf",
+      "questionId": "cmr560s76001ryouthowlj1du",
+      "letter": "D",
+      "text": "Metodologi dan data kuantitatif yang menguatkan kesimpulan Anda."
+    },
+    {
+      "id": "cmr560s76001xyouttn1t23v0",
+      "questionId": "cmr560s76001wyoutkiy43pcv",
+      "letter": "A",
+      "text": "Mengonfirmasi ekspektasi output akhir dan batas waktu penyelesaiannya."
+    },
+    {
+      "id": "cmr560s76001yyoutei46amph",
+      "questionId": "cmr560s76001wyoutkiy43pcv",
+      "letter": "B",
+      "text": "Berdiskusi sejenak untuk memahami gambaran besar dan tujuan strategis tugas tersebut."
+    },
+    {
+      "id": "cmr560s76001zyout417ylk2h",
+      "questionId": "cmr560s76001wyoutkiy43pcv",
+      "letter": "C",
+      "text": "Berkoordinasi dengan rekan lain agar pendekatan yang diambil bisa sejalan."
+    },
+    {
+      "id": "cmr560s760020youtbkzpykbs",
+      "questionId": "cmr560s76001wyoutkiy43pcv",
+      "letter": "D",
+      "text": "Mencari preseden, referensi, atau panduan tertulis terkait tugas serupa di masa lalu."
+    },
+    {
+      "id": "cmr560s770022youtnq7zy5pm",
+      "questionId": "cmr560s770021youtgc38bkzj",
+      "letter": "A",
+      "text": "Mengerahkan energi untuk mengeksekusi prioritas tertinggi tanpa menunda."
+    },
+    {
+      "id": "cmr560s770023youtpomehyoq",
+      "questionId": "cmr560s770021youtgc38bkzj",
+      "letter": "B",
+      "text": "Menjaga ritme kerja tim agar tetap optimis dalam mengejar tenggat waktu."
+    },
+    {
+      "id": "cmr560s770024youtb4q5spre",
+      "questionId": "cmr560s770021youtgc38bkzj",
+      "letter": "C",
+      "text": "Memastikan komunikasi internal tim tetap lancar untuk mencegah tumpang tindih pekerjaan."
+    },
+    {
+      "id": "cmr560s770025youtmrlcir22",
+      "questionId": "cmr560s770021youtgc38bkzj",
+      "letter": "D",
+      "text": "Melakukan pengecekan ulang secara efisien pada tahapan-tahapan yang paling krusial."
+    },
+    {
+      "id": "cmr560s770027yout6wegaywl",
+      "questionId": "cmr560s770026yout5oymvljs",
+      "letter": "A",
+      "text": "Menyampaikannya secara lugas dengan fokus pada area yang perlu segera diperbaiki."
+    },
+    {
+      "id": "cmr560s770028youtk89mfbhf",
+      "questionId": "cmr560s770026yout5oymvljs",
+      "letter": "B",
+      "text": "Menyampaikannya sebagai ruang untuk bertumbuh dan mengeksplorasi potensi baru."
+    },
+    {
+      "id": "cmr560s770029youtjktwxsfx",
+      "questionId": "cmr560s770026yout5oymvljs",
+      "letter": "C",
+      "text": "Menyampaikannya secara personal dengan memastikan rekan kerja tersebut tetap dihargai."
+    },
+    {
+      "id": "cmr560s77002ayout7kwfessn",
+      "questionId": "cmr560s770026yout5oymvljs",
+      "letter": "D",
+      "text": "Menyampaikannya berdasarkan parameter kerja yang terukur, objektif, dan spesifik."
+    },
+    {
+      "id": "cmr560s77002cyoutk609xsp2",
+      "questionId": "cmr560s77002byoutjawmfl14",
+      "letter": "A",
+      "text": "Menerimanya sebagai masukan taktis untuk langsung diimplementasikan pada pekerjaan."
+    },
+    {
+      "id": "cmr560s77002dyoutmailkah2",
+      "questionId": "cmr560s77002byoutjawmfl14",
+      "letter": "B",
+      "text": "Menjadikannya motivasi untuk mencoba pendekatan baru yang lebih baik di masa depan."
+    },
+    {
+      "id": "cmr560s77002eyoutrlbraxdr",
+      "questionId": "cmr560s77002byoutjawmfl14",
+      "letter": "C",
+      "text": "Menghargai niat baik atasan dan merefleksikannya untuk perbaikan kolaborasi ke depan."
+    },
+    {
+      "id": "cmr560s77002fyoutxdsswxzx",
+      "questionId": "cmr560s77002byoutjawmfl14",
+      "letter": "D",
+      "text": "Meminta detail atau metrik lebih lanjut agar upaya perbaikannya bisa tepat sasaran."
+    },
+    {
+      "id": "cmr560s77002hyout6chqtovj",
+      "questionId": "cmr560s77002gyout8as35pwi",
+      "letter": "A",
+      "text": "Mengarahkan ide-ide yang muncul menuju solusi yang paling mungkin dieksekusi."
+    },
+    {
+      "id": "cmr560s77002iyout25mh14xs",
+      "questionId": "cmr560s77002gyout8as35pwi",
+      "letter": "B",
+      "text": "Berkontribusi dengan gagasan yang segar, luas, dan mungkin belum terpikirkan."
+    },
+    {
+      "id": "cmr560s77002jyoutalx9w7jm",
+      "questionId": "cmr560s77002gyout8as35pwi",
+      "letter": "C",
+      "text": "Memfasilitasi agar setiap orang memiliki kesempatan yang sama untuk menyumbang suara."
+    },
+    {
+      "id": "cmr560s77002kyout8oiangkf",
+      "questionId": "cmr560s77002gyout8as35pwi",
+      "letter": "D",
+      "text": "Mengkategorikan ide-ide yang muncul berdasarkan kriteria atau kelayakan teknis."
+    },
+    {
+      "id": "cmr560s77002myouth28doyq3",
+      "questionId": "cmr560s77002lyout0kdn8ytf",
+      "letter": "A",
+      "text": "Mengutamakan efisiensi kata, berfokus langsung pada substansi atau pertanyaan inti."
+    },
+    {
+      "id": "cmr560s77002nyout1fjyjviu",
+      "questionId": "cmr560s77002lyout0kdn8ytf",
+      "letter": "B",
+      "text": "Menggunakan gaya bahasa yang cair, dinamis, dan ekspresif menyesuaikan lawan bicara."
+    },
+    {
+      "id": "cmr560s77002oyoutclyvyqax",
+      "questionId": "cmr560s77002lyout0kdn8ytf",
+      "letter": "C",
+      "text": "Mengedepankan pembukaan yang sopan, ramah, dan memastikan waktu lawan bicara luang."
+    },
+    {
+      "id": "cmr560s77002pyoutjdzr385v",
+      "questionId": "cmr560s77002lyout0kdn8ytf",
+      "letter": "D",
+      "text": "Memformulasikan pesan secara sistematis, seringkali menggunakan poin bernomor."
+    },
+    {
+      "id": "cmr560s78002ryout7rzyqmbq",
+      "questionId": "cmr560s78002qyoutl9f23snb",
+      "letter": "A",
+      "text": "Segera mengidentifikasi tindakan respons pertama yang bisa langsung dieksekusi."
+    },
+    {
+      "id": "cmr560s78002syoutd3i3gy1a",
+      "questionId": "cmr560s78002qyoutl9f23snb",
+      "letter": "B",
+      "text": "Menghimpun tim untuk melakukan pertukaran pikiran singkat dan taktis untuk mencari solusi."
+    },
+    {
+      "id": "cmr560s78002tyoutrxezwmha",
+      "questionId": "cmr560s78002qyoutl9f23snb",
+      "letter": "C",
+      "text": "Memastikan semua pihak yang terdampak mendapat informasi yang selaras dan terkelola."
+    },
+    {
+      "id": "cmr560s78002uyoute4t21q4k",
+      "questionId": "cmr560s78002qyoutl9f23snb",
+      "letter": "D",
+      "text": "Mengumpulkan informasi awal mengenai skala, akar masalah, dan potensi dampaknya."
+    },
+    {
+      "id": "cmr560s78002wyoutvop5aeev",
+      "questionId": "cmr560s78002vyoutrl4tw8f9",
+      "letter": "A",
+      "text": "Berinisiatif mengonfirmasi status pekerjaannya agar jadwal tim secara keseluruhan tidak bergeser."
+    },
+    {
+      "id": "cmr560s78002xyouto1791iti",
+      "questionId": "cmr560s78002vyoutrl4tw8f9",
+      "letter": "B",
+      "text": "Memberikan dorongan semangat atau perspektif baru agar mereka kembali termotivasi."
+    },
+    {
+      "id": "cmr560s78002yyoutqjj4q3k2",
+      "questionId": "cmr560s78002vyoutrl4tw8f9",
+      "letter": "C",
+      "text": "Menawarkan ketersediaan Anda untuk membantu bagian yang mungkin menyulitkan mereka."
+    },
+    {
+      "id": "cmr560s78002zyoutavpspnlc",
+      "questionId": "cmr560s78002vyoutrl4tw8f9",
+      "letter": "D",
+      "text": "Mengamati prosesnya untuk memahami letak kendala operasionalnya secara lebih objektif."
+    },
+    {
+      "id": "cmr560s780031youtqmgzydpk",
+      "questionId": "cmr560s780030youtneyfrv10",
+      "letter": "A",
+      "text": "Menyampaikan ringkasan eksekutifnya terlebih dahulu sebelum masuk ke detail teknis."
+    },
+    {
+      "id": "cmr560s780032yout0f04de8h",
+      "questionId": "cmr560s780030youtneyfrv10",
+      "letter": "B",
+      "text": "Menggunakan analogi atau ilustrasi yang relevan agar konsepnya lebih mudah dibayangkan."
+    },
+    {
+      "id": "cmr560s780033youtvgk7sur2",
+      "questionId": "cmr560s780030youtneyfrv10",
+      "letter": "C",
+      "text": "Menyesuaikan kecepatan penjelasan dengan merespons gestur pemahaman dari pendengar."
+    },
+    {
+      "id": "cmr560s780034youtldwqma0j",
+      "questionId": "cmr560s780030youtneyfrv10",
+      "letter": "D",
+      "text": "Menjabarkan alur logika atau tahapannya secara berurutan, sistematis, dan terstruktur."
+    },
+    {
+      "id": "cmr560s780036youtoc4pvqdo",
+      "questionId": "cmr560s780035youtnf3xtgns",
+      "letter": "A",
+      "text": "Mengidentifikasi resolusi tercepat yang bisa segera diterapkan untuk mengatasi masalah klien."
+    },
+    {
+      "id": "cmr560s780037yout4jdn6g5q",
+      "questionId": "cmr560s780035youtnf3xtgns",
+      "letter": "B",
+      "text": "Meyakinkan klien bahwa perusahaan mendengarkan dan berkomitmen memberikan pelayanan terbaik."
+    },
+    {
+      "id": "cmr560s780038youttcwkzjr9",
+      "questionId": "cmr560s780035youtnf3xtgns",
+      "letter": "C",
+      "text": "Mendengarkan secara aktif untuk memvalidasi sudut pandang dan memahami kekhawatiran klien."
+    },
+    {
+      "id": "cmr560s780039youtybpzuu7g",
+      "questionId": "cmr560s780035youtnf3xtgns",
+      "letter": "D",
+      "text": "Mencatat poin-poin keluhan secara detail untuk divalidasi dengan kebijakan atau sistem yang ada."
+    },
+    {
+      "id": "cmr560s78003byout9wbz3b81",
+      "questionId": "cmr560s78003ayoutf53d7ajw",
+      "letter": "A",
+      "text": "Menetapkan parameter keberhasilan yang diharapkan dari tugas tersebut secara jelas."
+    },
+    {
+      "id": "cmr560s78003cyoutw5ml2o4t",
+      "questionId": "cmr560s78003ayoutf53d7ajw",
+      "letter": "B",
+      "text": "Menjelaskan bagaimana kontribusi tugas tersebut berdampak pada tujuan besar perusahaan."
+    },
+    {
+      "id": "cmr560s78003dyoutoeku70di",
+      "questionId": "cmr560s78003ayoutf53d7ajw",
+      "letter": "C",
+      "text": "Memastikan penerima tugas merasa didukung dan memiliki kapasitas yang cukup saat ini."
+    },
+    {
+      "id": "cmr560s78003eyoutzg9otuyz",
+      "questionId": "cmr560s78003ayoutf53d7ajw",
+      "letter": "D",
+      "text": "Menyertakan instruksi, alat bantu pendukung, atau pedoman kualitas yang dibutuhkan."
+    },
+    {
+      "id": "cmr560s78003gyoutcoudrpf4",
+      "questionId": "cmr560s78003fyoutxck1v93d",
+      "letter": "A",
+      "text": "Mengarahkan mereka untuk segera melakukan koreksi dan meninjau hasilnya bersama nanti."
+    },
+    {
+      "id": "cmr560s78003hyoutypin0isz",
+      "questionId": "cmr560s78003fyoutxck1v93d",
+      "letter": "B",
+      "text": "Mengajak mereka membahas lessons learned(pelajaran) sebagai ruang untuk berkembang."
+    },
+    {
+      "id": "cmr560s78003iyoutg8n8i4tf",
+      "questionId": "cmr560s78003fyoutxck1v93d",
+      "letter": "C",
+      "text": "Membahasnya secara tertutup untuk menjaga kepercayaan diri dan motivasi kerja mereka."
+    },
+    {
+      "id": "cmr560s78003jyoutz85s7sjb",
+      "questionId": "cmr560s78003fyoutxck1v93d",
+      "letter": "D",
+      "text": "Meninjau bersama langkah-langkah kerja prosedural untuk menemukan titik awal kesalahannya."
+    },
+    {
+      "id": "cmr560s79003lyout2mfrqf83",
+      "questionId": "cmr560s79003kyoutxnt4gc4p",
+      "letter": "A",
+      "text": "Fokus pada bagaimana menyesuaikan taktik kerja harian dengan kebijakan baru tersebut."
+    },
+    {
+      "id": "cmr560s79003myoutbc7qe16x",
+      "questionId": "cmr560s79003kyoutxnt4gc4p",
+      "letter": "B",
+      "text": "Melihat kebijakan tersebut sebagai peluang untuk merampingkan atau memperbarui cara kerja."
+    },
+    {
+      "id": "cmr560s79003nyouta0ks7c8d",
+      "questionId": "cmr560s79003kyoutxnt4gc4p",
+      "letter": "C",
+      "text": "Mengobservasi bagaimana kebijakan ini akan memengaruhi dinamika dan beban kerja di dalam tim."
+    },
+    {
+      "id": "cmr560s79003oyouthh87kq8w",
+      "questionId": "cmr560s79003kyoutxnt4gc4p",
+      "letter": "D",
+      "text": "Membaca secara saksama dokumen kebijakan untuk memahami implikasi proseduralnya secara utuh."
+    },
+    {
+      "id": "cmr560s79003qyoutf2clehyj",
+      "questionId": "cmr560s79003pyouts165spns",
+      "letter": "A",
+      "text": "Mengomunikasikan kebutuhan spesifik dan tenggat waktu yang Anda harapkan sejak awal."
+    },
+    {
+      "id": "cmr560s79003ryout5xf1s2e1",
+      "questionId": "cmr560s79003pyouts165spns",
+      "letter": "B",
+      "text": "Membangun komunikasi yang positif dan engaging sebelum menyampaikan permohonan."
+    },
+    {
+      "id": "cmr560s79003syoutvkpoa0tg",
+      "questionId": "cmr560s79003pyouts165spns",
+      "letter": "C",
+      "text": "Menanyakan waktu luang mereka terlebih dahulu agar tidak mengganggu fokus kerja utama mereka."
+    },
+    {
+      "id": "cmr560s79003tyout61dnitaq",
+      "questionId": "cmr560s79003pyouts165spns",
+      "letter": "D",
+      "text": "Memberikan alasan yang berdasar mengapa proses kerja Anda sangat membutuhkan input mereka."
+    },
+    {
+      "id": "cmr560s79003vyoutv7h5falo",
+      "questionId": "cmr560s79003uyout8s5gimae",
+      "letter": "A",
+      "text": "Memberikan apresiasi atas tercapainya target dan bersiap merencanakan fase selanjutnya."
+    },
+    {
+      "id": "cmr560s79003wyout19viubac",
+      "questionId": "cmr560s79003uyout8s5gimae",
+      "letter": "B",
+      "text": "Mengusulkan aktivitas kebersamaan atau selebrasi yang bisa dinikmati seluruh anggota tim."
+    },
+    {
+      "id": "cmr560s79003xyoutovsn9rew",
+      "questionId": "cmr560s79003uyout8s5gimae",
+      "letter": "C",
+      "text": "Menyampaikan apresiasi secara personal atas dedikasi dan kontribusi spesifik setiap individu."
+    },
+    {
+      "id": "cmr560s79003yyoutdajmldn6",
+      "questionId": "cmr560s79003uyout8s5gimae",
+      "letter": "D",
+      "text": "Merangkum faktor-faktor penentu keberhasilan agar proses yang baik ini bisa direplikasi di masa depan."
+    },
+    {
+      "id": "cmr560s790040youtg5uzfz2z",
+      "questionId": "cmr560s79003zyoutozmk94qp",
+      "letter": "A",
+      "text": "Menyoroti pencapaian utama (milestones) yang telah selesai dan rencana aksi berikutnya."
+    },
+    {
+      "id": "cmr560s790041youtu6egc6ch",
+      "questionId": "cmr560s79003zyoutozmk94qp",
+      "letter": "B",
+      "text": "Mengemas presentasi visual agar laporan terlihat menarik dan alur informasinya mudah diikuti."
+    },
+    {
+      "id": "cmr560s790042yout2bxd8n85",
+      "questionId": "cmr560s79003zyoutozmk94qp",
+      "letter": "C",
+      "text": "Mengikutsertakan narasi mengenai kerja sama tim dan kemajuan kolaboratif yang terjadi."
+    },
+    {
+      "id": "cmr560s790043youti0ivuick",
+      "questionId": "cmr560s79003zyoutozmk94qp",
+      "letter": "D",
+      "text": "Menyajikan matriks kemajuan atau perbandingan data aktual dengan target yang ditetapkan."
+    },
+    {
+      "id": "cmr560s790045youtbfri672z",
+      "questionId": "cmr560s790044youtnievwvho",
+      "letter": "A",
+      "text": "Secara profesional mengingatkan forum mengenai agenda prioritas yang belum selesai dibahas."
+    },
+    {
+      "id": "cmr560s790046youttyf9fzpo",
+      "questionId": "cmr560s790044youtnievwvho",
+      "letter": "B",
+      "text": "Menanggapi sekilas lalu mencari transisi yang mulus untuk kembali ke topik utama."
+    },
+    {
+      "id": "cmr560s790047youtj7sgqr6j",
+      "questionId": "cmr560s790044youtnievwvho",
+      "letter": "C",
+      "text": "Menunggu jeda yang tepat untuk mengarahkan kembali pembicaraan tanpa membuat suasana canggung."
+    },
+    {
+      "id": "cmr560s790048youtojkqqb0w",
+      "questionId": "cmr560s790044youtnievwvho",
+      "letter": "D",
+      "text": "Mengacu pada catatan rapat (notulen) atau pointer untuk menyelaraskan kembali arah diskusi."
+    },
+    {
+      "id": "cmr560s79004ayout3m3zzvq2",
+      "questionId": "cmr560s790049youtnjyccip1",
+      "letter": "A",
+      "text": "Lingkungan yang menghargai kecepatan eksekusi, pengambilan keputusan, dan pencapaian target."
+    },
+    {
+      "id": "cmr560s79004byout9roq64ga",
+      "questionId": "cmr560s790049youtnjyccip1",
+      "letter": "B",
+      "text": "Lingkungan yang dinamis, kolaboratif, dan sangat terbuka terhadap eksperimen atau inovasi."
+    },
+    {
+      "id": "cmr560s79004cyout5lki71bi",
+      "questionId": "cmr560s790049youtnjyccip1",
+      "letter": "C",
+      "text": "Lingkungan yang mengedepankan rasa saling percaya, empati, dan komunikasi yang suportif."
+    },
+    {
+      "id": "cmr560s79004dyout68of275g",
+      "questionId": "cmr560s790049youtnjyccip1",
+      "letter": "D",
+      "text": "Lingkungan yang terstruktur, memiliki standar mutu yang jelas, dan berbasis keahlian teknis."
+    },
+    {
+      "id": "cmr560s7a004fyoutbenv1a3b",
+      "questionId": "cmr560s7a004eyout2gfn1wmr",
+      "letter": "A",
+      "text": "Mempertimbangkan opsi mana yang paling efektif menyelesaikan inti permasalahan."
+    },
+    {
+      "id": "cmr560s7a004gyoutlmnhu6ik",
+      "questionId": "cmr560s7a004eyout2gfn1wmr",
+      "letter": "B",
+      "text": "Mempertimbangkan opsi mana yang memiliki potensi hasil (return) jangka panjang terbaik."
+    },
+    {
+      "id": "cmr560s7a004hyout8batsvdr",
+      "questionId": "cmr560s7a004eyout2gfn1wmr",
+      "letter": "C",
+      "text": "Mempertimbangkan opsi mana yang paling bisa menjaga stabilitas para pemangku kepentingan."
+    },
+    {
+      "id": "cmr560s7a004iyoutpywknprd",
+      "questionId": "cmr560s7a004eyout2gfn1wmr",
+      "letter": "D",
+      "text": "Mempertimbangkan opsi mana yang mitigasi risikonya paling jelas berdasarkan analisis."
+    },
+    {
+      "id": "cmr560s7a004kyout5uk467fj",
+      "questionId": "cmr560s7a004jyoutr57h8acx",
+      "letter": "A",
+      "text": "Menanyakan keputusan akhirnya untuk segera melakukan penyesuaian langkah kerja."
+    },
+    {
+      "id": "cmr560s7a004lyoutjajhr92d",
+      "questionId": "cmr560s7a004jyoutr57h8acx",
+      "letter": "B",
+      "text": "Mencari sudut pandang alternatif untuk menyempurnakan strategi tersebut di kesempatan lain."
+    },
+    {
+      "id": "cmr560s7a004myoutefdm6mms",
+      "questionId": "cmr560s7a004jyoutr57h8acx",
+      "letter": "C",
+      "text": "Menghargai keputusan tersebut demi menjaga keselarasan dengan arahan dari perusahaan."
+    },
+    {
+      "id": "cmr560s7a004nyoutn9nt9m7n",
+      "questionId": "cmr560s7a004jyoutr57h8acx",
+      "letter": "D",
+      "text": "Meminta masukan spesifik mengenai parameter ukur apa yang belum terpenuhi dari usulan tersebut."
+    },
+    {
+      "id": "cmr560s7a004pyoutmgu29rgi",
+      "questionId": "cmr560s7a004oyoutqb1eataa",
+      "letter": "A",
+      "text": "Menetapkan logistik dasar (waktu, tempat, anggaran) agar proses persiapan bisa langsung berjalan."
+    },
+    {
+      "id": "cmr560s7a004qyout93a0m7db",
+      "questionId": "cmr560s7a004oyoutqb1eataa",
+      "letter": "B",
+      "text": "Melakukan curah pendapat ringan untuk menentukan konsep atau tema acara yang paling engaging."
+    },
+    {
+      "id": "cmr560s7a004ryout1vrhff5f",
+      "questionId": "cmr560s7a004oyoutqb1eataa",
+      "letter": "C",
+      "text": "Memetakan berbagai preferensi anggota tim agar semua partisipan bisa merasa nyaman untuk hadir."
+    },
+    {
+      "id": "cmr560s7a004syoutiu0b82m6",
+      "questionId": "cmr560s7a004oyoutqb1eataa",
+      "letter": "D",
+      "text": "Membuat kerangka kerja (timeline) persiapan dan detail pembagian tugas secara sistematis."
+    },
+    {
+      "id": "cmr560s7a004uyoutiaijjt8j",
+      "questionId": "cmr560s7a004tyoutetelcqon",
+      "letter": "A",
+      "text": "Membahas progres penyelesaian target saat ini dan meminta persetujuan untuk langkah ke depan."
+    },
+    {
+      "id": "cmr560s7a004vyout9657kykr",
+      "questionId": "cmr560s7a004tyoutetelcqon",
+      "letter": "B",
+      "text": "Membahas ide-ide pengembangan baru dan potensi kontribusi Anda lebih lanjut pada perusahaan."
+    },
+    {
+      "id": "cmr560s7a004wyoutcaqaakl7",
+      "questionId": "cmr560s7a004tyoutetelcqon",
+      "letter": "C",
+      "text": "Membahas dinamika kolaborasi, kesejahteraan kerja, dan keselarasan visi secara personal."
+    },
+    {
+      "id": "cmr560s7a004xyout9oe0gnhb",
+      "questionId": "cmr560s7a004tyoutetelcqon",
+      "letter": "D",
+      "text": "Membahas metrik kinerja, analisis hasil kerja, dan area pengembangan teknis profesional Anda."
+    },
+    {
+      "id": "cmr560s7a004zyoutrl2jwz4a",
+      "questionId": "cmr560s7a004yyout9u3qbb3s",
+      "letter": "A",
+      "text": "Segera mendistribusikan perbaikan informasinya dilengkapi dengan instruksi yang ringkas."
+    },
+    {
+      "id": "cmr560s7a0050youtohg057zo",
+      "questionId": "cmr560s7a004yyout9u3qbb3s",
+      "letter": "B",
+      "text": "Menyampaikan ralat dengan pendekatan yang rileks agar tim tidak merasa panik atau tegang."
+    },
+    {
+      "id": "cmr560s7a0051youtd908vb3w",
+      "questionId": "cmr560s7a004yyout9u3qbb3s",
+      "letter": "C",
+      "text": "Mengomunikasikan ralat tersebut dengan memperhatikan kelancaran tugas pihak yang terdampak."
+    },
+    {
+      "id": "cmr560s7a0052yout2rky58af",
+      "questionId": "cmr560s7a004yyout9u3qbb3s",
+      "letter": "D",
+      "text": "Mengirimkan pembaruan informasi yang detail beserta konteks di mana kekeliruan tersebut terjadi."
+    },
+    {
+      "id": "cmr560s7b0054youtqxyp7083",
+      "questionId": "cmr560s7a0053youtq66ycxcu",
+      "letter": "A",
+      "text": "Segera mengidentifikasi langkah pertama yang paling rasional untuk mulai mengeksekusi."
+    },
+    {
+      "id": "cmr560s7b0055youtfzjf13vc",
+      "questionId": "cmr560s7a0053youtq66ycxcu",
+      "letter": "B",
+      "text": "Menggali inspirasi dan pendekatan adaptif untuk mencoba menyelesaikannya secara berbeda."
+    },
+    {
+      "id": "cmr560s7b0056youtg93lui3z",
+      "questionId": "cmr560s7a0053youtq66ycxcu",
+      "letter": "C",
+      "text": "Mencari rekan diskusi untuk bertukar pikiran mengenai cara atau pengalaman terbaik mengerjakannya."
+    },
+    {
+      "id": "cmr560s7b0057youtku56yyyr",
+      "questionId": "cmr560s7a0053youtq66ycxcu",
+      "letter": "D",
+      "text": "Memetakan struktur tugas tersebut ke dalam beberapa fase terukur yang lebih mudah dikelola."
+    },
+    {
+      "id": "cmr560s7b0059youtmfnwsjm6",
+      "questionId": "cmr560s7b0058youtzhdiy1fw",
+      "letter": "A",
+      "text": "Memastikan semua prioritas utama hari ini telah tertangani atau memiliki status progres yang jelas."
+    },
+    {
+      "id": "cmr560s7b005ayoutlpmjqcu9",
+      "questionId": "cmr560s7b0058youtzhdiy1fw",
+      "letter": "B",
+      "text": "Merencanakan secara singkat hal-hal baru apa yang ingin dieksplorasi atau diselesaikan esok hari."
+    },
+    {
+      "id": "cmr560s7b005byoutue9wiwng",
+      "questionId": "cmr560s7b0058youtzhdiy1fw",
+      "letter": "C",
+      "text": "Memastikan tidak ada komunikasi tertunda dengan rekan kerja yang mungkin sedang membutuhkan Anda."
+    },
+    {
+      "id": "cmr560s7b005cyout4h0r66lq",
+      "questionId": "cmr560s7b0058youtzhdiy1fw",
+      "letter": "D",
+      "text": "Menata kembali dokumen kerja, merapikan data, dan memperbarui catatan agar siap digunakan esok."
+    }
+  ],
+  "FeatureFlag": [
+    {
+      "id": "cmr7j8c5i0000ajr46xzrdg6p",
+      "featureKey": "panduan_komunikasi",
+      "roleGroup": "Staf",
+      "department": "GLOBAL",
+      "enabled": false,
+      "label": "Panduan Gaya Komunikasi",
+      "description": "Menampilkan menu akses ke halaman panduan gaya komunikasi.",
+      "createdAt": "2026-07-05T08:31:38.119Z",
+      "updatedAt": "2026-07-05T08:31:38.119Z"
+    },
+    {
+      "id": "cmr7j8c5i0001ajr4uvx0gh4g",
+      "featureKey": "panduan_komunikasi",
+      "roleGroup": "Asisten Deputi",
+      "department": "GLOBAL",
+      "enabled": false,
+      "label": "Panduan Gaya Komunikasi",
+      "description": "Menampilkan menu akses ke halaman panduan gaya komunikasi.",
+      "createdAt": "2026-07-05T08:31:38.119Z",
+      "updatedAt": "2026-07-29T05:22:14.805Z"
+    },
+    {
+      "id": "cmr7j8c5i0002ajr4hka7bteu",
+      "featureKey": "panduan_komunikasi",
+      "roleGroup": "Deputi Direksi Wilayah",
+      "department": "GLOBAL",
+      "enabled": false,
+      "label": "Panduan Gaya Komunikasi",
+      "description": "Menampilkan menu akses ke halaman panduan gaya komunikasi.",
+      "createdAt": "2026-07-05T08:31:38.119Z",
+      "updatedAt": "2026-07-29T05:22:15.679Z"
+    },
+    {
+      "id": "cmr7j8c5i0003ajr4r1xbnalk",
+      "featureKey": "ulangi_asesmen",
+      "roleGroup": "Staf",
+      "department": "GLOBAL",
+      "enabled": false,
+      "label": "Ulangi / Perbarui Asesmen",
+      "description": "Menampilkan tombol untuk mengulang kuesioner asesmen gaya komunikasi.",
+      "createdAt": "2026-07-05T08:31:38.119Z",
+      "updatedAt": "2026-07-29T05:22:51.855Z"
+    },
+    {
+      "id": "cmr7j8c5i0004ajr4veb44zjp",
+      "featureKey": "ulangi_asesmen",
+      "roleGroup": "Asisten Deputi",
+      "department": "GLOBAL",
+      "enabled": false,
+      "label": "Ulangi / Perbarui Asesmen",
+      "description": "Menampilkan tombol untuk mengulang kuesioner asesmen gaya komunikasi.",
+      "createdAt": "2026-07-05T08:31:38.119Z",
+      "updatedAt": "2026-07-05T08:31:38.119Z"
+    },
+    {
+      "id": "cmr7j8c5i0005ajr45f5uq77m",
+      "featureKey": "ulangi_asesmen",
+      "roleGroup": "Deputi Direksi Wilayah",
+      "department": "GLOBAL",
+      "enabled": false,
+      "label": "Ulangi / Perbarui Asesmen",
+      "description": "Menampilkan tombol untuk mengulang kuesioner asesmen gaya komunikasi.",
+      "createdAt": "2026-07-05T08:31:38.119Z",
+      "updatedAt": "2026-07-05T08:31:38.119Z"
+    },
+    {
+      "id": "cmr7jbszq000cajr47ej80t90",
+      "featureKey": "manajemen_bank_soal",
+      "roleGroup": "Staf",
+      "department": "GLOBAL",
+      "enabled": false,
+      "label": "Manajemen Bank Soal",
+      "description": "Menampilkan akses ke halaman manajemen bank soal dan pertanyaan asesmen.",
+      "createdAt": "2026-07-05T08:34:19.910Z",
+      "updatedAt": "2026-07-05T08:34:19.910Z"
+    },
+    {
+      "id": "cmr7jbszr000dajr45auhswbi",
+      "featureKey": "manajemen_bank_soal",
+      "roleGroup": "Asisten Deputi",
+      "department": "GLOBAL",
+      "enabled": false,
+      "label": "Manajemen Bank Soal",
+      "description": "Menampilkan akses ke halaman manajemen bank soal dan pertanyaan asesmen.",
+      "createdAt": "2026-07-05T08:34:19.911Z",
+      "updatedAt": "2026-07-29T05:22:12.313Z"
+    },
+    {
+      "id": "cmr7jbszr000eajr4067cncpn",
+      "featureKey": "manajemen_bank_soal",
+      "roleGroup": "Deputi Direksi Wilayah",
+      "department": "GLOBAL",
+      "enabled": false,
+      "label": "Manajemen Bank Soal",
+      "description": "Menampilkan akses ke halaman manajemen bank soal dan pertanyaan asesmen.",
+      "createdAt": "2026-07-05T08:34:19.912Z",
+      "updatedAt": "2026-07-05T08:34:19.912Z"
+    },
+    {
+      "id": "cmr7lbu8i002z5ezkejnr2tlb",
+      "featureKey": "jangka_asesmen_ulang",
+      "roleGroup": "Staf",
+      "department": "GLOBAL",
+      "enabled": false,
+      "label": "Jangka Asesmen Ulang",
+      "description": "Menampilkan akses ke halaman pengaturan jangka waktu minimal pengisian ulang asesmen.",
+      "createdAt": "2026-07-05T09:30:20.755Z",
+      "updatedAt": "2026-07-05T09:30:20.755Z"
+    },
+    {
+      "id": "cmr7lbu8j00325ezkjj01fdev",
+      "featureKey": "jangka_asesmen_ulang",
+      "roleGroup": "Asisten Deputi",
+      "department": "GLOBAL",
+      "enabled": false,
+      "label": "Jangka Asesmen Ulang",
+      "description": "Menampilkan akses ke halaman pengaturan jangka waktu minimal pengisian ulang asesmen.",
+      "createdAt": "2026-07-05T09:30:20.756Z",
+      "updatedAt": "2026-07-29T05:22:08.898Z"
+    },
+    {
+      "id": "cmr7lbu8k00335ezkl0q9h3ym",
+      "featureKey": "jangka_asesmen_ulang",
+      "roleGroup": "Deputi Direksi Wilayah",
+      "department": "GLOBAL",
+      "enabled": false,
+      "label": "Jangka Asesmen Ulang",
+      "description": "Menampilkan akses ke halaman pengaturan jangka waktu minimal pengisian ulang asesmen.",
+      "createdAt": "2026-07-05T09:30:20.757Z",
+      "updatedAt": "2026-07-05T09:30:20.757Z"
+    },
+    {
+      "id": "cms5ndu4x000cdwx12v9448mt",
+      "featureKey": "panduan_komunikasi",
+      "roleGroup": "Asisten Deputi",
+      "department": "Bidang SDM, Umum dan Komunikasi (SDMUK)",
+      "enabled": true,
+      "label": "Panduan Gaya Komunikasi",
+      "description": "Menampilkan menu akses ke halaman panduan gaya komunikasi.",
+      "createdAt": "2026-07-29T05:32:03.153Z",
+      "updatedAt": "2026-08-19T01:04:34.688Z"
+    },
+    {
+      "id": "cms5ne7bq0011dwx177xrztia",
+      "featureKey": "jangka_asesmen_ulang",
+      "roleGroup": "Asisten Deputi",
+      "department": "Bidang SDM, Umum dan Komunikasi (SDMUK)",
+      "enabled": true,
+      "label": "Jangka Asesmen Ulang",
+      "description": "Menampilkan akses ke halaman pengaturan jangka waktu minimal pengisian ulang asesmen.",
+      "createdAt": "2026-07-29T05:32:20.246Z",
+      "updatedAt": "2026-08-19T01:04:34.688Z"
+    },
+    {
+      "id": "cms5nfvok0022dwx1k5fegcro",
+      "featureKey": "manajemen_bank_soal",
+      "roleGroup": "Asisten Deputi",
+      "department": "Bidang SDM, Umum dan Komunikasi (SDMUK)",
+      "enabled": true,
+      "label": "Manajemen Bank Soal",
+      "description": "Menampilkan akses ke halaman manajemen bank soal dan pertanyaan asesmen.",
+      "createdAt": "2026-07-29T05:33:38.468Z",
+      "updatedAt": "2026-08-19T01:04:34.688Z"
+    },
+    {
+      "id": "cms5ngbzw002rdwx1s591m2c5",
+      "featureKey": "ulangi_asesmen",
+      "roleGroup": "Asisten Deputi",
+      "department": "Bidang SDM, Umum dan Komunikasi (SDMUK)",
+      "enabled": true,
+      "label": "Ulangi / Perbarui Asesmen",
+      "description": "Menampilkan tombol untuk mengulang kuesioner asesmen gaya komunikasi.",
+      "createdAt": "2026-07-29T05:33:59.612Z",
+      "updatedAt": "2026-08-19T01:04:34.688Z"
+    },
+    {
+      "id": "cms5nwhi2000n6oo3t5royijv",
+      "featureKey": "manajemen_menu_aplikasi",
+      "roleGroup": "Staf",
+      "department": "GLOBAL",
+      "enabled": false,
+      "label": "Manajemen Menu Aplikasi",
+      "description": "Menampilkan akses ke halaman manajemen fitur aplikasi.",
+      "createdAt": "2026-07-29T05:46:33.243Z",
+      "updatedAt": "2026-07-29T05:46:33.243Z"
+    },
+    {
+      "id": "cms5nwhi6000q6oo351yas4tj",
+      "featureKey": "manajemen_menu_aplikasi",
+      "roleGroup": "Asisten Deputi",
+      "department": "GLOBAL",
+      "enabled": false,
+      "label": "Manajemen Menu Aplikasi",
+      "description": "Menampilkan akses ke halaman manajemen fitur aplikasi.",
+      "createdAt": "2026-07-29T05:46:33.246Z",
+      "updatedAt": "2026-07-29T05:46:33.246Z"
+    },
+    {
+      "id": "cms5nwhi7000r6oo3mixah4j2",
+      "featureKey": "manajemen_menu_aplikasi",
+      "roleGroup": "Deputi Direksi Wilayah",
+      "department": "GLOBAL",
+      "enabled": false,
+      "label": "Manajemen Menu Aplikasi",
+      "description": "Menampilkan akses ke halaman manajemen fitur aplikasi.",
+      "createdAt": "2026-07-29T05:46:33.247Z",
+      "updatedAt": "2026-07-29T05:46:33.247Z"
+    },
+    {
+      "id": "cms5pho7a004011bqzguuarfl",
+      "featureKey": "manajemen_kamus_panduan",
+      "roleGroup": "Staf",
+      "department": "GLOBAL",
+      "enabled": false,
+      "label": "Manajemen Kamus Panduan",
+      "description": "Menampilkan akses ke halaman manajemen kamus dan interpretasi panduan gaya komunikasi.",
+      "createdAt": "2026-07-29T06:31:01.318Z",
+      "updatedAt": "2026-07-29T06:31:01.318Z"
+    },
+    {
+      "id": "cms5pho7b004111bq5orokn1o",
+      "featureKey": "manajemen_kamus_panduan",
+      "roleGroup": "Asisten Deputi",
+      "department": "GLOBAL",
+      "enabled": false,
+      "label": "Manajemen Kamus Panduan",
+      "description": "Menampilkan akses ke halaman manajemen kamus dan interpretasi panduan gaya komunikasi.",
+      "createdAt": "2026-07-29T06:31:01.320Z",
+      "updatedAt": "2026-07-29T06:31:01.320Z"
+    },
+    {
+      "id": "cms5pho7c004211bqb6ixk8vz",
+      "featureKey": "manajemen_kamus_panduan",
+      "roleGroup": "Deputi Direksi Wilayah",
+      "department": "GLOBAL",
+      "enabled": false,
+      "label": "Manajemen Kamus Panduan",
+      "description": "Menampilkan akses ke halaman manajemen kamus dan interpretasi panduan gaya komunikasi.",
+      "createdAt": "2026-07-29T06:31:01.320Z",
+      "updatedAt": "2026-07-29T06:31:01.320Z"
+    },
+    {
+      "id": "cms5pihx200108nj2xspdjrrq",
+      "featureKey": "manajemen_kamus_panduan",
+      "roleGroup": "Asisten Deputi",
+      "department": "Bidang SDM, Umum dan Komunikasi (SDMUK)",
+      "enabled": true,
+      "label": "Manajemen Kamus Panduan",
+      "description": "Menampilkan akses ke halaman manajemen kamus dan interpretasi panduan gaya komunikasi.",
+      "createdAt": "2026-07-29T06:31:39.830Z",
+      "updatedAt": "2026-08-19T01:04:34.688Z"
+    }
+  ],
+  "SystemSetting": [
+    {
+      "id": "cmr7l6d6i00095ezkmxmqgnch",
+      "key": "assessment_cooldown_months",
+      "value": "1",
+      "createdAt": "2026-07-05T09:26:05.370Z",
+      "updatedAt": "2026-07-05T09:28:25.406Z"
+    },
+    {
+      "id": "cmssxbhnn004iy6chh2narwvo",
+      "key": "reminder_days",
+      "value": "1",
+      "createdAt": "2026-08-14T12:28:51.875Z",
+      "updatedAt": "2026-08-14T12:46:07.792Z"
+    },
+    {
+      "id": "cmssxbhoq005jy6chi10lsnll",
+      "key": "email_tpl_agreed_coach",
+      "value": "Halo {{coachName}},\n\nJadwal sesi coaching Anda selanjutnya dengan Coachee {{coacheeName}} telah disepakati dan diinput ke dalam sistem.\n\nPelaksanaan pada tanggal: {{date}}\n\nHarap persiapkan diri Anda.\n\nSalam,\nTim Belian Kepwil VIII",
+      "createdAt": "2026-08-14T12:28:51.915Z",
+      "updatedAt": "2026-08-14T12:46:07.824Z"
+    },
+    {
+      "id": "cmssxbhor005ky6chap0k6agr",
+      "key": "email_tpl_agreed_coachee",
+      "value": "Halo {{coacheeName}},\n\nJadwal sesi coaching Anda selanjutnya dengan Coach {{coachName}} telah disepakati dan diinput ke dalam sistem.\n\nPelaksanaan pada tanggal: {{date}}\n\nHarap persiapkan evidens atau rencana aksi Anda sebelum sesi dimulai.\n\nSalam,\nTim Belian Kepwil VIII",
+      "createdAt": "2026-08-14T12:28:51.916Z",
+      "updatedAt": "2026-08-14T12:46:07.826Z"
+    },
+    {
+      "id": "cmssxbhos005ly6chzmw9h0cx",
+      "key": "email_tpl_reminder_coach",
+      "value": "Halo {{coachName}},\n\nIni adalah pengingat bahwa Anda memiliki jadwal sesi coaching dengan Coachee {{coacheeName}} yang akan datang.\n\nPelaksanaan Sesi Coaching selanjutnya adalah pada tanggal: {{date}}\n\nJangan lupa untuk mempersiapkan diskusi terkait.\n\nSalam,\nTim Belian Kepwil VIII",
+      "createdAt": "2026-08-14T12:28:51.917Z",
+      "updatedAt": "2026-08-14T12:46:07.827Z"
+    },
+    {
+      "id": "cmssxbhot005my6chfyld8gv0",
+      "key": "email_tpl_reminder_coachee",
+      "value": "Halo {{coacheeName}},\n\nIni adalah pengingat bahwa Anda memiliki jadwal sesi coaching dengan Coach {{coachName}} yang akan datang.\n\nPelaksanaan Sesi Coaching selanjutnya adalah pada tanggal: {{date}}\n\nPastikan Anda telah mengisi evidens dan progress action plan di sistem sebelum sesi dimulai.\n\nSalam,\nTim Belian Kepwil VIII",
+      "createdAt": "2026-08-14T12:28:51.918Z",
+      "updatedAt": "2026-08-14T12:46:07.828Z"
+    }
+  ],
+  "CommunicationDictionary": []
+}

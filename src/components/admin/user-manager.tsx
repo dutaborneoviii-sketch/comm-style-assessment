@@ -1,0 +1,715 @@
+"use client";
+
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { deleteUser, approveUser, toggleUserStatus, resetUserPassword, migrateUsers, resetUserAssessment } from "@/app/actions/users";
+import { CreateUserDialog, EditUserDialog } from "./user-dialogs";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Card } from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Trash2, Search, Edit, Shield, User as UserIcon, CheckCircle2, XCircle, Power, PowerOff, KeyRound, AlertTriangle, Upload, FileUp, Download, Check, AlertCircle, Copy, RefreshCw } from "lucide-react";
+import * as XLSX from "xlsx";
+
+interface ConfirmState {
+  open: boolean;
+  title: string;
+  message: string;
+  confirmLabel: string;
+  confirmClass: string;
+  onConfirm: () => void;
+}
+
+const defaultConfirm: ConfirmState = {
+  open: false,
+  title: "",
+  message: "",
+  confirmLabel: "Ya",
+  confirmClass: "bg-red-600 hover:bg-red-700 text-white",
+  onConfirm: () => {},
+};
+
+export function UserManager({ initialUsers, currentUserId }: { initialUsers: any[], currentUserId: string }) {
+  const router = useRouter();
+  const [users, setUsers] = useState(initialUsers);
+  const [search, setSearch] = useState("");
+  const [isDeleting, setIsDeleting] = useState<string | null>(null);
+  const [isApproving, setIsApproving] = useState<string | null>(null);
+  const [isToggling, setIsToggling] = useState<string | null>(null);
+  const [isResetting, setIsResetting] = useState<string | null>(null);
+  const [isResettingAssessment, setIsResettingAssessment] = useState<string | null>(null);
+  const [confirm, setConfirm] = useState<ConfirmState>(defaultConfirm);
+
+  function showConfirm(opts: Omit<ConfirmState, 'open'>) {
+    setConfirm({ ...opts, open: true });
+  }
+
+  function closeConfirm() {
+    setConfirm(defaultConfirm);
+  }
+
+  // Search filter
+  const filteredUsers = initialUsers.filter((user) => 
+    user.name?.toLowerCase().includes(search.toLowerCase()) || 
+    user.email?.toLowerCase().includes(search.toLowerCase()) ||
+    user.department?.toLowerCase().includes(search.toLowerCase()) ||
+    user.npp?.toLowerCase().includes(search.toLowerCase())
+  );
+
+  const registeredUsers = filteredUsers.filter(u => u.status === 'APPROVED' || u.status === 'INACTIVE' || u.status === 'ACTIVE');
+  const pendingUsers = filteredUsers.filter(u => u.status === 'PENDING');
+
+  async function handleDelete(id: string, name: string) {
+    showConfirm({
+      title: "Hapus Pengguna",
+      message: `Apakah Anda yakin ingin menghapus pengguna "${name || 'ini'}"? Semua data terkait (asesmen, log coaching) juga akan ikut terhapus secara permanen.`,
+      confirmLabel: "Ya, Hapus",
+      confirmClass: "bg-red-600 hover:bg-red-700 text-white",
+      onConfirm: async () => {
+        closeConfirm();
+        setIsDeleting(id);
+        const result = await deleteUser(id);
+        if (result.error) {
+          showConfirm({
+            title: "Gagal Menghapus",
+            message: result.error,
+            confirmLabel: "Tutup",
+            confirmClass: "bg-slate-600 hover:bg-slate-700 text-white",
+            onConfirm: closeConfirm,
+          });
+        } else {
+          router.refresh();
+        }
+        setIsDeleting(null);
+      },
+    });
+  }
+
+  async function handleApprove(id: string, name: string) {
+    showConfirm({
+      title: "Setujui Pengguna",
+      message: `Setujui pengguna "${name || 'ini'}" untuk mendapatkan akses login?`,
+      confirmLabel: "Ya, Setujui",
+      confirmClass: "bg-emerald-600 hover:bg-emerald-700 text-white",
+      onConfirm: async () => {
+        closeConfirm();
+        setIsApproving(id);
+        const result = await approveUser(id);
+        if (result.error) {
+          showConfirm({
+            title: "Gagal Menyetujui",
+            message: result.error,
+            confirmLabel: "Tutup",
+            confirmClass: "bg-slate-600 hover:bg-slate-700 text-white",
+            onConfirm: closeConfirm,
+          });
+        } else {
+          router.refresh();
+        }
+        setIsApproving(null);
+      },
+    });
+  }
+
+  async function handleToggleStatus(id: string, currentStatus: string, name: string) {
+    const actionName = currentStatus === 'APPROVED' ? 'menonaktifkan' : 'mengaktifkan kembali';
+    const confirmLabel = currentStatus === 'APPROVED' ? 'Ya, Nonaktifkan' : 'Ya, Aktifkan';
+    const confirmClass = currentStatus === 'APPROVED'
+      ? 'bg-amber-600 hover:bg-amber-700 text-white'
+      : 'bg-emerald-600 hover:bg-emerald-700 text-white';
+
+    showConfirm({
+      title: currentStatus === 'APPROVED' ? "Nonaktifkan Pengguna" : "Aktifkan Pengguna",
+      message: `Apakah Anda yakin ingin ${actionName} pengguna "${name || 'ini'}"?`,
+      confirmLabel,
+      confirmClass,
+      onConfirm: async () => {
+        closeConfirm();
+        setIsToggling(id);
+        const result = await toggleUserStatus(id, currentStatus);
+        if (result.error) {
+          showConfirm({
+            title: "Gagal",
+            message: result.error,
+            confirmLabel: "Tutup",
+            confirmClass: "bg-slate-600 hover:bg-slate-700 text-white",
+            onConfirm: closeConfirm,
+          });
+        } else {
+          router.refresh();
+        }
+        setIsToggling(null);
+      },
+    });
+  }
+
+  async function handleResetPassword(id: string, name: string) {
+    showConfirm({
+      title: "Reset Password",
+      message: `Apakah Anda yakin ingin mereset password untuk pengguna "${name || 'ini'}"? Password baru akan digenerate otomatis dan dikirimkan ke email pengguna.`,
+      confirmLabel: "Ya, Reset Password",
+      confirmClass: "bg-amber-600 hover:bg-amber-700 text-white",
+      onConfirm: async () => {
+        closeConfirm();
+        setIsResetting(id);
+        const result = await resetUserPassword(id);
+        if (result.error) {
+          showConfirm({
+            title: "Gagal Reset Password",
+            message: result.error,
+            confirmLabel: "Tutup",
+            confirmClass: "bg-slate-600 hover:bg-slate-700 text-white",
+            onConfirm: closeConfirm,
+          });
+        } else if (result.password) {
+          let msg = `Password berhasil direset menjadi: ${result.password}.`;
+          if (result.hasEmail && result.emailSent) {
+            msg += ` Password baru juga telah berhasil dikirimkan ke email pengguna.`;
+          } else if (result.hasEmail && !result.emailSent) {
+            msg += ` Namun, sistem gagal mengirimkan password ke email pengguna. Harap beritahu pengguna secara manual.`;
+          } else {
+            msg += ` Pengguna ini tidak memiliki alamat email yang terdaftar, harap beritahu pengguna secara manual.`;
+          }
+
+          showConfirm({
+            title: "Password Berhasil Direset",
+            message: msg,
+            confirmLabel: "Tutup",
+            confirmClass: "bg-emerald-600 hover:bg-emerald-700 text-white",
+            onConfirm: closeConfirm,
+          });
+          router.refresh();
+        }
+        setIsResetting(null);
+      },
+    });
+  }
+
+  async function handleResetAssessment(id: string, name: string) {
+    showConfirm({
+      title: "Reset Asesmen",
+      message: `Apakah Anda yakin ingin menghapus seluruh riwayat asesmen gaya komunikasi untuk pengguna "${name || 'ini'}"? Pengguna akan dapat mengisi ulang kuesioner dari awal.`,
+      confirmLabel: "Ya, Reset Asesmen",
+      confirmClass: "bg-amber-600 hover:bg-amber-700 text-white",
+      onConfirm: async () => {
+        closeConfirm();
+        setIsResettingAssessment(id);
+        const result = await resetUserAssessment(id);
+        if (result.error) {
+          showConfirm({
+            title: "Gagal Reset Asesmen",
+            message: result.error,
+            confirmLabel: "Tutup",
+            confirmClass: "bg-slate-600 hover:bg-slate-700 text-white",
+            onConfirm: closeConfirm,
+          });
+        } else {
+          showConfirm({
+            title: "Asesmen Berhasil Direset",
+            message: `Riwayat asesmen untuk pengguna tersebut telah berhasil dihapus.`,
+            confirmLabel: "Tutup",
+            confirmClass: "bg-emerald-600 hover:bg-emerald-700 text-white",
+            onConfirm: closeConfirm,
+          });
+          router.refresh();
+        }
+        setIsResettingAssessment(null);
+      },
+    });
+  }
+
+  return (
+    <div className="space-y-6">
+      {/* Custom Confirm Dialog */}
+      <Dialog open={confirm.open} onOpenChange={(open) => { if (!open) closeConfirm(); }}>
+        <DialogContent className="sm:max-w-[440px] bg-white dark:bg-zinc-950">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-slate-800 dark:text-white">
+              <AlertTriangle className="w-5 h-5 text-amber-500" />
+              {confirm.title}
+            </DialogTitle>
+            <DialogDescription className="text-slate-600 dark:text-slate-400 mt-2 leading-relaxed">
+              {confirm.message}
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="gap-2 mt-2">
+            <Button variant="outline" onClick={closeConfirm}>
+              Batal
+            </Button>
+            <Button className={confirm.confirmClass} onClick={confirm.onConfirm}>
+              {confirm.confirmLabel}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div className="relative w-full sm:max-w-xs">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+          <Input 
+            placeholder="Cari nama, NPP, atau bidang..." 
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="pl-9 bg-white dark:bg-zinc-950 border-slate-200 dark:border-slate-800"
+          />
+        </div>
+        <div className="flex items-center gap-2 w-full sm:w-auto">
+          <MigrationDialog />
+          <CreateUserDialog />
+        </div>
+      </div>
+
+      <Tabs defaultValue="active" className="w-full">
+        <TabsList className="grid w-full sm:w-[450px] grid-cols-2 mb-4 bg-slate-100 dark:bg-slate-900/50">
+          <TabsTrigger value="active" className="data-[state=active]:bg-white dark:data-[state=active]:bg-zinc-950 data-[state=active]:shadow-sm">
+            Semua User ({registeredUsers.length})
+          </TabsTrigger>
+          <TabsTrigger value="pending" className="data-[state=active]:bg-white dark:data-[state=active]:bg-zinc-950 data-[state=active]:shadow-sm relative whitespace-nowrap">
+            Menunggu Persetujuan 
+            {pendingUsers.length > 0 && (
+              <span className="ml-1.5 flex-shrink-0 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-red-500 px-1.5 text-[11px] font-bold text-white">
+                {pendingUsers.length}
+              </span>
+            )}
+          </TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="active">
+          <Card className="border-slate-200 dark:border-slate-800 bg-white dark:bg-zinc-950 shadow-sm overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm text-left">
+                <thead className="text-xs uppercase bg-slate-50 dark:bg-slate-900/50 text-slate-500 dark:text-slate-400 border-b border-slate-200 dark:border-slate-800">
+                  <tr>
+                    <th className="px-6 py-4 font-semibold">NPP</th>
+                    <th className="px-6 py-4 font-semibold">Nama User</th>
+                    <th className="px-6 py-4 font-semibold">Bidang</th>
+                    <th className="px-6 py-4 font-semibold">Jabatan</th>
+                    <th className="px-6 py-4 font-semibold">Peran</th>
+                    <th className="px-6 py-4 font-semibold">Status</th>
+                    <th className="px-6 py-4 font-semibold text-right">Aksi</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100 dark:divide-slate-800/50">
+                  {registeredUsers.length === 0 ? (
+                    <tr>
+                      <td colSpan={7} className="px-6 py-8 text-center text-muted-foreground">
+                        Tidak ada pengguna yang ditemukan.
+                      </td>
+                    </tr>
+                  ) : (
+                    registeredUsers.map((user) => (
+                      <tr key={user.id} className={`transition-colors ${user.status === 'INACTIVE' ? 'bg-slate-50/50 dark:bg-slate-900/20 opacity-70 grayscale-[30%]' : 'hover:bg-slate-50/50 dark:hover:bg-slate-900/20'}`}>
+                        <td className="px-6 py-4 font-medium text-slate-900 dark:text-white">
+                          {user.npp || "-"}
+                        </td>
+                        <td className="px-6 py-4">
+                          <div className="flex flex-col items-start">
+                            <div className="flex items-center gap-2">
+                              <span className="font-semibold text-slate-900 dark:text-white">{user.name || "Tanpa Nama"}</span>
+                              {user.status === 'INACTIVE' && (
+                                <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-400">
+                                  NONAKTIF
+                                </span>
+                              )}
+                            </div>
+                            {user.email && <span className="text-slate-500 dark:text-slate-400 text-xs mt-0.5">{user.email}</span>}
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 text-slate-600 dark:text-slate-300">
+                          {user.department || "-"}
+                        </td>
+                        <td className="px-6 py-4">
+                          {user.position ? (
+                            <span className={`inline-flex items-center px-2 py-1 rounded-md text-xs font-medium ${
+                              user.position === 'Atasan' 
+                                ? 'bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-400' 
+                                : 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300'
+                            }`}>
+                              {user.position}
+                            </span>
+                          ) : (
+                            <span className="text-slate-400 dark:text-slate-500">-</span>
+                          )}
+                        </td>
+                        <td className="px-6 py-4">
+                          <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${
+                            user.role === "ADMIN" 
+                              ? "bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400" 
+                              : "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400"
+                          }`}>
+                            {user.role === "ADMIN" ? <Shield className="w-3 h-3 mr-1" /> : <UserIcon className="w-3 h-3 mr-1" />}
+                            {user.role === "ADMIN" ? "Admin" : "User"}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4">
+                          <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${
+                            user.status === "INACTIVE" 
+                              ? "bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-400" 
+                              : "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400"
+                          }`}>
+                            {user.status === "INACTIVE" ? "Nonaktif" : "Aktif"}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 text-right">
+                          <div className="flex items-center justify-end gap-1">
+                            <Button 
+                              variant="ghost" 
+                              size="icon" 
+                              onClick={() => handleToggleStatus(user.id, user.status, user.name)}
+                              disabled={isToggling === user.id || currentUserId === user.id}
+                              className={`h-8 w-8 ${user.status === 'INACTIVE' ? 'text-emerald-500 hover:text-emerald-600' : 'text-amber-500 hover:text-amber-600'}`}
+                              title={currentUserId === user.id ? "Tidak dapat menonaktifkan akun sendiri" : user.status === 'INACTIVE' ? "Aktifkan User" : "Nonaktifkan User"}
+                            >
+                              {user.status === 'INACTIVE' ? <Power className="w-4 h-4" /> : <PowerOff className="w-4 h-4" />}
+                            </Button>
+
+                            <EditUserDialog user={user}>
+                              <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-500 hover:text-[#015249]" title="Edit Profil">
+                                <Edit className="w-4 h-4" />
+                              </Button>
+                            </EditUserDialog>
+
+                            <Button 
+                              variant="ghost" 
+                              size="icon" 
+                              onClick={() => handleResetPassword(user.id, user.name)}
+                              disabled={isResetting === user.id}
+                              className="h-8 w-8 text-slate-500 hover:text-amber-600"
+                              title="Reset Password"
+                            >
+                              <KeyRound className="w-4 h-4" />
+                            </Button>
+                            
+                            <Button 
+                              variant="ghost" 
+                              size="icon" 
+                              onClick={() => handleResetAssessment(user.id, user.name)}
+                              disabled={isResettingAssessment === user.id}
+                              className="h-8 w-8 text-slate-500 hover:text-blue-600"
+                              title="Reset Asesmen (Isi Ulang Kuisioner)"
+                            >
+                              <RefreshCw className="w-4 h-4" />
+                            </Button>
+
+                            <Button 
+                              variant="ghost" 
+                              size="icon" 
+                              onClick={() => handleDelete(user.id, user.name)}
+                              disabled={isDeleting === user.id || currentUserId === user.id}
+                              className="h-8 w-8 text-slate-500 hover:text-red-600"
+                              title={currentUserId === user.id ? "Tidak dapat menghapus akun sendiri" : "Hapus Pengguna"}
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </Button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </Card>
+        </TabsContent>
+        
+        <TabsContent value="pending">
+          <Card className="border-slate-200 dark:border-slate-800 bg-white dark:bg-zinc-950 shadow-sm overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm text-left">
+                <thead className="text-xs uppercase bg-slate-50 dark:bg-slate-900/50 text-slate-500 dark:text-slate-400 border-b border-slate-200 dark:border-slate-800">
+                  <tr>
+                    <th className="px-6 py-4 font-semibold">NPP</th>
+                    <th className="px-6 py-4 font-semibold">Nama User</th>
+                    <th className="px-6 py-4 font-semibold">Bidang</th>
+                    <th className="px-6 py-4 font-semibold">Jabatan</th>
+                    <th className="px-6 py-4 font-semibold">Tgl Daftar</th>
+                    <th className="px-6 py-4 font-semibold text-right">Aksi</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100 dark:divide-slate-800/50">
+                  {pendingUsers.length === 0 ? (
+                    <tr>
+                      <td colSpan={6} className="px-6 py-8 text-center text-muted-foreground">
+                        Tidak ada pengguna yang menunggu persetujuan.
+                      </td>
+                    </tr>
+                  ) : (
+                    pendingUsers.map((user) => (
+                      <tr key={user.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-900/20 transition-colors">
+                        <td className="px-6 py-4 font-medium text-slate-900 dark:text-white">
+                          {user.npp || "-"}
+                        </td>
+                        <td className="px-6 py-4">
+                          <div className="flex flex-col">
+                            <span className="font-semibold text-slate-900 dark:text-white">{user.name || "Tanpa Nama"}</span>
+                            {user.email && <span className="text-slate-500 dark:text-slate-400 text-xs mt-0.5">{user.email}</span>}
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 text-slate-600 dark:text-slate-300">
+                          {user.department || "-"}
+                        </td>
+                        <td className="px-6 py-4 text-slate-600 dark:text-slate-300">
+                          {user.position || "-"}
+                        </td>
+                        <td className="px-6 py-4 text-slate-500 dark:text-slate-400 text-xs" suppressHydrationWarning>
+                          {user.createdAt ? new Intl.DateTimeFormat('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }).format(new Date(user.createdAt)) : "-"}
+                        </td>
+                        <td className="px-6 py-4 text-right">
+                          <div className="flex items-center justify-end gap-2">
+                            <Button 
+                              variant="outline" 
+                              size="sm"
+                              className="text-emerald-600 border-emerald-200 hover:bg-emerald-50 dark:border-emerald-900 dark:hover:bg-emerald-900/30"
+                              onClick={() => handleApprove(user.id, user.name)}
+                              disabled={isApproving === user.id}
+                            >
+                              <CheckCircle2 className="w-4 h-4 mr-2" />
+                              Setujui
+                            </Button>
+                            <Button 
+                              variant="outline" 
+                              size="sm"
+                              className="text-red-600 border-red-200 hover:bg-red-50 dark:border-red-900 dark:hover:bg-red-900/30"
+                              onClick={() => handleDelete(user.id, user.name)}
+                              disabled={isDeleting === user.id}
+                            >
+                              <XCircle className="w-4 h-4 mr-2" />
+                              Tolak
+                            </Button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </Card>
+        </TabsContent>
+      </Tabs>
+    </div>
+  );
+}
+
+function MigrationDialog() {
+  const router = useRouter();
+  const [open, setOpen] = useState(false);
+  const [file, setFile] = useState<File | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+  const [results, setResults] = useState<any[] | null>(null);
+  const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      setFile(e.target.files[0]);
+      setError("");
+      setResults(null);
+    }
+  };
+
+  const handleUpload = async () => {
+    if (!file) {
+      setError("Silakan pilih file excel terlebih dahulu.");
+      return;
+    }
+
+    setLoading(true);
+    setError("");
+    setResults(null);
+
+    try {
+      const reader = new FileReader();
+      reader.onload = async (event) => {
+        if (!event.target?.result) {
+          setError("Gagal membaca file.");
+          setLoading(false);
+          return;
+        }
+
+        const base64Data = (event.target.result as string).split(",")[1];
+        const res = await migrateUsers(base64Data);
+
+        if (res.error) {
+          setError(res.error);
+        } else if (res.results) {
+          setResults(res.results);
+          router.refresh();
+        }
+        setLoading(false);
+      };
+
+      reader.onerror = () => {
+        setError("Error membaca file.");
+        setLoading(false);
+      };
+
+      reader.readAsDataURL(file);
+    } catch (err: any) {
+      setError("Terjadi kesalahan sistem: " + err.message);
+      setLoading(false);
+    }
+  };
+
+  const handleCopy = (text: string, index: number) => {
+    navigator.clipboard.writeText(text);
+    setCopiedIndex(index);
+    setTimeout(() => setCopiedIndex(null), 2000);
+  };
+
+  const downloadTemplate = () => {
+    // Generate a simple Excel sheet template
+    const templateData = [
+      { npp: "10234", name: "Budi Santoso", email: "budi@domain.com", bidang: "TI Wilayah", jabatan: "Staf Pelaksana", role: "USER" },
+      { npp: "10235", name: "Rina Melati", email: "rina@domain.com", bidang: "Bidang SDM, Umum dan Komunikasi (SDMUK)", jabatan: "Asisten Deputi", role: "USER" }
+    ];
+
+    const worksheet = XLSX.utils.json_to_sheet(templateData);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Template");
+    
+    // Write buffer and download
+    const excelBuffer = XLSX.write(workbook, { bookType: "xlsx", type: "array" });
+    const blob = new Blob([excelBuffer], { type: "application/octet-stream" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "template_migrasi_user.xlsx";
+    link.click();
+    URL.revokeObjectURL(url);
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={(val) => {
+      setOpen(val);
+      if (!val) {
+        setFile(null);
+        setError("");
+        setResults(null);
+      }
+    }}>
+      <DialogTrigger render={
+        <Button variant="outline" className="border-blue-200 text-[#015249] hover:bg-blue-50 dark:border-blue-900 dark:hover:bg-blue-950/30 gap-2 font-bold text-xs h-9 rounded-xl">
+          <Upload className="w-4 h-4" />
+          Migrasi User Excel
+        </Button>
+      } />
+      <DialogContent className="sm:max-w-[650px] max-h-[85vh] overflow-y-auto bg-white dark:bg-zinc-950 border-slate-200 dark:border-slate-800 p-6 rounded-2xl shadow-2xl">
+        <DialogHeader className="border-b pb-3 border-slate-100 dark:border-slate-800">
+          <DialogTitle className="text-lg font-black text-[#015249] dark:text-blue-400 flex items-center gap-2">
+            <FileUp className="w-5 h-5 text-[#57BC90]" />
+            Migrasi Data User via Excel
+          </DialogTitle>
+          <DialogDescription className="text-xs text-slate-500 font-semibold mt-1">
+            Unggah file excel untuk menambahkan pengguna baru secara massal. Sistem akan mengenerate password otomatis sesuai kebijakan keamanan (minimal 8 karakter, kombinasi huruf besar/kecil, angka, dan simbol).
+          </DialogDescription>
+        </DialogHeader>
+
+        <div className="space-y-5 pt-3">
+          {/* Template Download Alert */}
+          <div className="bg-slate-50 dark:bg-zinc-900/60 p-4 rounded-xl border border-slate-200/50 dark:border-slate-800 flex items-center justify-between gap-4">
+            <div className="space-y-1">
+              <h4 className="text-xs font-black text-slate-700 dark:text-slate-300">Belum punya template migrasi?</h4>
+              <p className="text-[11px] text-slate-500 dark:text-slate-400">Unduh format Excel standar di sini untuk mempercepat proses pengisian data.</p>
+            </div>
+            <Button onClick={downloadTemplate} variant="ghost" className="h-8 font-extrabold text-[11px] text-[#015249] hover:text-[#57BC90] gap-1.5 shrink-0 border border-slate-200 dark:border-slate-700 rounded-lg">
+              <Download className="w-3.5 h-3.5" />
+              Unduh Format
+            </Button>
+          </div>
+
+          {/* File Input upload zone */}
+          <div className="space-y-2">
+            <label className="text-xs font-black text-slate-500 uppercase tracking-wider block">Pilih Berkas Excel</label>
+            <div className="flex gap-3">
+              <Input 
+                type="file" 
+                accept=".xlsx, .xls" 
+                onChange={handleFileChange} 
+                className="bg-white dark:bg-zinc-950 border-slate-200 dark:border-slate-800 text-xs py-2 h-10 rounded-xl flex-1 cursor-pointer"
+              />
+              <Button 
+                onClick={handleUpload} 
+                disabled={loading || !file}
+                className="bg-[#015249] hover:bg-[#57BC90] text-white font-bold h-10 px-5 rounded-xl text-xs gap-2 shrink-0"
+              >
+                {loading ? "Memproses..." : "Mulai Migrasi"}
+              </Button>
+            </div>
+          </div>
+
+          {error && (
+            <div className="p-3 bg-red-50 dark:bg-red-950/20 text-red-600 dark:text-red-400 border border-red-200/50 dark:border-red-900/30 text-xs font-semibold rounded-xl flex items-center gap-2">
+              <AlertCircle className="w-4 h-4 shrink-0" />
+              <span>{error}</span>
+            </div>
+          )}
+
+          {/* Results Table of Generated Passwords */}
+          {results && (
+            <div className="space-y-3 pt-2">
+              <h4 className="text-xs font-black text-slate-600 dark:text-slate-400 uppercase tracking-widest">Laporan Status Migrasi</h4>
+              <div className="overflow-x-auto rounded-xl border border-slate-200/60 dark:border-slate-800 shadow-sm max-h-[220px]">
+                <table className="w-full text-left border-collapse text-[11px]">
+                  <thead>
+                    <tr className="bg-slate-50 dark:bg-zinc-900 border-b border-slate-200/60 dark:border-slate-800 font-bold text-slate-500 uppercase tracking-wider">
+                      <th className="p-2.5">NPP</th>
+                      <th className="p-2.5">Nama</th>
+                      <th className="p-2.5">Status</th>
+                      <th className="p-2.5">Password Baru</th>
+                      <th className="p-2.5 text-center">Salin</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100 dark:divide-slate-800/80">
+                    {results.map((r, idx) => (
+                      <tr key={idx} className="hover:bg-slate-50/50 dark:hover:bg-zinc-900/30 font-medium text-slate-700 dark:text-slate-300">
+                        <td className="p-2.5 font-bold text-slate-900 dark:text-white">{r.npp}</td>
+                        <td className="p-2.5 truncate max-w-[120px]" title={r.name}>{r.name}</td>
+                        <td className="p-2.5">
+                          {r.status === "SUCCESS" ? (
+                            <span className="inline-flex px-2 py-0.5 bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600 dark:text-emerald-400 rounded-md font-bold text-[9px]">Berhasil</span>
+                          ) : (
+                            <span className="inline-flex px-2 py-0.5 bg-red-50 dark:bg-red-950/30 text-red-600 dark:text-red-400 rounded-md font-bold text-[9px] cursor-help" title={r.message}>Gagal</span>
+                          )}
+                        </td>
+                        <td className="p-2.5 font-mono font-bold text-slate-900 dark:text-slate-100 bg-slate-50 dark:bg-zinc-900 px-1.5 py-0.5 rounded border border-slate-200/40 dark:border-slate-800/40">
+                          {r.status === "SUCCESS" ? r.passwordGenerated : "-"}
+                        </td>
+                        <td className="p-2.5 text-center">
+                          {r.status === "SUCCESS" && (
+                            <Button 
+                              variant="ghost" 
+                              size="icon" 
+                              onClick={() => handleCopy(r.passwordGenerated, idx)} 
+                              className="h-6 w-6 text-slate-400 hover:text-[#57BC90]"
+                            >
+                              {copiedIndex === idx ? (
+                                <Check className="w-3.5 h-3.5 text-emerald-500 animate-scale-in" />
+                              ) : (
+                                <Copy className="w-3.5 h-3.5" />
+                              )}
+                            </Button>
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
+        </div>
+
+        <DialogFooter className="border-t pt-4 border-slate-100 dark:border-slate-800 mt-4 gap-2">
+          <Button 
+            onClick={() => setOpen(false)} 
+            className="bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-900 dark:text-white font-bold px-6 py-2 rounded-xl text-xs"
+          >
+            Selesai
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}

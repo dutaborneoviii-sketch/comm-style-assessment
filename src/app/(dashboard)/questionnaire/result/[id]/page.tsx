@@ -1,11 +1,12 @@
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
-import { STYLE_COLORS, STYLE_DESCRIPTIONS, STYLE_TRAITS, STYLE_ADVICE } from "@/lib/scoring";
+import { getStyleColor, getStyleDescription, getStyleTrait, getStyleAdvice, resolveStyleKey } from "@/lib/scoring";
 import { redirect } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { ChevronLeft, Target, Sparkles } from "lucide-react";
+import { ChevronLeft, Target, Sparkles, Search, Lightbulb } from "lucide-react";
+import { RadarChartClient } from "@/components/radar-chart-client";
 
 export default async function ResultPage({ params }: { params: { id: string } }) {
   const session = await auth();
@@ -17,157 +18,179 @@ export default async function ResultPage({ params }: { params: { id: string } })
 
   if (!assessment) return redirect("/profile");
 
-  const primaryColor = STYLE_COLORS[assessment.primaryStyle] || "bg-gray-500 text-white";
-  const secondaryColor = assessment.secondaryStyle ? (STYLE_COLORS[assessment.secondaryStyle] || "bg-gray-500 text-white") : "";
+  const primaryColor = getStyleColor(assessment.primaryStyle);
+  const secondaryColor = assessment.secondaryStyle ? getStyleColor(assessment.secondaryStyle) : "";
   
   const totalAnswers = assessment.countA + assessment.countB + assessment.countC + assessment.countD;
   const pct = (count: number) => Math.round((count / totalAnswers) * 100) || 0;
+
+  const radarData = [
+    { subject: 'Direktif', A: pct(assessment.countA), fullMark: 100 },
+    { subject: 'Ekspresif', A: pct(assessment.countB), fullMark: 100 },
+    { subject: 'Harmonis', A: pct(assessment.countC), fullMark: 100 },
+    { subject: 'Analitis', A: pct(assessment.countD), fullMark: 100 },
+  ];
 
   const formatStyleTitle = (style: string) => {
     const parts = style.split(' (');
     if (parts.length > 1) {
       return (
-        <span className="flex flex-col items-center justify-center gap-1">
-          <span>{parts[0]}</span>
-          <span className="text-xl md:text-2xl lg:text-3xl font-bold opacity-90">({parts[1]}</span>
-        </span>
+        <div className="flex flex-col justify-center gap-0 text-left">
+          <span className="text-xl md:text-2xl font-black text-slate-900 leading-tight">{parts[0]}</span>
+          <span className="text-sm md:text-base font-semibold text-slate-800/80 leading-tight">({parts[1]}</span>
+        </div>
       );
     }
-    return style;
+    return <span className="text-xl md:text-2xl font-black text-slate-900">{style}</span>;
+  };
+
+  const getStyleIcon = (style: string) => {
+    if (style.includes('Direktif')) return '🎯';
+    if (style.includes('Ekspresif')) return '🎨';
+    if (style.includes('Harmonis')) return '🤝';
+    if (style.includes('Analitis')) return '🔍';
+    return '✨';
   };
 
   return (
-    <div className="container mx-auto pt-6 pb-12 px-4 md:px-6 max-w-7xl space-y-4">
-      <Link href="/profile" className="inline-flex items-center text-sm font-medium hover:underline text-white">
-        <ChevronLeft className="h-4 w-4 mr-1" />
-        Kembali ke Dasbor
-      </Link>
+    <div className="w-full pb-8 space-y-4">
+      <div className="sticky top-16 z-40 bg-white/90 dark:bg-zinc-950/90 backdrop-blur-xl py-3 px-4 border-b border-slate-200 dark:border-slate-800 shadow-sm mb-4 -mt-2">
+        <Link href="/profile" className="inline-flex items-center text-xs font-medium hover:underline text-slate-600 hover:text-white transition-colors">
+          <ChevronLeft className="h-3.5 w-3.5 mr-1" />
+          Kembali ke Dasbor
+        </Link>
+      </div>
 
-      <Card className="overflow-hidden shadow-2xl glass-card border-0">
-        <div className="min-h-[12rem] flex flex-col md:flex-row w-full">
-           <div className={`flex-1 ${primaryColor} flex items-center justify-center p-8 text-center`}>
-             <h2 className="text-2xl md:text-3xl lg:text-4xl font-extrabold text-white drop-shadow-lg tracking-tight leading-tight">
-                {formatStyleTitle(assessment.primaryStyle)}
-             </h2>
+      <div className="max-w-6xl mx-auto space-y-4 px-4">
+        
+        {/* TOP CARDS */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+           {/* Primary Style Box */}
+           <div className={`rounded-3xl p-4 flex items-center gap-4 ${primaryColor} shadow-md`}>
+             <div className="w-20 h-20 shrink-0 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center text-4xl shadow-inner border border-white/30">
+               {getStyleIcon(assessment.primaryStyle)}
+             </div>
+             {formatStyleTitle(assessment.primaryStyle)}
            </div>
-           {assessment.isCombination && assessment.secondaryStyle && (
-             <div className={`flex-1 ${secondaryColor} flex items-center justify-center p-8 text-center`}>
-               <h2 className="text-2xl md:text-3xl lg:text-4xl font-extrabold text-white drop-shadow-lg tracking-tight leading-tight">
-                  {formatStyleTitle(assessment.secondaryStyle)}
-               </h2>
+
+           {/* Secondary Style Box (if combination) */}
+           {assessment.isCombination && assessment.secondaryStyle ? (
+             <div className={`rounded-3xl p-4 flex items-center gap-4 ${secondaryColor} shadow-md`}>
+               <div className="w-20 h-20 shrink-0 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center text-4xl shadow-inner border border-white/30">
+                 {getStyleIcon(assessment.secondaryStyle)}
+               </div>
+               {formatStyleTitle(assessment.secondaryStyle)}
+             </div>
+           ) : (
+             <div className={`rounded-3xl p-4 flex items-center gap-4 bg-slate-100 dark:bg-slate-800/50 shadow-sm opacity-50`}>
+               <div className="w-20 h-20 shrink-0 rounded-2xl bg-white/50 dark:bg-slate-700 backdrop-blur-sm flex items-center justify-center text-4xl shadow-inner">
+                 ✨
+               </div>
+               <div className="flex flex-col justify-center gap-0">
+                  <span className="text-xl md:text-2xl font-black text-slate-400">Gaya Tunggal</span>
+               </div>
              </div>
            )}
         </div>
-        <div className="flex flex-col items-center justify-center gap-5 pt-8 pb-2 px-6 sm:px-10 max-w-4xl mx-auto text-center w-full">
-          <div className="space-y-2 flex flex-col items-center w-full">
-            <div className="flex items-center gap-4 w-full max-w-2xl mx-auto mb-1">
-              <div className="h-px flex-1 bg-primary/20 dark:bg-primary/10"></div>
-              <span className="text-xs font-black text-primary/60 dark:text-primary/50 uppercase tracking-[0.2em] flex items-center gap-2">
-                <Target className="w-3.5 h-3.5" /> FOKUS UTAMA
-              </span>
-              <div className="h-px flex-1 bg-primary/20 dark:bg-primary/10"></div>
-            </div>
-            <p className="text-xl md:text-2xl font-medium text-foreground leading-relaxed">
-              {STYLE_DESCRIPTIONS[assessment.primaryStyle].replace('Fokus utama Anda adalah ', '').replace(/^\\w/, c => c.toUpperCase())}
-            </p>
-          </div>
-          
-          {assessment.isCombination && assessment.secondaryStyle && (
-             <div className="space-y-2 flex flex-col items-center w-full">
-               <div className="flex items-center gap-4 w-full max-w-2xl mx-auto mb-1">
-                 <div className="h-px flex-1 bg-muted-foreground/20"></div>
-                 <span className="text-xs font-black text-muted-foreground/60 uppercase tracking-[0.2em] flex items-center gap-2">
-                   <Sparkles className="w-3.5 h-3.5" /> GAYA PENDUKUNG
-                 </span>
-                 <div className="h-px flex-1 bg-muted-foreground/20"></div>
-               </div>
-               <p className="text-base md:text-lg text-muted-foreground leading-relaxed">
-                 {STYLE_DESCRIPTIONS[assessment.secondaryStyle].replace('Fokus utama Anda adalah ', '').replace(/^\\w/, c => c.toUpperCase())}
-               </p>
-             </div>
-          )}
-        </div>
-        <CardContent className="space-y-8 p-6 sm:p-10">
-          
-          <div className="grid lg:grid-cols-2 gap-8">
-            <div className="bg-muted/30 rounded-2xl p-6 sm:p-10 border shadow-sm h-full">
-              <h3 className="text-xl font-bold mb-6">Rincian Gaya Komunikasi</h3>
-              <div className="space-y-6">
-                <div className="space-y-2">
-                  <div className="flex justify-between text-sm">
-                    <span className="font-medium">Direktif</span>
-                    <span className="font-bold">{pct(assessment.countA)}%</span>
-                  </div>
-                  <div className="w-full bg-muted h-4 rounded-full overflow-hidden shadow-inner border border-white/5">
-                    <div className="bg-red-500 h-full transition-all duration-1000 shadow-sm" style={{ width: `${pct(assessment.countA)}%` }} />
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <div className="flex justify-between text-sm">
-                    <span className="font-medium">Ekspresif</span>
-                    <span className="font-bold">{pct(assessment.countB)}%</span>
-                  </div>
-                  <div className="w-full bg-muted h-4 rounded-full overflow-hidden shadow-inner border border-white/5">
-                    <div className="bg-amber-500 h-full transition-all duration-1000 shadow-sm" style={{ width: `${pct(assessment.countB)}%` }} />
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <div className="flex justify-between text-sm">
-                    <span className="font-medium">Harmonis</span>
-                    <span className="font-bold">{pct(assessment.countC)}%</span>
-                  </div>
-                  <div className="w-full bg-muted h-4 rounded-full overflow-hidden shadow-inner border border-white/5">
-                    <div className="bg-emerald-500 h-full transition-all duration-1000 shadow-sm" style={{ width: `${pct(assessment.countC)}%` }} />
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <div className="flex justify-between text-sm">
-                    <span className="font-medium">Analitis</span>
-                    <span className="font-bold">{pct(assessment.countD)}%</span>
-                  </div>
-                  <div className="w-full bg-muted h-4 rounded-full overflow-hidden shadow-inner border border-white/5">
-                    <div className="bg-indigo-500 h-full transition-all duration-1000 shadow-sm" style={{ width: `${pct(assessment.countD)}%` }} />
-                  </div>
-                </div>
-              </div>
-            </div>
 
-            <div className="bg-white/40 dark:bg-black/20 rounded-2xl p-6 sm:p-10 border shadow-sm flex flex-col h-full">
-              <h3 className="text-xl font-bold border-b border-border/50 pb-4 mb-6">Analisis Tipe & Saran Berkomunikasi</h3>
-              <div className="space-y-6 flex-1 flex flex-col">
-                <div className="space-y-3">
-                   <h4 className="font-semibold text-lg flex items-center gap-2">
-                      <span className="text-primary text-xl">✨</span> Ciri Khas
-                   </h4>
-                   <p className="text-muted-foreground leading-relaxed">
-                     {STYLE_TRAITS[assessment.primaryStyle]}
-                   </p>
+        {/* MIDDLE SECTION (FOKUS & GAYA PENDUKUNG) */}
+        <Card className="rounded-3xl border border-slate-200 shadow-sm bg-white dark:bg-zinc-950 p-6 md:p-8">
+           <div className="space-y-6">
+             <div className="space-y-2">
+                <div className="flex items-center gap-2">
+                  <div className="p-1 rounded-full bg-indigo-100 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-400">
+                    <Target className="w-4 h-4" />
+                  </div>
+                  <h3 className="text-xs font-black uppercase tracking-widest text-slate-500">Fokus Utama</h3>
                 </div>
-                
-                <div className="space-y-3 mt-auto pt-4">
-                   <h4 className="font-semibold text-lg flex items-center gap-2">
-                      <span className="text-primary text-xl">💡</span> Saran Komunikasi
-                   </h4>
-                   <div className="bg-primary/5 p-4 sm:p-5 rounded-xl border border-primary/10 shadow-sm">
-                     <p className="text-foreground leading-relaxed font-medium">
-                       {STYLE_ADVICE[assessment.primaryStyle]}
-                     </p>
-                   </div>
-                </div>
-              </div>
-            </div>
-          </div>
+                <p className="text-lg md:text-xl font-bold text-slate-900 dark:text-white pl-8 leading-snug">
+                  {getStyleDescription(assessment.primaryStyle).replace('Fokus utama Anda adalah ', '')}
+                </p>
+             </div>
+
+             {assessment.isCombination && assessment.secondaryStyle && (
+               <div className="space-y-2">
+                  <div className="flex items-center gap-2">
+                    <div className="p-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400">
+                      <Sparkles className="w-4 h-4" />
+                    </div>
+                    <h3 className="text-xs font-black uppercase tracking-widest text-slate-500">Gaya Pendukung</h3>
+                  </div>
+                  <p className="text-base md:text-lg font-semibold text-slate-700 dark:text-slate-300 pl-8 leading-snug">
+                    {getStyleDescription(assessment.secondaryStyle).replace('Fokus utama Anda adalah ', '')}
+                  </p>
+               </div>
+             )}
+           </div>
+        </Card>
+
+        {/* BOTTOM SECTION (2 COLUMNS) */}
+        <div className="grid grid-cols-1 lg:grid-cols-[1.2fr_1fr] gap-4">
           
-          <div className="flex flex-col sm:flex-row justify-center mt-8 gap-4 px-4 sm:px-0">
-            <Link href="/history" className="w-full sm:w-auto">
-              <Button variant="outline" size="lg" className="w-full">Lihat Riwayat</Button>
-            </Link>
-            <Link href="/profile" className="w-full sm:w-auto">
-              <Button size="lg" className="w-full shadow-lg shadow-primary/25">Kembali ke Beranda</Button>
-            </Link>
+          {/* Left Column: Rincian & Radar Chart */}
+          <Card className="rounded-3xl border border-slate-200 shadow-sm bg-white dark:bg-zinc-950 p-6">
+            <div className="flex flex-col md:flex-row gap-6 h-full">
+               <div className="w-full md:w-48 shrink-0 flex flex-col justify-start border-b md:border-b-0 md:border-r border-slate-100 dark:border-slate-800 pb-6 md:pb-0 md:pr-6">
+                 <h3 className="text-sm font-black uppercase tracking-wider text-slate-900 dark:text-white mb-6">
+                   Rincian<br/>Gaya<br/>Komunikasi
+                 </h3>
+                 <div className="space-y-4">
+                   <div className="flex items-center gap-2 text-sm font-semibold text-slate-700 dark:text-slate-300">
+                     <span className="text-red-500 text-lg">✨</span> Direktif
+                   </div>
+                   <div className="flex items-center gap-2 text-sm font-semibold text-slate-700 dark:text-slate-300">
+                     <span className="text-amber-500 text-lg">🎨</span> Ekspresif
+                   </div>
+                   <div className="flex items-center gap-2 text-sm font-semibold text-slate-700 dark:text-slate-300">
+                     <span className="text-emerald-500 text-lg">✨</span> Harmonis
+                   </div>
+                   <div className="flex items-center gap-2 text-sm font-semibold text-slate-700 dark:text-slate-300">
+                     <span className="text-indigo-500 text-lg">🎯</span> Analitis
+                   </div>
+                 </div>
+               </div>
+               
+               <div className="flex-1 min-h-[300px] md:min-h-[350px] w-full flex items-center justify-center">
+                 {/* Recharts RadarChart requires client component, we will need to wrap it if this is a server component. Wait, ResultPage is a server component! */}
+                 <RadarChartClient data={radarData} />
+               </div>
+            </div>
+          </Card>
+
+          {/* Right Column: Analisis & Saran */}
+          <div className="flex flex-col gap-4">
+             <Card className="rounded-3xl border border-slate-200 shadow-sm bg-white dark:bg-zinc-950 p-6 flex-1">
+               <h3 className="text-sm font-black uppercase tracking-wider text-slate-900 dark:text-white mb-4">Analisis & Saran</h3>
+               <div className="space-y-3">
+                 <div className="flex items-center gap-2">
+                   <div className="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-blue-600">
+                     <Search className="w-4 h-4" />
+                   </div>
+                   <h4 className="text-xs font-bold text-slate-500 uppercase tracking-wide">Ciri Khas</h4>
+                 </div>
+                 <p className="text-sm font-medium text-slate-800 dark:text-slate-200 pl-10">
+                   {getStyleTrait(assessment.primaryStyle)}
+                 </p>
+               </div>
+             </Card>
+
+             <Card className="rounded-3xl border border-slate-200 shadow-sm bg-white dark:bg-zinc-950 p-6 flex-1">
+               <div className="space-y-3">
+                 <div className="flex items-center gap-2">
+                   <div className="w-8 h-8 rounded-full bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center text-amber-600">
+                     <Lightbulb className="w-4 h-4" />
+                   </div>
+                   <h4 className="text-xs font-bold text-slate-500 uppercase tracking-wide">Saran Komunikasi</h4>
+                 </div>
+                 <p className="text-sm font-medium text-slate-800 dark:text-slate-200 pl-10">
+                   {getStyleAdvice(assessment.primaryStyle)}
+                 </p>
+               </div>
+             </Card>
           </div>
-        </CardContent>
-      </Card>
+
+        </div>
+      </div>
     </div>
   );
 }

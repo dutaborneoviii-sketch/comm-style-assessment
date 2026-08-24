@@ -37,7 +37,7 @@ export const directiveGuide = {
 
 export const expressiveGuide = {
   title: "EKSPRESIF",
-  subtitle: "Tipe Ekspresif adalah individu yang antusias, persuasif, visioner, dan sangat menghargai hubungan interpersonal. Mereka sering kali merasa bosan dengan detail teknis yang terlalu kaku dan lebih bersemangat jika diajak mendiskusikan ide besar serta dampaknya terhadap orang lain. Pendekatan ini efektif karena coachee akan merespons positif terhadap atasan yang menghargai ide dan gaya bicara mereka. Dengan memberikan validasi dan ruang untuk bereksplorasi, Anda tidak hanya meningkatkan performa mereka, tetapi juga menjaga motivasi intrinsik mereka tetap tinggi.",
+  subtitle: "Bawahan dengan gaya komunikasi Ekspresif adalah individu yang penuh energi, antusias, dan berorientasi pada ide serta hubungan. Mereka sering kali menjadi penyemangat tim, namun bisa kehilangan fokus jika dihadapkan pada terlalu banyak detail atau rutinitas yang kaku.",
   rows: [
     {
       panduan: 'Fokus pada "Visi" dan "Pengakuan" (Bukan Detail Teknis)',
@@ -74,7 +74,7 @@ export const expressiveGuide = {
 
 export const harmoniousGuide = {
   title: "HARMONIS",
-  subtitle: "Tipe Harmonis adalah individu yang sangat mementingkan keharmonisan tim, keamanan psikologis, dan apresiasi. Mereka bekerja paling baik ketika merasa didukung dan dipahami. Mereka sering kali tidak vokal tentang hambatan mereka, sehingga perlu pendekatan yang sangat personal dan empatik. Pendekatan ini efektif karena coachee akan merasa mendapatkan rasa aman dan kepercayaan, yang akan meningkatkan loyalitas dan keterbukaan mereka dalam berkomunikasi.",
+  subtitle: "Bawahan dengan gaya komunikasi Harmonis sangat menghargai kedamaian, stabilitas, dan kerja sama tim. Mereka adalah pendengar yang baik dan sangat loyal, namun cenderung menghindari konflik dan bisa kesulitan membuat keputusan yang tidak populer.",
   rows: [
     {
       panduan: 'Fokus pada "Keamanan" dan "Rasa Diterima" (Bukan Tekanan)',
@@ -111,7 +111,7 @@ export const harmoniousGuide = {
 
 export const analyticalGuide = {
   title: "ANALITIS",
-  subtitle: "Tipe Analitis adalah individu yang sangat berorientasi pada data, detail, dan fakta. Mereka cenderung skeptis terhadap hal-hal yang bersifat asumsi. Mereka adalah tipe yang paling efisien ketika diberikan ruang untuk memecahkan masalah secara sistematis. Pendekatan ini efektif karena coachee akan merasa mendapatkan ruang untuk bekerja dengan akurasi dan data, yang akan memicu rasa hormat mereka kepada Anda sebagai pemimpin yang kompeten.",
+  subtitle: "Bawahan Analitis sangat digerakkan oleh fakta, logika, dan data. Mereka teliti, terorganisir, dan berhati-hati dalam mengambil keputusan. Pendekatan yang terlalu emosional atau memaksa tanpa bukti akan membuat mereka bersikap skeptis dan defensif.",
   rows: [
     {
       panduan: 'Fokus pada "Logika" dan "Presisi" (Bukan Opini)',
@@ -157,25 +157,25 @@ export const dirAnaGuide = {
     {
       cara: "Direct & Agenda-Driven: Buka sesi dengan agenda yang jelas dan batasan waktu yang ketat.",
       penjelasan: "Anda tidak berperan sebagai \"guru\" bagi mereka, melainkan sebagai mitra diskusi strategis yang mampu menantang logika mereka.",
-      contoh: '"Saya punya waktu 15 menit untuk membahas proyek X. Saya sudah meninjau laporan performa mingguan. Mari kita fokus pada efisiensi di fase operasional karena data menunjukkan adanya bottleneck di sana. Kamu setuju?"',
+      contoh: "Saat Membuka Sesi:\n\"Saya punya waktu 15 menit untuk membahas proyek X. Saya sudah meninjau laporan performa mingguan. Mari kita fokus pada efisiensi di fase operasional karena data menunjukkan adanya bottleneck di sana. Kamu setuju?\"",
       donts: "Jangan gunakan pertanyaan reflektif yang tidak relevan: (Contoh: \"Bagaimana perasaanmu tentang hambatan ini?\" — Ini akan membuat mereka merasa Anda tidak profesional.)"
     },
     {
       cara: "Challenge the Logic: Gunakan pertanyaan yang menuntut mereka menjelaskan \"bagaimana\" dan \"mengapa\" sebuah keputusan diambil berdasarkan bukti.",
       penjelasan: "Penting: Selalu siapkan data sebelum sesi dimulai. Jika Anda datang tanpa data, mereka akan mempertanyakan kredibilitas Anda sebagai coach.",
-      contoh: '"Rencana kamu untuk menaikkan target sebesar 15% cukup ambisius. Berdasarkan data historis tahun lalu, apa variabel kunci yang membuatmu yakin angka itu tercapai tanpa mengorbankan standar kualitas kita?"',
+      contoh: "Saat Menantang Logika (Sparring):\n\"Rencana kamu untuk menaikkan target sebesar 15% cukup ambisius. Berdasarkan data historis tahun lalu, apa variabel kunci yang membuatmu yakin angka itu tercapai tanpa mengorbankan standar kualitas kita?\"",
       donts: "Jangan berikan instruksi samar: (Contoh: \"Pokoknya lakukan yang terbaik ya\" — Mereka akan bingung karena \"terbaik\" tidak memiliki standar yang terukur bagi mereka.)"
     },
     {
       cara: "Risk Management: Alihkan fokus dari sekadar \"cara mencapai hasil\" ke \"bagaimana meminimalisir risiko\". Mereka sangat menyukai diskusi tentang skenario kegagalan dan pencegahannya.",
       penjelasan: "Fokus: Mempercepat pengambilan keputusan dengan validitas yang kuat.",
-      contoh: '"Jika kita mengambil jalur teknis ini, apa risiko terbesar yang paling mungkin mengganggu timeline? Dan jika risiko itu terjadi, apa contingency plan (rencana cadangan) yang sudah kamu siapkan agar operasional tidak terhenti?"',
+      contoh: "Saat Membahas Risiko:\n\"Jika kita mengambil jalur teknis ini, apa risiko terbesar yang paling mungkin mengganggu timeline? Dan jika risiko itu terjadi, apa contingency plan (rencana cadangan) yang sudah kamu siapkan agar operasional tidak terhenti?\"",
       donts: "Jangan menyela saat mereka menjelaskan data: Biarkan mereka menyelesaikan pemaparan logikanya. Jika ada yang salah, catat dan tanyakan setelah mereka selesai menjelaskan."
     },
     {
       cara: "Result-Oriented Accountability: Fokus pada metrik kinerja. Jika mereka melakukan kesalahan, jangan bicara tentang \"perasaan mereka\", tapi bicara tentang \"apa yang rusak di sistem\" dan \"bagaimana memperbaikinya\".",
       penjelasan: "",
-      contoh: '"Poin-poin langkah perbaikan sudah jelas. Saya tidak akan menanyakan lagi prosesnya sampai hari Kamis sesuai komitmenmu. Saya hanya akan menunggu laporan progresnya berdasarkan metrik yang kita sepakati tadi. Sepakat?"',
+      contoh: "Saat Menutup Sesi (Akuntabilitas):\n\"Poin-poin langkah perbaikan sudah jelas. Saya tidak akan menanyakan lagi prosesnya sampai hari Kamis sesuai komitmenmu. Saya hanya akan menunggu laporan progresnya berdasarkan metrik yang kita sepakati tadi. Sepakat?\"",
       donts: ""
     }
   ]
@@ -209,9 +209,9 @@ export const eksHarGuide = {
     },
     {
       cara: "Positive Correction: Jika harus memberikan koreksi, gunakan metode \"Sandwich\" (Apresiasi - Koreksi - Motivasi). Pastikan mereka tahu bahwa kritik Anda adalah bentuk dukungan, bukan kebencian.",
-      penjelasan: "",
+      penjelasan: "Tipe ini sangat sensitif terhadap penolakan. Menggunakan umpan balik positif akan menjaga moral mereka tetap tinggi selama proses evaluasi.",
       contoh: '"Terima kasih sudah sangat terbuka hari ini. Saya yakin dengan dukunganmu, tim akan jauh lebih solid. Jadi, kita sepakat ya untuk progres bagian ini di hari Jumat? Saya tidak sabar melihat bagaimana sentuhan kreatifmu akan membuat hasilnya jadi lebih baik lagi nanti."',
-      donts: ""
+      donts: "Jangan pernah menegur atau mengkritik kesalahan mereka secara kasar di depan umum. Ini akan menjatuhkan mental dan memutus kepercayaan mereka."
     }
   ]
 };
@@ -227,7 +227,7 @@ export const dirEksGuide = {
     {
       cara: "Challenge the Ego: Gunakan ambisi mereka sebagai bahan bakar. Ajak mereka berdiskusi tentang bagaimana tugas ini bisa membuat mereka dikenal sebagai \"orang yang berhasil\" di organisasi.",
       penjelasan: "Anda tidak berperan sebagai \"pengawas\" bagi mereka, melainkan sebagai partner dalam mewujudkan visi besar. Mereka membutuhkan seseorang yang bisa menampung ambisi mereka sekaligus memberikan batasan agar tidak \"terbang terlalu tinggi\" hingga melupakan detail.",
-      contoh: '"Saya sudah melihat ide kamu untuk proyek baru ini, energinya sangat bagus! Saya ingin kita diskusi bagaimana cara kita mengeksekusinya agar dampaknya benar-benar besar dan bisa membuat divisi kita jadi sorotan utama bulan depan. Punya waktu 20 menit?"',
+      contoh: '"Saya sudah melihat ide kamu untuk proyek baru ini, energinya sangat bagus! Saya ingin kita diskusi bagaimana cara kita mengeksekusinya agar dampaknya benar-benar besar dan bisa membuat bidang kita jadi sorotan utama bulan depan. Punya waktu 20 menit?"',
       donts: "Jangan membatasi cara kerja mereka secara mikro: (Contoh: \"Ikuti prosedur ini langkah demi langkah, jangan berinovasi.\" — Ini akan membuat mereka merasa terkekang.)"
     },
     {
@@ -244,9 +244,9 @@ export const dirEksGuide = {
     },
     {
       cara: "Results-Driven Motivation: Mereka tidak butuh motivasi \"lembut\", mereka butuh motivasi \"kemenangan\". Hubungkan setiap tugas dengan kemenangan berikutnya.",
-      penjelasan: "",
+      penjelasan: "Dorongan terbaik bagi mereka adalah pencapaian yang prestisius. Memberikan pengakuan nyata atas keberhasilan mereka adalah bahan bakar utamanya.",
       contoh: '"Bagus, saya setuju dengan rencana aksi ini. Kamu yang pimpin eksekusinya dan saya ingin kamu yang mempresentasikan hasil akhirnya nanti di depan direksi. Saya yakin kamu bisa membawa hasil yang memukau. Kapan kita bisa cek progress besarnya?"',
-      donts: ""
+      donts: "Jangan memberikan target yang terlalu mudah atau merendahkan standar mereka. Mereka akan cepat merasa bosan jika tidak ada kebanggaan dalam mencapainya."
     }
   ]
 };
@@ -279,9 +279,9 @@ export const harAnaGuide = {
     },
     {
       cara: "Validate the Effort: Mereka sering merasa kurang puas dengan pekerjaan mereka sendiri. Berikan apresiasi spesifik atas ketelitian mereka.",
-      penjelasan: "",
+      penjelasan: "Mereka cenderung perfeksionis dan overthinking. Pengakuan dari Anda akan sangat meredakan kecemasan mereka terhadap kualitas hasil kerja.",
       contoh: '"Data yang kamu susun sudah sangat rapi dan logis. Kamu sudah melakukan bagianmu dengan sangat baik. Jika ada kendala di tengah jalan, langsung beri tahu saya, kita akan cari solusinya bersama. Kamu sudah berada di jalur yang benar."',
-      donts: ""
+      donts: "Jangan menganggap remeh usaha mereka dengan memberikan umpan balik yang dangkal atau tidak spesifik seperti 'Kerja bagus'."
     }
   ]
 };
@@ -314,9 +314,9 @@ export const dirHarGuide = {
     },
     {
       cara: "Empathic Firmness: Ajarkan mereka cara menyampaikan instruksi yang lugas (Direktif) namun dengan pemilihan kata yang tetap menghargai martabat anggota tim (Harmonis).",
-      penjelasan: "",
+      penjelasan: "Tugas Anda adalah menyeimbangkan ketegasan agar tidak menjadi kejam, dan kelembutan agar tidak menjadi kelemahan dalam kepemimpinan mereka.",
       contoh: '"Keputusanmu sudah tepat. Fokuslah pada standar hasil, bukan pada reaksi orang lain. Saya akan dukung langkah tegasmu. Kita sepakat target ini selesai Jumat ya? Apakah ada yang perlu saya bantu agar timmu merasa lebih siap menghadapi tekanan ini?"',
-      donts: ""
+      donts: "Jangan biarkan mereka meminta maaf secara berlebihan saat memberikan teguran yang memang diperlukan demi menjaga standar kinerja."
     }
   ]
 };

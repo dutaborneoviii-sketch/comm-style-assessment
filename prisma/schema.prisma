@@ -3,24 +3,71 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
-  url      = "file:./dev.db"
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model Department {
+  name         String        @id
+  users        User[]
+  featureFlags FeatureFlag[]
 }
 
 model User {
   id            String          @id @default(cuid())
   name          String?
+  npp           String?         @unique
   email         String?         @unique
   emailVerified DateTime?
   image         String?
   password      String?
   department    String?
+  departmentRel Department?     @relation(fields: [department], references: [name], onDelete: SetNull)
+  position      String?
   accounts      Account[]
   sessions      Session[]
   assessments   Assessment[]
+  coachLogs     CoachingLog[] @relation("CoachLogs")
+  coacheeLogs   CoachingLog[] @relation("CoacheeLogs")
   role          String          @default("USER")
+  status        String          @default("PENDING")
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model CoachingLog {
+  id          String   @id @default(cuid())
+  coachId     String
+  coacheeId   String
+  date        DateTime
+  title       String
+  notes       String
+  actionItems ActionItem[]
+  response    String?
+  nextSessionDate DateTime?
+  isClosed    Boolean  @default(false)
+  isDraft     Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  coach       User     @relation("CoachLogs", fields: [coachId], references: [id], onDelete: Cascade)
+  coachee     User     @relation("CoacheeLogs", fields: [coacheeId], references: [id], onDelete: Cascade)
+}
+
+model ActionItem {
+  id             String      @id @default(cuid())
+  coachingLogId  String
+  text           String
+  dueDate        DateTime?
+  followUpNotes  String?
+  evidenceUrl    String?
+  evidenceName   String?
+  
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+  
+  coachingLog    CoachingLog @relation(fields: [coachingLogId], references: [id], onDelete: Cascade)
 }
 
 model Account {
@@ -98,4 +145,34 @@ model Option {
   question   Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
   letter     String   // A, B, C, D
   text       String
+}
+
+model FeatureFlag {
+  id          String   @id @default(cuid())
+  featureKey  String   // e.g. "panduan_komunikasi"
+  roleGroup   String   // e.g. "Staf", "Asisten Deputi", "Deputi Direksi Wilayah"
+  department  String   @default("GLOBAL") // e.g. "TI Wilayah", "GLOBAL"
+  departmentRel Department? @relation(fields: [department], references: [name], onDelete: Cascade)
+  enabled     Boolean  @default(false)
+  label       String   // Display name, e.g. "Panduan Gaya Komunikasi"
+  description String   @default("")
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([featureKey, roleGroup, department])
+}
+
+model SystemSetting {
+  id        String   @id @default(cuid())
+  key       String   @unique // e.g. "assessment_cooldown_months"
+  value     String   // e.g. "3"
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model CommunicationDictionary {
+  id        String   @id // e.g. "directive", "dirAna"
+  content   String   // JSON string
+  updatedAt DateTime @updatedAt
 }

@@ -17,11 +17,7 @@ export default async function HistoryPage() {
   });
 
   return (
-    <div className="container mx-auto py-10 px-4 max-w-4xl space-y-8">
-      <Link href="/profile" className="inline-flex items-center text-sm font-medium hover:underline text-white">
-        <ChevronLeft className="h-4 w-4 mr-1" />
-        Kembali ke Dasbor
-      </Link>
+    <div className="w-full pb-12 space-y-8">
 
       <div>
         <h1 className="text-3xl font-bold tracking-tight mb-2">Riwayat Asesmen</h1>
