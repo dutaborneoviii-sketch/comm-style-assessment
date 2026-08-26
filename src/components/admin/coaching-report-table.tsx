@@ -1,7 +1,11 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Search, ChevronDown, ChevronRight, UserCircle2 } from 'lucide-react';
+import { Search, ChevronDown, ChevronRight, UserCircle2, FileSpreadsheet, FileText, Download } from 'lucide-react';
+import * as XLSX from 'xlsx';
+import jsPDF from 'jspdf';
+import 'jspdf-autotable';
+import { Button } from '@/components/ui/button';
 
 function MetricCell({ count, names, activeClass, inactiveClass, isLast = false }: { count: number, names?: string[], activeClass: string, inactiveClass: string, isLast?: boolean }) {
   if (count === 0) {
@@ -61,8 +65,108 @@ export function CoachingReportTable({ reports }: { reports: CoachingReportType[]
     return name.split(" ").map(n => n[0]).join("").substring(0, 2).toUpperCase();
   };
 
+  const exportToExcel = () => {
+    const wsData: any[][] = [];
+    // Header
+    wsData.push(["No", "Nama Pimpinan", "Jabatan", "Bidang", "Jumlah Sesi", "Selesai", "Proses", "Belum Mulai"]);
+    
+    reports.forEach((r, idx) => {
+      wsData.push([
+        idx + 1,
+        r.name || "-",
+        r.position || "-",
+        r.department || "-",
+        r.totalSesi,
+        r.selesai,
+        r.proses,
+        r.belumMulai
+      ]);
+      
+      if (r.members && r.members.length > 0) {
+        wsData.push(["", "RINCIAN ANGGOTA BIDANG", "", "", "", "", "", ""]);
+        wsData.push(["", "Nama Anggota", "Status Coaching", "", "", "", "", ""]);
+        r.members.forEach(m => {
+          wsData.push(["", m.name, m.status, "", "", "", "", ""]);
+        });
+        wsData.push(["", "", "", "", "", "", "", ""]); // empty row separator
+      }
+    });
+
+    const ws = XLSX.utils.aoa_to_sheet(wsData);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Rekapitulasi");
+    XLSX.writeFile(wb, `Laporan_Coaching_${new Date().toISOString().split('T')[0]}.xlsx`);
+  };
+
+  const exportToPDF = () => {
+    const doc = new jsPDF('landscape');
+    
+    doc.setFontSize(16);
+    doc.text("Rekapitulasi Coaching", 14, 15);
+    doc.setFontSize(10);
+    doc.text(`Tanggal: ${new Date().toLocaleDateString('id-ID')}`, 14, 22);
+
+    const tableData: any[] = [];
+    
+    reports.forEach((r, idx) => {
+      tableData.push([
+        idx + 1,
+        r.name || "-",
+        r.position || "-",
+        r.department || "-",
+        r.totalSesi,
+        r.selesai,
+        r.proses,
+        r.belumMulai
+      ]);
+      
+      if (r.members && r.members.length > 0) {
+        tableData.push([{ content: `Rincian Anggota: ${r.department}`, colSpan: 8, styles: { fillColor: [240, 240, 240], fontStyle: 'bold' } }]);
+        r.members.forEach(m => {
+          tableData.push([{ content: "", colSpan: 1 }, { content: m.name, colSpan: 3 }, { content: m.status, colSpan: 4 }]);
+        });
+      }
+    });
+
+    (doc as any).autoTable({
+      startY: 28,
+      head: [["No", "Nama Pimpinan", "Jabatan", "Bidang", "Jumlah Sesi", "Selesai", "Proses", "Belum Mulai"]],
+      body: tableData,
+      theme: 'grid',
+      headStyles: { fillColor: [1, 82, 73] },
+      styles: { fontSize: 8 }
+    });
+
+    doc.save(`Laporan_Coaching_${new Date().toISOString().split('T')[0]}.pdf`);
+  };
+
   return (
-    <div className="overflow-x-auto md:overflow-visible pb-20">
+    <div className="flex flex-col w-full">
+      {/* Action Bar */}
+      <div className="flex justify-end items-center p-4 border-b border-slate-200 dark:border-slate-800 bg-[#f9fdfc] dark:bg-zinc-950/50">
+        <div className="flex gap-2">
+          <Button 
+            onClick={exportToExcel}
+            variant="outline"
+            size="sm"
+            className="flex items-center gap-2 border-emerald-200 hover:bg-emerald-50 hover:text-emerald-700 text-emerald-600 dark:border-emerald-900 dark:hover:bg-emerald-900/30 dark:text-emerald-500"
+          >
+            <FileSpreadsheet className="w-4 h-4" />
+            <span className="hidden sm:inline">Download Excel</span>
+          </Button>
+          <Button 
+            onClick={exportToPDF}
+            variant="outline"
+            size="sm"
+            className="flex items-center gap-2 border-rose-200 hover:bg-rose-50 hover:text-rose-700 text-rose-600 dark:border-rose-900 dark:hover:bg-rose-900/30 dark:text-rose-500"
+          >
+            <FileText className="w-4 h-4" />
+            <span className="hidden sm:inline">Download PDF</span>
+          </Button>
+        </div>
+      </div>
+      
+      <div className="overflow-x-auto md:overflow-visible pb-20">
       <table className="w-full text-sm text-left">
         <thead className="bg-[#f2fafa] dark:bg-[#015249]/20 text-[#015249] dark:text-[#57BC90] font-bold border-b border-slate-200 dark:border-slate-800/50">
           <tr>
@@ -205,6 +309,7 @@ export function CoachingReportTable({ reports }: { reports: CoachingReportType[]
           )}
         </tbody>
       </table>
+    </div>
     </div>
   );
 }
