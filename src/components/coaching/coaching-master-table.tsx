@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { MessageCircle, Calendar, Search, FileText, Sheet } from "lucide-react";
 import { EditResponseDialog } from "@/components/coaching/edit-response-dialog";
+import { EvidenceDialog } from "@/components/coaching/evidence-dialog";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import ExcelJS from "exceljs";
@@ -71,7 +72,7 @@ export function CoachingMasterTable({ logs, isDeputi }: { logs: any[], isDeputi:
         coach: `${log.coach?.name || "-"}\nNPP: ${log.coach?.npp || "-"}`,
         coachee: `${log.coachee?.name || "-"}\n(${log.coachee?.department || "-"})\n${log.coachee?.assessments?.[0]?.primaryStyle ? `Gaya: ${log.coachee?.assessments[0].primaryStyle}` : ''}`.trim(),
         topik: `${log.title || "-"}\n\n${log.notes || "-"}`,
-        actionItems: log.actionItems && log.actionItems.length > 0 ? log.actionItems.map((a: any) => `• ${a.text}`).join("\n") : "-",
+        actionItems: log.actionItems && log.actionItems.length > 0 ? log.actionItems.map((a: any) => `• ${a.text}${a.evidenceUrl ? '\n  [Ada Lampiran Bukti]' : ''}`).join("\n") : "-",
         response: log.response ? log.response.split('@@@')[0] : "-",
       });
 
@@ -105,7 +106,7 @@ export function CoachingMasterTable({ logs, isDeputi }: { logs: any[], isDeputi:
       log.coach?.name || '-',
       `${log.coachee?.name || '-'}\n(${log.coachee?.department || '-'})\n${log.coachee?.assessments?.[0]?.primaryStyle ? `Gaya: ${log.coachee?.assessments[0].primaryStyle}` : ''}`.trim(),
       log.title || '-',
-      log.actionItems ? log.actionItems.map((a: any) => `• ${a.text}`).join('\n') : '-',
+      log.actionItems ? log.actionItems.map((a: any) => `• ${a.text}${a.evidenceUrl ? '\n  [Ada Lampiran Bukti]' : ''}`).join('\n') : '-',
       log.response ? log.response.split('@@@')[0] : '-',
     ]);
 
@@ -233,7 +234,14 @@ export function CoachingMasterTable({ logs, isDeputi }: { logs: any[], isDeputi:
                           <div className="absolute top-0 right-0 w-16 h-16 bg-emerald-400/10 rounded-full blur-xl -translate-y-8 translate-x-8"></div>
                           <div className="text-sm font-medium text-emerald-800 dark:text-emerald-300 relative z-10 leading-relaxed space-y-1">
                             {log.actionItems.map((item: any, i: number) => (
-                              <p key={i} className="whitespace-pre-wrap break-words">• {item.text}</p>
+                              <div key={i} className="mb-2 last:mb-0">
+                                <p className="whitespace-pre-wrap break-words">• {item.text}</p>
+                                {item.evidenceUrl && (
+                                  <div className="ml-3 mt-1 inline-flex items-center gap-1 bg-white/60 dark:bg-black/20 px-2 py-0.5 rounded-md border border-emerald-200/50 dark:border-emerald-800/50">
+                                    <EvidenceDialog url={item.evidenceUrl} name={item.evidenceName || 'Lampiran'} />
+                                  </div>
+                                )}
+                              </div>
                             ))}
                           </div>
                         </div>
