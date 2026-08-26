@@ -1,5 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { BookOpen, LogIn, Users, Shield, FileText, CheckCircle2 } from "lucide-react";
+import { BookOpen, LogIn, Users, Shield, FileText, CheckCircle2, Activity } from "lucide-react";
 import Image from "next/image";
 
 export const metadata = {
