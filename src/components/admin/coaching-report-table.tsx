@@ -68,33 +68,53 @@ export function CoachingReportTable({ reports }: { reports: CoachingReportType[]
   const exportToExcel = () => {
     const wsData: any[][] = [];
     
+    // Excel Top Table
+    wsData.push(["Rincian Kedeputian Wilayah VIII"]);
+    wsData.push(["No", "Nama Pimpinan", "Jabatan", "Bidang", "Sesi Selesai", "Sedang Proses", "Belum Mulai"]);
+    
     reports.forEach((r, idx) => {
-      // Title above table
-      wsData.push([`Rincian Anggota: ${r.department || "-"}`]);
-      
-      // Header per Bidang
-      wsData.push(["No", "Nama Pimpinan", "Jabatan", "Bidang", "Jumlah Sesi", "Selesai", "Proses", "Belum Mulai"]);
-      
       wsData.push([
-        String.fromCharCode(65 + idx),
+        idx + 1,
         r.name || "-",
         r.position || "-",
         r.department || "-",
-        r.totalSesi,
         r.selesai,
         r.proses,
         r.belumMulai
       ]);
-      
+    });
+    
+    wsData.push(["", "", "", "", "", "", ""]);
+    wsData.push(["", "", "", "", "", "", ""]);
+
+    // Excel Bottom Tables
+    reports.forEach((r, idx) => {
       if (r.members && r.members.length > 0) {
+        // Title above table
+        wsData.push([`Rincian Anggota: ${r.department || "-"}`]);
+        
+        // Header per Bidang
+        wsData.push(["No", "Nama Pimpinan", "Jabatan", "Sesi Selesai", "Sedang Proses", "Belum Mulai"]);
+        
+        // Leader as first row
+        wsData.push([
+          1,
+          r.name || "-",
+          r.position || "-",
+          r.selesai,
+          r.proses,
+          r.belumMulai
+        ]);
+        
+        // Members
         r.members.forEach((m, mIdx) => {
-          wsData.push([mIdx + 1, m.name, m.status, "", "", "", "", ""]);
+          wsData.push([mIdx + 2, m.name, (m as any).position || "-", m.status, "", ""]);
         });
+        
+        // Gap between tables
+        wsData.push(["", "", "", "", "", ""]);
+        wsData.push(["", "", "", "", "", ""]);
       }
-      
-      // Gap between tables
-      wsData.push(["", "", "", "", "", "", "", ""]);
-      wsData.push(["", "", "", "", "", "", "", ""]);
     });
 
     const ws = XLSX.utils.aoa_to_sheet(wsData);
@@ -113,50 +133,75 @@ export function CoachingReportTable({ reports }: { reports: CoachingReportType[]
 
     let currentY = 28;
     
+    // Top Table Data
+    const topTableData = reports.map((r, idx) => [
+      idx + 1,
+      r.name || "-",
+      r.position || "-",
+      r.department || "-",
+      r.selesai,
+      r.proses,
+      r.belumMulai
+    ]);
+
+    autoTable(doc, {
+      startY: currentY,
+      head: [["No", "Nama Pimpinan", "Jabatan", "Bidang", "Sesi Selesai", "Sedang Proses", "Belum Mulai"]],
+      body: topTableData,
+      theme: 'grid',
+      headStyles: { fillColor: [1, 82, 73] },
+      styles: { fontSize: 8 },
+      margin: { bottom: 15 }
+    });
+    
+    currentY = (doc as any).lastAutoTable.finalY + 15;
+    
+    // Bottom Tables
     reports.forEach((r, idx) => {
-      // Check if we need to add a new page
-      if (currentY > 180) {
-        doc.addPage();
-        currentY = 20;
-      }
-
-      // Title above table
-      doc.setFontSize(11);
-      doc.setFont("helvetica", "bold");
-      doc.text(`Rincian Anggota: ${r.department || "-"}`, 14, currentY);
-      
-      currentY += 4;
-
-      const tableData: any[] = [];
-      
-      tableData.push([
-        String.fromCharCode(65 + idx),
-        r.name || "-",
-        r.position || "-",
-        r.department || "-",
-        r.totalSesi,
-        r.selesai,
-        r.proses,
-        r.belumMulai
-      ]);
-      
       if (r.members && r.members.length > 0) {
-        r.members.forEach((m, mIdx) => {
-          tableData.push([{ content: String(mIdx + 1), colSpan: 1 }, { content: m.name, colSpan: 3 }, { content: m.status, colSpan: 4 }]);
-        });
-      }
+        if (currentY > 170) {
+          doc.addPage();
+          currentY = 20;
+        }
 
-      autoTable(doc, {
-        startY: currentY,
-        head: [["No", "Nama Pimpinan", "Jabatan", "Bidang", "Jumlah Sesi", "Selesai", "Proses", "Belum Mulai"]],
-        body: tableData,
-        theme: 'grid',
-        headStyles: { fillColor: [1, 82, 73] },
-        styles: { fontSize: 8 },
-        margin: { bottom: 15 }
-      });
-      
-      currentY = (doc as any).lastAutoTable.finalY + 15;
+        doc.setFontSize(11);
+        doc.setFont("helvetica", "bold");
+        doc.text(`Rincian Anggota: ${r.department || "-"}`, 14, currentY);
+        currentY += 4;
+
+        const tableData: any[] = [];
+        
+        // Leader as first row
+        tableData.push([
+          1,
+          r.name || "-",
+          r.position || "-",
+          r.selesai,
+          r.proses,
+          r.belumMulai
+        ]);
+        
+        r.members.forEach((m, mIdx) => {
+          tableData.push([
+            { content: String(mIdx + 2), colSpan: 1 }, 
+            { content: m.name, colSpan: 1 }, 
+            { content: (m as any).position || "-", colSpan: 1 },
+            { content: m.status, colSpan: 3 }
+          ]);
+        });
+
+        autoTable(doc, {
+          startY: currentY,
+          head: [["No", "Nama Pimpinan", "Jabatan", "Sesi Selesai", "Sedang Proses", "Belum Mulai"]],
+          body: tableData,
+          theme: 'grid',
+          headStyles: { fillColor: [1, 82, 73] },
+          styles: { fontSize: 8 },
+          margin: { bottom: 15 }
+        });
+        
+        currentY = (doc as any).lastAutoTable.finalY + 15;
+      }
     });
 
     doc.save(`Laporan_Coaching_${new Date().toISOString().split('T')[0]}.pdf`);

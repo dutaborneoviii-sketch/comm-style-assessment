@@ -20,7 +20,7 @@ export async function getCoachingReport() {
           isClosed: true,
           coacheeId: true,
           coachee: {
-            select: { name: true }
+            select: { name: true, position: true }
           }
         }
       }
@@ -73,28 +73,35 @@ export async function getCoachingReport() {
     const belumMulaiNames = belumMulaiStaff.map(s => s.name).filter(Boolean) as string[];
 
     // Generate detailed members list
-    const membersList: { name: string; status: string }[] = [];
+    const membersList: { name: string; status: string; position: string; selesai: number; proses: number; belumMulai: number }[] = [];
     
     // Add staff with sessions
-    const counts: Record<string, number> = {};
+    const counts: Record<string, { selesai: number; proses: number; position: string }> = {};
     leader.coachLogs.forEach(log => {
       const name = log.coachee?.name;
-      if (name) counts[name] = (counts[name] || 0) + 1;
+      const position = log.coachee?.position || "-";
+      if (name) {
+        if (!counts[name]) counts[name] = { selesai: 0, proses: 0, position };
+        if (log.isClosed) counts[name].selesai++;
+        else counts[name].proses++;
+      }
     });
     
-    Object.entries(counts).forEach(([name, count]) => {
-      membersList.push({ name, status: `Mengikuti ${count}x sesi Coaching` });
+    Object.entries(counts).forEach(([name, data]) => {
+      membersList.push({ name, position: data.position, selesai: data.selesai, proses: data.proses, belumMulai: 0, status: `Mengikuti ${data.selesai + data.proses}x sesi Coaching` });
     });
     
     // Add staff without sessions
     belumMulaiStaff.forEach(s => {
       if (s.name) {
-        membersList.push({ name: s.name, status: 'Belum Mengikuti Sesi Coaching' });
+        membersList.push({ name: s.name, position: s.position || "-", selesai: 0, proses: 0, belumMulai: 1, status: 'Belum Mengikuti Sesi Coaching' });
       }
     });
 
     // Sort members alphabetically
     membersList.sort((a, b) => a.name.localeCompare(b.name));
+
+    // Also inject the leader as the first member if they want it like the mockup (Optional, I'll just add the leader to members list if it makes sense. Wait, no, it's better to just put the leader in the UI array). Actually I'll let UI handle prepending the leader.
 
     return {
       id: leader.id,
