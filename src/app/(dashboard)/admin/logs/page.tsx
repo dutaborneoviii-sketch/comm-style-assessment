@@ -150,10 +150,12 @@ export default async function AdminLogsPage() {
                           </div>
                         </div>
                       </TableCell>
-                      <TableCell className="px-6 py-4 align-top max-w-[300px]">
-                        <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed break-all bg-slate-50 dark:bg-zinc-900/50 p-2 rounded-lg border border-slate-100 dark:border-slate-800">
-                          {log.userAgent || 'Unknown Device'}
-                        </p>
+                      <TableCell className="px-6 py-4 align-top">
+                        <div className="w-[250px] sm:w-[350px] lg:w-[450px]">
+                          <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed break-words whitespace-normal bg-slate-50 dark:bg-zinc-900/50 p-2 rounded-lg border border-slate-100 dark:border-slate-800">
+                            {log.userAgent || 'Unknown Device'}
+                          </p>
+                        </div>
                       </TableCell>
                     </TableRow>
                   ))}
