@@ -89,7 +89,7 @@ export function CoachingReportTable({ reports }: { reports: CoachingReportType[]
 
     // Excel Bottom Tables
     reports.forEach((r, idx) => {
-      if (r.members && r.members.length > 0) {
+      if (r.position !== 'Deputi Direksi Wilayah' && r.members && r.members.length > 0) {
         // Title above table
         wsData.push([`Rincian Anggota: ${r.department || "-"}`]);
         
@@ -158,7 +158,7 @@ export function CoachingReportTable({ reports }: { reports: CoachingReportType[]
     
     // Bottom Tables
     reports.forEach((r, idx) => {
-      if (r.members && r.members.length > 0) {
+      if (r.position !== 'Deputi Direksi Wilayah' && r.members && r.members.length > 0) {
         if (currentY > 170) {
           doc.addPage();
           currentY = 20;
@@ -255,11 +255,13 @@ export function CoachingReportTable({ reports }: { reports: CoachingReportType[]
             return (
               <React.Fragment key={report.id}>
                 <tr 
-                  className={`hover:bg-slate-50 dark:hover:bg-zinc-900/50 transition-colors group cursor-pointer ${isExpanded ? 'bg-slate-50/50 dark:bg-zinc-900/30' : ''}`}
-                  onClick={() => toggleRow(report.id)}
+                  className={`hover:bg-slate-50 dark:hover:bg-zinc-900/50 transition-colors group ${report.position !== 'Deputi Direksi Wilayah' ? 'cursor-pointer' : ''} ${isExpanded ? 'bg-slate-50/50 dark:bg-zinc-900/30' : ''}`}
+                  onClick={() => report.position !== 'Deputi Direksi Wilayah' && toggleRow(report.id)}
                 >
                   <td className="px-4 py-4 text-slate-400">
-                    {isExpanded ? <ChevronDown className="w-5 h-5 text-[#015249] dark:text-[#57BC90]" /> : <ChevronRight className="w-5 h-5" />}
+                    {report.position !== 'Deputi Direksi Wilayah' && (
+                      isExpanded ? <ChevronDown className="w-5 h-5 text-[#015249] dark:text-[#57BC90]" /> : <ChevronRight className="w-5 h-5" />
+                    )}
                   </td>
                   <td className="px-2 py-4 text-slate-400 dark:text-slate-500 font-medium">
                     {String.fromCharCode(65 + index)}
