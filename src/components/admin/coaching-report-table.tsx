@@ -156,7 +156,7 @@ export function CoachingReportTable({ reports }: { reports: CoachingReportType[]
       head: [["No", "Nama Pimpinan", "Jabatan", "Bidang", "Sesi Selesai", "Sedang Proses", "Belum Mulai"]],
       body: topTableData,
       theme: 'grid',
-      headStyles: { fillColor: [1, 82, 73] },
+      headStyles: { fillColor: [1, 82, 73], halign: 'center' },
       styles: { fontSize: 8 },
       margin: { bottom: 15 }
     });
@@ -204,7 +204,7 @@ export function CoachingReportTable({ reports }: { reports: CoachingReportType[]
           head: [["No", "Nama Pimpinan", "Jabatan", "Sesi Selesai", "Sedang Proses", "Belum Mulai"]],
           body: tableData,
           theme: 'grid',
-          headStyles: { fillColor: [1, 82, 73] },
+          headStyles: { fillColor: [1, 82, 73], halign: 'center' },
           styles: { fontSize: 8 },
           margin: { bottom: 15 },
           didParseCell: function (data) {
