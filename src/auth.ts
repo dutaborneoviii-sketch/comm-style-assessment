@@ -4,6 +4,7 @@ import { authConfig } from './auth.config';
 import { prisma } from '@/lib/prisma';
 import bcrypt from 'bcryptjs';
 import { PrismaAdapter } from '@auth/prisma-adapter';
+import { headers } from 'next/headers';
 
 export const { auth, signIn, signOut, handlers } = NextAuth({
   ...authConfig,
@@ -39,7 +40,30 @@ export const { auth, signIn, signOut, handlers } = NextAuth({
           }
 
           const passwordsMatch = await bcrypt.compare(credentials.password as string, user.password);
-          if (passwordsMatch) return user;
+          if (passwordsMatch) {
+            // Log Login Activity
+            try {
+              const headersList = headers();
+              const ipAddress = headersList.get('x-forwarded-for') || headersList.get('x-real-ip') || 'Unknown IP';
+              const userAgent = headersList.get('user-agent') || 'Unknown Device';
+              const city = headersList.get('x-vercel-ip-city') || 'Unknown City';
+              const country = headersList.get('x-vercel-ip-country') || 'Unknown Country';
+              const location = `${city}, ${country}`;
+
+              await prisma.loginActivity.create({
+                data: {
+                  userId: user.id,
+                  ipAddress,
+                  userAgent,
+                  location
+                }
+              });
+            } catch (logError) {
+              console.error("Failed to log login activity:", logError);
+            }
+
+            return user;
+          }
           
           throw new Error("NPP atau password salah.");
         } catch (error) {
