@@ -44,7 +44,7 @@ export default function AdminSidebar({ user, viewMode, asistenMode, featuresMap,
   const showBankSoal = isAdminView || (isAsistenCoachMode && isAsdepSDM && featuresMap?.manajemen_bank_soal);
   const showKamusPanduan = isAdminView || (isAsistenCoachMode && isAsdepSDM && featuresMap?.manajemen_kamus_panduan);
   const showJangkaAsesmenUlang = isAdminView || (isAsistenCoachMode && isAsdepSDM && featuresMap?.jangka_asesmen_ulang);
-  const showPanduan = (isAsistenCoachMode && featuresMap?.panduan_komunikasi) || user?.position === 'Deputi Direksi Wilayah';
+  const showPanduan = isAdminView || isAsistenCoachMode || user?.position === 'Deputi Direksi Wilayah';
 
   // Staf-like view: regular user OR Asisten Deputi in coachee mode
   const isStafView = (!isAdminView && !isAsistenCoachMode && user?.position !== 'Deputi Direksi Wilayah');
