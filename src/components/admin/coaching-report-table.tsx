@@ -73,7 +73,7 @@ export function CoachingReportTable({ reports }: { reports: CoachingReportType[]
       wsData.push(["No", "Nama Pimpinan", "Jabatan", "Bidang", "Jumlah Sesi", "Selesai", "Proses", "Belum Mulai"]);
       
       wsData.push([
-        idx + 1,
+        String.fromCharCode(65 + idx),
         r.name || "-",
         r.position || "-",
         r.department || "-",
@@ -86,8 +86,8 @@ export function CoachingReportTable({ reports }: { reports: CoachingReportType[]
       if (r.members && r.members.length > 0) {
         wsData.push(["", "RINCIAN ANGGOTA BIDANG", "", "", "", "", "", ""]);
         wsData.push(["", "Nama Anggota", "Status Coaching", "", "", "", "", ""]);
-        r.members.forEach(m => {
-          wsData.push(["", m.name, m.status, "", "", "", "", ""]);
+        r.members.forEach((m, mIdx) => {
+          wsData.push([mIdx + 1, m.name, m.status, "", "", "", "", ""]);
         });
       }
       
@@ -116,7 +116,7 @@ export function CoachingReportTable({ reports }: { reports: CoachingReportType[]
       const tableData: any[] = [];
       
       tableData.push([
-        idx + 1,
+        String.fromCharCode(65 + idx),
         r.name || "-",
         r.position || "-",
         r.department || "-",
@@ -128,8 +128,8 @@ export function CoachingReportTable({ reports }: { reports: CoachingReportType[]
       
       if (r.members && r.members.length > 0) {
         tableData.push([{ content: `Rincian Anggota: ${r.department}`, colSpan: 8, styles: { fillColor: [240, 240, 240], fontStyle: 'bold' } }]);
-        r.members.forEach(m => {
-          tableData.push([{ content: "", colSpan: 1 }, { content: m.name, colSpan: 3 }, { content: m.status, colSpan: 4 }]);
+        r.members.forEach((m, mIdx) => {
+          tableData.push([{ content: String(mIdx + 1), colSpan: 1 }, { content: m.name, colSpan: 3 }, { content: m.status, colSpan: 4 }]);
         });
       }
 
@@ -204,7 +204,7 @@ export function CoachingReportTable({ reports }: { reports: CoachingReportType[]
                     {isExpanded ? <ChevronDown className="w-5 h-5 text-[#015249] dark:text-[#57BC90]" /> : <ChevronRight className="w-5 h-5" />}
                   </td>
                   <td className="px-2 py-4 text-slate-400 dark:text-slate-500 font-medium">
-                    {index + 1}
+                    {String.fromCharCode(65 + index)}
                   </td>
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-3">
@@ -283,7 +283,7 @@ export function CoachingReportTable({ reports }: { reports: CoachingReportType[]
                                     </div>
                                     <div className="flex flex-col">
                                       <span className="text-sm font-bold text-slate-800 dark:text-slate-200">
-                                        {member.name}
+                                        {mIdx + 1}. {member.name}
                                       </span>
                                       <span className={`text-xs font-medium mt-0.5 ${hasSession ? 'text-emerald-600 dark:text-emerald-400' : 'text-amber-600 dark:text-amber-500'}`}>
                                         {member.status}
