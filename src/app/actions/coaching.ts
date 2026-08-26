@@ -209,12 +209,8 @@ export async function updateActionItemFollowUp(formData: FormData) {
       const bytes = await file.arrayBuffer();
       const buffer = Buffer.from(bytes);
       
-      const fileName = `${uuidv4()}-${file.name.replace(/[^a-zA-Z0-9.-]/g, '_')}`;
-      const uploadDir = join(process.cwd(), 'public', 'uploads');
-      const filepath = join(uploadDir, fileName);
-      
-      await writeFile(filepath, buffer);
-      evidenceUrl = `/uploads/${fileName}`;
+      const base64String = buffer.toString('base64');
+      evidenceUrl = `data:${file.type || 'application/octet-stream'};base64,${base64String}`;
       evidenceName = file.name;
     }
 

@@ -30,25 +30,35 @@ export default async function DashboardLayout({ children }: { children: React.Re
                         (dbUser?.position === 'Asisten Deputi' && (cookies().get('asisten-mode')?.value || 'coach') !== 'coachee');
     
     if (isCoachView) {
-      // Get logs where action items have been created/updated recently
-      const logsWithActionItems = await prisma.coachingLog.findMany({
-        where: {
-          coachId: session.user.id,
-          actionItems: {
-            some: {} // Any action item
-          }
-        },
-        include: {
-          coachee: { select: { name: true } },
-          actionItems: true
-        },
-        orderBy: { updatedAt: 'desc' }
-      });
+      // Get logs where action items have been created/updated recently, and logs with responses
+      const [logsWithActionItems, logsWithResponse] = await Promise.all([
+        prisma.coachingLog.findMany({
+          where: {
+            coachId: session.user.id,
+            actionItems: {
+              some: {} // Any action item
+            }
+          },
+          include: {
+            coachee: { select: { name: true } },
+            actionItems: true
+          },
+          orderBy: { updatedAt: 'desc' }
+        }),
+        prisma.coachingLog.findMany({
+          where: {
+            coachId: session.user.id,
+            response: { not: null }
+          },
+          include: { coachee: { select: { name: true } } },
+          orderBy: { updatedAt: 'desc' }
+        })
+      ]);
 
-      logsWithActionItems.forEach(log => {
+      logsWithActionItems.forEach((log: any) => {
         let latestUpdate = log.updatedAt;
         let hasEvidence = false;
-        log.actionItems.forEach(ai => {
+        log.actionItems.forEach((ai: any) => {
            if (ai.updatedAt > latestUpdate) latestUpdate = ai.updatedAt;
            if (ai.evidenceUrl) hasEvidence = true;
         });
@@ -64,18 +74,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
         });
       });
 
-
-      // Also get logs where coachee has responded
-      const logsWithResponse = await prisma.coachingLog.findMany({
-        where: {
-          coachId: session.user.id,
-          response: { not: null }
-        },
-        include: { coachee: { select: { name: true } } },
-        orderBy: { updatedAt: 'desc' }
-      });
-
-      logsWithResponse.forEach(log => {
+      logsWithResponse.forEach((log: any) => {
         notifications.push({
           id: `resp-${log.id}`,
           title: 'Tanggapan Coaching',

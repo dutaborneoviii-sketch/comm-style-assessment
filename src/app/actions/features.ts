@@ -47,6 +47,10 @@ const ROLE_GROUPS = ["Staf", "Asisten Deputi", "Deputi Direksi Wilayah"];
 
 // Seed/upsert data — selalu jalankan agar flag baru langsung tersedia dengan department "GLOBAL"
 export async function seedDefaultFlagsIfEmpty() {
+  const count = await prisma.featureFlag.count();
+  const expectedCount = DEFAULT_FLAGS.length * ROLE_GROUPS.length;
+  if (count >= expectedCount) return;
+
   for (const flag of DEFAULT_FLAGS) {
     for (const roleGroup of ROLE_GROUPS) {
       await prisma.featureFlag.upsert({

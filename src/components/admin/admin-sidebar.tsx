@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { 
@@ -12,6 +13,7 @@ import {
   Network,
   ToggleLeft,
   ChevronRight,
+  ChevronDown,
   Activity,
   History,
   FileSpreadsheet,
@@ -21,6 +23,16 @@ import { cn } from '@/lib/utils';
 
 export default function AdminSidebar({ user, viewMode, asistenMode, featuresMap, isCollapsed = false, toggleCollapse }: { user?: any, viewMode?: string, asistenMode?: string, featuresMap?: Record<string, boolean>, isCollapsed?: boolean, toggleCollapse?: () => void }) {
   const pathname = usePathname();
+  const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>({
+    "HOME": true,
+    "DATA UTAMA": true,
+    "ASESMEN & LAPORAN": true,
+    "SISTEM & PENGATURAN": true,
+  });
+
+  const toggleGroup = (title: string) => {
+    setExpandedGroups(prev => ({ ...prev, [title]: !prev[title] }));
+  };
 
   const isAdminView = user?.role === 'ADMIN' && viewMode === 'admin';
   const isAsistenDeputi = user?.position === 'Asisten Deputi';
@@ -39,27 +51,46 @@ export default function AdminSidebar({ user, viewMode, asistenMode, featuresMap,
 
   const navGroups = [
     {
-      title: "Home",
+      title: "HOME",
+      collapsible: false,
+      headerClass: "bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400",
+      iconClass: "text-slate-500 dark:text-slate-400",
       items: [
         { href: "/profile", label: "Dashboard", icon: LayoutDashboard, show: true },
       ].filter(item => item.show)
     },
     {
-      title: "Pages",
+      title: "DATA UTAMA",
+      collapsible: true,
+      headerClass: "bg-[#96c1e9] text-white dark:bg-[#4375a3]",
+      iconClass: "text-white",
       items: [
-        // Staf / Coachee menus
-        { href: "/questionnaire", label: "Pengisian Kuisioner", icon: Activity, show: isStafView },
-        { href: "/history", label: "Riwayat Asesmen", icon: History, show: isStafView },
-        // Admin menus
-        { href: "/admin/coaching-report", label: "Rekapitulasi Coaching", icon: FileSpreadsheet, show: isAdminView || (isAsdepSDM && isAsistenCoachMode) },
-        { href: "/admin/users", label: "Manajemen Akses User", icon: Shield, show: isAdminView },
-        { href: "/admin/features", label: "Manajemen Menu Aplikasi", icon: ToggleLeft, show: showMenuAplikasi },
-        // Coach / Admin menus
         { href: "/team", label: "Anggota Bidang", icon: Users, show: isAdminView || isAsistenCoachMode || user?.position === 'Deputi Direksi Wilayah' },
         { href: "/guide", label: "Panduan Gaya Komunikasi", icon: BookOpen, show: showPanduan },
-        { href: "/admin/dictionary", label: "Manajemen Kamus Panduan", icon: FileSpreadsheet, show: showKamusPanduan },
-        { href: "/admin/questions", label: "Manajemen Bank Soal", icon: Database, show: showBankSoal },
+        { href: "/admin/dictionary", label: "Kamus Panduan", icon: FileSpreadsheet, show: showKamusPanduan },
+        { href: "/admin/questions", label: "Bank Soal", icon: Database, show: showBankSoal },
+      ].filter(item => item.show)
+    },
+    {
+      title: "ASESMEN & LAPORAN",
+      collapsible: true,
+      headerClass: "bg-[#a6d8aa] text-[#37754d] dark:bg-[#487e4e] dark:text-white",
+      iconClass: "text-[#37754d] dark:text-white",
+      items: [
+        { href: "/questionnaire", label: "Pengisian Kuisioner", icon: Activity, show: isStafView },
+        { href: "/history", label: "Riwayat Asesmen", icon: History, show: isStafView },
+        { href: "/admin/coaching-report", label: "Rekapitulasi Coaching", icon: FileSpreadsheet, show: isAdminView || (isAsdepSDM && isAsistenCoachMode) },
         { href: "/admin/settings", label: "Jangka Asesmen Ulang", icon: Settings, show: showJangkaAsesmenUlang },
+      ].filter(item => item.show)
+    },
+    {
+      title: "SISTEM & PENGATURAN",
+      collapsible: true,
+      headerClass: "bg-[#fbce9c] text-[#8b5523] dark:bg-[#9a6a38] dark:text-white",
+      iconClass: "text-[#8b5523] dark:text-white",
+      items: [
+        { href: "/admin/users", label: "Akses User", icon: Shield, show: isAdminView },
+        { href: "/admin/features", label: "Menu Aplikasi", icon: ToggleLeft, show: showMenuAplikasi },
         { href: "/admin/email-settings", label: "Pengaturan Email", icon: Mail, show: isAdminView },
       ].filter(item => item.show)
     }
@@ -89,44 +120,64 @@ export default function AdminSidebar({ user, viewMode, asistenMode, featuresMap,
         )}
       </div>
 
-      <div className="flex-1 overflow-y-auto px-4 py-2 flex flex-col gap-6 scrollbar-none">
-        {navGroups.map((group, idx) => (
-          <div key={idx}>
-            {!isCollapsed && (
-              <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3 px-3">
-                {group.title}
-              </h3>
-            )}
-            <ul className="space-y-1">
-              {group.items.map((item) => {
-                const isActive = pathname === item.href || (item.href !== '/profile' && pathname.startsWith(item.href));
-                const Icon = item.icon;
-                
-                return (
-                  <li key={item.href}>
-                    <Link 
-                      href={item.href}
-                      title={isCollapsed ? item.label : undefined}
-                      className={cn(
-                        "flex items-center justify-between py-2.5 rounded-xl transition-all duration-200 group",
-                        isCollapsed ? "px-0 justify-center w-10 mx-auto" : "px-3",
-                        isActive 
-                          ? "bg-[#57BC90] text-white shadow-md shadow-[#57BC90]/20 font-semibold" 
-                          : "text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white font-medium"
-                      )}
-                    >
-                      <div className={cn("flex items-center", isCollapsed ? "justify-center w-full" : "gap-3")}>
-                        <Icon className={cn("w-5 h-5", isActive ? "text-white" : "text-slate-400 group-hover:text-[#57BC90] transition-colors")} />
-                        {!isCollapsed && <span className="text-sm">{item.label}</span>}
-                      </div>
-                      {!isActive && !isCollapsed && <ChevronRight className="w-4 h-4 opacity-0 group-hover:opacity-50 transition-opacity" />}
-                    </Link>
-                  </li>
-                );
-              })}
-            </ul>
-          </div>
-        ))}
+      <div className="flex-1 overflow-y-auto px-4 py-2 flex flex-col gap-3 scrollbar-none">
+        {navGroups.map((group, idx) => {
+          if (group.items.length === 0) return null;
+          const isExpanded = expandedGroups[group.title] !== false;
+          
+          return (
+            <div key={idx} className="mb-1">
+              {!isCollapsed && (
+                group.collapsible ? (
+                  <button 
+                    onClick={() => toggleGroup(group.title)}
+                    className={cn(
+                      "w-full flex items-center justify-between text-xs font-medium uppercase tracking-wider mb-2 px-4 py-2 rounded-lg transition-colors",
+                      group.headerClass
+                    )}
+                  >
+                    <span>{group.title}</span>
+                    <ChevronDown className={cn("w-4 h-4 transition-transform duration-200", group.iconClass, !isExpanded && "-rotate-90")} />
+                  </button>
+                ) : (
+                  <h3 className="text-xs font-medium text-slate-500 uppercase tracking-wider mb-2 px-3 py-1">
+                    {group.title}
+                  </h3>
+                )
+              )}
+              {(!isCollapsed ? isExpanded : true) && (
+                <ul className="space-y-1">
+                  {group.items.map((item) => {
+                    const isActive = pathname === item.href || (item.href !== '/profile' && pathname.startsWith(item.href));
+                    const Icon = item.icon;
+                    
+                    return (
+                      <li key={item.href}>
+                        <Link 
+                          href={item.href}
+                          title={isCollapsed ? item.label : undefined}
+                          className={cn(
+                            "flex items-center justify-between py-2.5 rounded-xl transition-all duration-200 group",
+                            isCollapsed ? "px-0 justify-center w-10 mx-auto" : "px-3",
+                            isActive 
+                              ? "bg-[#015249] text-white shadow-md font-semibold" 
+                              : "text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white font-medium"
+                          )}
+                        >
+                          <div className={cn("flex items-center", isCollapsed ? "justify-center w-full" : "gap-3")}>
+                            <Icon className={cn("w-5 h-5", isActive ? "text-white" : "text-slate-400 group-hover:text-[#015249] dark:group-hover:text-[#57BC90] transition-colors")} />
+                            {!isCollapsed && <span className="text-[15px]">{item.label}</span>}
+                          </div>
+                          {!isActive && !isCollapsed && <ChevronRight className="w-4 h-4 opacity-0 group-hover:opacity-50 transition-opacity" />}
+                        </Link>
+                      </li>
+                    );
+                  })}
+                </ul>
+              )}
+            </div>
+          );
+        })}
       </div>
 
       {/* Sidebar Footer Application Version */}
@@ -141,25 +192,3 @@ export default function AdminSidebar({ user, viewMode, asistenMode, featuresMap,
   );
 }
 
-function FileTextIcon(props: any) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z" />
-      <polyline points="14 2 14 8 20 8" />
-      <line x1="16" x2="8" y1="13" y2="13" />
-      <line x1="16" x2="8" y1="17" y2="17" />
-      <line x1="10" x2="8" y1="9" y2="9" />
-    </svg>
-  );
-}

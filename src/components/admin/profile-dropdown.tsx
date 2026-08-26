@@ -12,21 +12,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
-import { useFormStatus } from "react-dom";
 import { changeSelfPassword } from "@/app/actions/users";
-
-function SubmitLogoutButton() {
-  const { pending } = useFormStatus();
-  return (
-    <button
-      type="submit"
-      disabled={pending}
-      className="h-10 px-5 text-sm font-bold text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-950/30 hover:bg-red-100 dark:hover:bg-red-950/50 rounded-xl transition-colors disabled:opacity-50"
-    >
-      {pending ? "Memproses..." : "Ya, Keluar"}
-    </button>
-  );
-}
 
 function SubmitPasswordButton({ isSubmitting }: { isSubmitting: boolean }) {
   return (
@@ -104,48 +90,38 @@ export function ProfileDropdown({ user }: ProfileDropdownProps) {
           </div>
           <ChevronDown className="w-4 h-4 text-white/70 ml-1 transition-transform duration-200 group-data-[popup-open]:-rotate-180" />
         </DropdownMenuTrigger>
-        <DropdownMenuContent className="w-[300px] p-2 rounded-xl shadow-xl border-slate-200/60" align="end" sideOffset={8}>
-          <div className="flex gap-3 p-2.5 mb-2 bg-slate-50 dark:bg-zinc-900 rounded-lg border border-slate-100 dark:border-zinc-800">
-            <div className="h-10 w-10 shrink-0 flex items-center justify-center rounded-full bg-emerald-100 text-emerald-700 font-bold text-lg dark:bg-emerald-950 dark:text-emerald-400">
+        <DropdownMenuContent className="w-[300px] p-0 rounded-2xl shadow-xl border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 overflow-hidden" align="end" sideOffset={12}>
+          <div className="flex items-center gap-4 p-5 bg-gradient-to-b from-slate-50 to-white dark:from-zinc-900 dark:to-zinc-950 border-b border-slate-100 dark:border-zinc-800">
+            <div className="h-12 w-12 shrink-0 flex items-center justify-center rounded-full bg-gradient-to-tr from-emerald-500 to-teal-400 text-white font-bold text-xl shadow-sm">
               {(user?.name || "U").charAt(0).toUpperCase()}
             </div>
-            <div className="flex flex-col space-y-0.5">
-              <p className="text-[14px] font-bold leading-tight text-slate-800 dark:text-slate-200">
-                {user?.name || "Tanpa Nama"}
+            <div className="flex flex-col">
+              <p className="text-[15px] font-bold tracking-tight text-slate-900 dark:text-slate-100 leading-tight">
+                {user?.name || "Tanpa Nama"} {user?.npp ? `(${user.npp})` : ''}
               </p>
-              {user?.npp && (
-                <p className="text-[11px] font-medium text-slate-500 dark:text-slate-400">
-                  NPP: {user.npp}
-                </p>
-              )}
               {(user?.position || user?.department) && (
-                <p className="text-[11px] leading-snug text-slate-500 dark:text-slate-400 mt-1.5">
-                  <span className="font-semibold text-slate-600 dark:text-slate-300">{user?.position}</span>
-                  {user?.department && user?.position ? <br/> : ""}
-                  {user?.department}
-                </p>
+                <div className="text-[12px] text-slate-500 dark:text-slate-400 mt-1 space-y-0.5">
+                  {user?.position && <p className="font-medium text-slate-700 dark:text-slate-300">{user.position}</p>}
+                  {user?.department && <p>{user.department}</p>}
+                </div>
               )}
             </div>
           </div>
           
-          <DropdownMenuGroup className="space-y-1">
+          <DropdownMenuGroup className="p-2 space-y-1">
             <DropdownMenuItem
               onClick={() => setPasswordOpen(true)}
-              className="cursor-pointer flex items-center gap-3 p-2 rounded-md transition-colors"
+              className="cursor-pointer flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all hover:bg-slate-100 focus:bg-slate-100 dark:hover:bg-zinc-800 dark:focus:bg-zinc-800"
             >
-              <div className="bg-slate-100 dark:bg-zinc-800 p-1.5 rounded-md">
-                <KeyRound className="w-4 h-4 text-slate-600 dark:text-slate-400" />
-              </div>
-              <span className="text-[14px] font-medium text-slate-700 dark:text-slate-300">Ubah Password</span>
+              <KeyRound className="w-[18px] h-[18px] text-slate-500 dark:text-slate-400" />
+              <span className="text-[14px] font-medium text-slate-700 dark:text-slate-200">Ubah Password</span>
             </DropdownMenuItem>
             
             <DropdownMenuItem
               onClick={() => setLogoutOpen(true)}
-              className="cursor-pointer flex items-center gap-3 p-2 rounded-md text-red-600 focus:text-red-600 focus:bg-red-50 dark:focus:bg-red-950/30 transition-colors"
+              className="cursor-pointer flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all text-red-600 focus:text-red-700 hover:bg-red-50 focus:bg-red-50 dark:hover:bg-red-950/30 dark:focus:bg-red-950/30"
             >
-              <div className="bg-red-50 dark:bg-red-950/30 p-1.5 rounded-md">
-                <LogOut className="w-4 h-4 text-red-600 dark:text-red-400" />
-              </div>
+              <LogOut className="w-[18px] h-[18px] text-red-500" />
               <span className="text-[14px] font-medium text-red-600 dark:text-red-400">Keluar</span>
             </DropdownMenuItem>
           </DropdownMenuGroup>
@@ -173,9 +149,13 @@ export function ProfileDropdown({ user }: ProfileDropdownProps) {
             >
               Batal
             </button>
-            <form action={logoutAction} onSubmit={() => setLogoutOpen(false)}>
-              <SubmitLogoutButton />
-            </form>
+            <button
+              type="button"
+              onClick={logoutAction}
+              className="h-10 px-5 text-sm font-bold text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-950/30 hover:bg-red-100 dark:hover:bg-red-950/50 rounded-xl transition-colors disabled:opacity-50"
+            >
+              Ya, Keluar
+            </button>
           </div>
         </DialogContent>
       </Dialog>
