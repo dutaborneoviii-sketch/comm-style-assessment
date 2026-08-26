@@ -69,6 +69,9 @@ export function CoachingReportTable({ reports }: { reports: CoachingReportType[]
     const wsData: any[][] = [];
     
     reports.forEach((r, idx) => {
+      // Title above table
+      wsData.push([`Rincian Anggota: ${r.department || "-"}`]);
+      
       // Header per Bidang
       wsData.push(["No", "Nama Pimpinan", "Jabatan", "Bidang", "Jumlah Sesi", "Selesai", "Proses", "Belum Mulai"]);
       
@@ -84,8 +87,6 @@ export function CoachingReportTable({ reports }: { reports: CoachingReportType[]
       ]);
       
       if (r.members && r.members.length > 0) {
-        wsData.push(["", "RINCIAN ANGGOTA BIDANG", "", "", "", "", "", ""]);
-        wsData.push(["", "Nama Anggota", "Status Coaching", "", "", "", "", ""]);
         r.members.forEach((m, mIdx) => {
           wsData.push([mIdx + 1, m.name, m.status, "", "", "", "", ""]);
         });
@@ -113,6 +114,19 @@ export function CoachingReportTable({ reports }: { reports: CoachingReportType[]
     let currentY = 28;
     
     reports.forEach((r, idx) => {
+      // Check if we need to add a new page
+      if (currentY > 180) {
+        doc.addPage();
+        currentY = 20;
+      }
+
+      // Title above table
+      doc.setFontSize(11);
+      doc.setFont("helvetica", "bold");
+      doc.text(`Rincian Anggota: ${r.department || "-"}`, 14, currentY);
+      
+      currentY += 4;
+
       const tableData: any[] = [];
       
       tableData.push([
@@ -127,7 +141,6 @@ export function CoachingReportTable({ reports }: { reports: CoachingReportType[]
       ]);
       
       if (r.members && r.members.length > 0) {
-        tableData.push([{ content: `Rincian Anggota: ${r.department}`, colSpan: 8, styles: { fillColor: [240, 240, 240], fontStyle: 'bold' } }]);
         r.members.forEach((m, mIdx) => {
           tableData.push([{ content: String(mIdx + 1), colSpan: 1 }, { content: m.name, colSpan: 3 }, { content: m.status, colSpan: 4 }]);
         });
@@ -143,7 +156,7 @@ export function CoachingReportTable({ reports }: { reports: CoachingReportType[]
         margin: { bottom: 15 }
       });
       
-      currentY = (doc as any).lastAutoTable.finalY + 10;
+      currentY = (doc as any).lastAutoTable.finalY + 15;
     });
 
     doc.save(`Laporan_Coaching_${new Date().toISOString().split('T')[0]}.pdf`);
