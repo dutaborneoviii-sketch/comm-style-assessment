@@ -136,9 +136,9 @@ export function CoachingReportTable({ reports }: { reports: CoachingReportType[]
     doc.setFontSize(16);
     doc.text("Rekapitulasi Coaching", 14, 15);
     doc.setFontSize(10);
-    doc.text(`Tanggal: ${new Date().toLocaleDateString('id-ID')}`, 14, 22);
+    doc.text(`Tanggal: ${new Date().toLocaleDateString('id-ID')}`, 283, 15, { align: 'right' });
 
-    let currentY = 28;
+    let currentY = 24;
     
     // Top Table Data
     const topTableData = reports.map((r, idx) => [
