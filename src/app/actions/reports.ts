@@ -72,6 +72,30 @@ export async function getCoachingReport() {
     const belumMulaiStaff = eligibleStaff.filter(s => !uniqueCoacheeIds.has(s.id));
     const belumMulaiNames = belumMulaiStaff.map(s => s.name).filter(Boolean) as string[];
 
+    // Generate detailed members list
+    const membersList: { name: string; status: string }[] = [];
+    
+    // Add staff with sessions
+    const counts: Record<string, number> = {};
+    leader.coachLogs.forEach(log => {
+      const name = log.coachee?.name;
+      if (name) counts[name] = (counts[name] || 0) + 1;
+    });
+    
+    Object.entries(counts).forEach(([name, count]) => {
+      membersList.push({ name, status: `Mengikuti ${count}x sesi Coaching` });
+    });
+    
+    // Add staff without sessions
+    belumMulaiStaff.forEach(s => {
+      if (s.name) {
+        membersList.push({ name: s.name, status: 'Belum Mengikuti Sesi Coaching' });
+      }
+    });
+
+    // Sort members alphabetically
+    membersList.sort((a, b) => a.name.localeCompare(b.name));
+
     return {
       id: leader.id,
       name: leader.name,
@@ -86,7 +110,10 @@ export async function getCoachingReport() {
       totalSesiNames,
       selesaiNames,
       prosesNames,
-      belumMulaiNames
+      belumMulaiNames,
+      
+      // Detailed breakdown
+      members: membersList
     };
   });
 
