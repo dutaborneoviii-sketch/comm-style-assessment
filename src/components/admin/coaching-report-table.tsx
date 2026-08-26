@@ -67,10 +67,11 @@ export function CoachingReportTable({ reports }: { reports: CoachingReportType[]
 
   const exportToExcel = () => {
     const wsData: any[][] = [];
-    // Header
-    wsData.push(["No", "Nama Pimpinan", "Jabatan", "Bidang", "Jumlah Sesi", "Selesai", "Proses", "Belum Mulai"]);
     
     reports.forEach((r, idx) => {
+      // Header per Bidang
+      wsData.push(["No", "Nama Pimpinan", "Jabatan", "Bidang", "Jumlah Sesi", "Selesai", "Proses", "Belum Mulai"]);
+      
       wsData.push([
         idx + 1,
         r.name || "-",
@@ -88,8 +89,11 @@ export function CoachingReportTable({ reports }: { reports: CoachingReportType[]
         r.members.forEach(m => {
           wsData.push(["", m.name, m.status, "", "", "", "", ""]);
         });
-        wsData.push(["", "", "", "", "", "", "", ""]); // empty row separator
       }
+      
+      // Gap between tables
+      wsData.push(["", "", "", "", "", "", "", ""]);
+      wsData.push(["", "", "", "", "", "", "", ""]);
     });
 
     const ws = XLSX.utils.aoa_to_sheet(wsData);
@@ -106,9 +110,11 @@ export function CoachingReportTable({ reports }: { reports: CoachingReportType[]
     doc.setFontSize(10);
     doc.text(`Tanggal: ${new Date().toLocaleDateString('id-ID')}`, 14, 22);
 
-    const tableData: any[] = [];
+    let currentY = 28;
     
     reports.forEach((r, idx) => {
+      const tableData: any[] = [];
+      
       tableData.push([
         idx + 1,
         r.name || "-",
@@ -126,15 +132,18 @@ export function CoachingReportTable({ reports }: { reports: CoachingReportType[]
           tableData.push([{ content: "", colSpan: 1 }, { content: m.name, colSpan: 3 }, { content: m.status, colSpan: 4 }]);
         });
       }
-    });
 
-    autoTable(doc, {
-      startY: 28,
-      head: [["No", "Nama Pimpinan", "Jabatan", "Bidang", "Jumlah Sesi", "Selesai", "Proses", "Belum Mulai"]],
-      body: tableData,
-      theme: 'grid',
-      headStyles: { fillColor: [1, 82, 73] },
-      styles: { fontSize: 8 }
+      autoTable(doc, {
+        startY: currentY,
+        head: [["No", "Nama Pimpinan", "Jabatan", "Bidang", "Jumlah Sesi", "Selesai", "Proses", "Belum Mulai"]],
+        body: tableData,
+        theme: 'grid',
+        headStyles: { fillColor: [1, 82, 73] },
+        styles: { fontSize: 8 },
+        margin: { bottom: 15 }
+      });
+      
+      currentY = (doc as any).lastAutoTable.finalY + 10;
     });
 
     doc.save(`Laporan_Coaching_${new Date().toISOString().split('T')[0]}.pdf`);
