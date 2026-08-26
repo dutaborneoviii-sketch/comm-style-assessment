@@ -3,7 +3,7 @@
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { toggleFeatureFlag, saveDepartmentFeatureFlag } from "@/app/actions/features";
-import { BookOpen, RefreshCw, Loader2, Database, CheckCircle2, Clock, Plus, Trash2, HelpCircle, Layers, CheckSquare, PlusCircle } from "lucide-react";
+import { BookOpen, RefreshCw, Loader2, Database, CheckCircle2, Clock, Plus, Trash2, HelpCircle, Layers, CheckSquare, PlusCircle, Table } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -32,6 +32,7 @@ const FEATURE_ICONS: Record<string, React.ReactNode> = {
   ulangi_asesmen: <RefreshCw className="w-4 h-4" />,
   manajemen_bank_soal: <Database className="w-4 h-4" />,
   jangka_asesmen_ulang: <Clock className="w-4 h-4" />,
+  rekapitulasi_coaching: <Table className="w-4 h-4" />,
 };
 
 const ROLE_COLORS: Record<string, string> = {

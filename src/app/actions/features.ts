@@ -41,6 +41,12 @@ const DEFAULT_FLAGS = [
     description: "Menampilkan akses ke halaman manajemen fitur aplikasi.",
     defaultEnabled: (_roleGroup: string) => false, // Default: nonaktif untuk semua kecuali Admin
   },
+  {
+    featureKey: "rekapitulasi_coaching",
+    label: "Rekapitulasi Coaching",
+    description: "Menampilkan menu rekapitulasi data coaching pegawai.",
+    defaultEnabled: (_roleGroup: string) => false, // Default: nonaktif untuk semua kecuali Admin
+  },
 ];
 
 const ROLE_GROUPS = ["Staf", "Asisten Deputi", "Deputi Direksi Wilayah"];
