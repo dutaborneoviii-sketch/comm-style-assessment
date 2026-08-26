@@ -206,7 +206,14 @@ export function CoachingReportTable({ reports }: { reports: CoachingReportType[]
           theme: 'grid',
           headStyles: { fillColor: [1, 82, 73] },
           styles: { fontSize: 8 },
-          margin: { bottom: 15 }
+          margin: { bottom: 15 },
+          didParseCell: function (data) {
+            if (data.section === 'body' && data.row.index === 0) {
+              if (data.column.index >= 3 && data.column.index <= 5) {
+                data.cell.styles.fillColor = [238, 245, 219];
+              }
+            }
+          }
         });
         
         currentY = (doc as any).lastAutoTable.finalY + 15;
