@@ -1,5 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { BookOpen, LogIn, Users, Shield, FileText, CheckCircle2, Activity } from "lucide-react";
+import { PrintButton } from "@/components/admin/print-button";
 import Image from "next/image";
 
 export const metadata = {
@@ -14,9 +15,7 @@ export default function UserManualPage() {
           <h2 className="font-bold text-lg">Format PDF Tersedia</h2>
           <p className="text-sm">Anda dapat menekan tombol <strong>Ctrl + P</strong> (atau Cmd + P di Mac) pada keyboard Anda untuk mencetak halaman ini dan menyimpannya sebagai file PDF.</p>
         </div>
-        <button onClick={() => typeof window !== 'undefined' && window.print()} className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-semibold transition-colors shadow-sm">
-          Simpan ke PDF
-        </button>
+        <PrintButton />
       </div>
 
       <div className="space-y-12" id="printable-manual">
