@@ -3,6 +3,7 @@ import { prisma } from '@/lib/prisma';
 import { cookies } from 'next/headers';
 import AdminLayoutWrapper from '@/components/admin/admin-layout-wrapper';
 import { getFeatureFlagsMap } from '@/app/actions/features';
+import { AutoLogout } from '@/components/auto-logout';
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   const session = await auth();
@@ -126,6 +127,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
     const asistenMode = cookies().get('asisten-mode')?.value || 'coach';
     return (
       <AdminLayoutWrapper user={dbUser} viewMode={viewMode} asistenMode={asistenMode} notifications={notifications} featuresMap={featuresMap}>
+        <AutoLogout />
         {children}
       </AdminLayoutWrapper>
     );
@@ -133,6 +135,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
 
   return (
     <div className="w-full">
+      <AutoLogout />
       {children}
     </div>
   );
