@@ -23,7 +23,7 @@ import { getStyleDescription, getStyleTrait, getStyleAdvice } from "@/lib/scorin
 
 
 export const metadata = {
-  title: "Strategi Coaching - COGNIT",
+  title: "Strategi Coaching - Belian",
 };
 
 const styleColors: Record<string, { main: string, bg: string, border: string, lightBg: string, guideClass: string }> = {

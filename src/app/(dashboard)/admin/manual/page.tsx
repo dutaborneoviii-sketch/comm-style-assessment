@@ -1,13 +1,35 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { BookOpen, LogIn, Users, Shield, FileText, CheckCircle2, Activity } from "lucide-react";
+import { BookOpen, LogIn, Users, Shield, FileText, CheckCircle2, Activity, Database } from "lucide-react";
 import { PrintButton } from "@/components/admin/print-button";
 import Image from "next/image";
+import { auth } from "@/auth";
+import { prisma } from "@/lib/prisma";
+import { redirect } from "next/navigation";
+import { cookies } from "next/headers";
 
 export const metadata = {
-  title: "User Manual - COGNIT",
+  title: "User Manual - Belian",
 };
 
-export default function UserManualPage() {
+export default async function UserManualPage() {
+  const session = await auth();
+  if (!session?.user?.id) {
+    redirect("/login");
+  }
+
+  // Authorize only real admin
+  const currentUser = await prisma.user.findUnique({
+    where: { id: session.user.id },
+    select: { role: true }
+  });
+
+  const viewMode = cookies().get('view-mode')?.value || 'admin';
+  const isAdminView = currentUser?.role === 'ADMIN' && viewMode === 'admin';
+
+  if (!isAdminView) {
+    redirect("/profile");
+  }
+
   return (
     <div className="w-full max-w-5xl mx-auto py-8 px-4 sm:px-6 lg:px-8 bg-slate-50 dark:bg-zinc-950 min-h-screen">
       <div className="print:hidden mb-8 bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 p-4 rounded-lg border border-blue-200 dark:border-blue-800 flex items-center justify-between">
@@ -28,7 +50,7 @@ export default function UserManualPage() {
             BUKU PANDUAN PENGGUNA (USER MANUAL)
           </h1>
           <h2 className="text-xl text-slate-600 dark:text-slate-400 font-medium">
-            Sistem Aplikasi COGNIT (Communication Style Assessment & Coaching)
+            Sistem Aplikasi Belian (Communication Style Assessment & Coaching)
           </h2>
         </div>
 
@@ -39,7 +61,7 @@ export default function UserManualPage() {
             PENDAHULUAN
           </h3>
           <p className="text-slate-600 dark:text-slate-400 leading-relaxed text-justify">
-            Aplikasi COGNIT adalah platform komprehensif yang dirancang untuk melakukan asesmen gaya komunikasi karyawan, memfasilitasi sesi <i>coaching</i> (pembinaan) berbasis hasil asesmen, dan menyediakan dasbor rekapitulasi untuk pimpinan. Aplikasi ini mendukung beberapa peran (Roles) dengan hak akses yang disesuaikan secara otomatis.
+            Aplikasi Belian adalah platform komprehensif yang dirancang untuk melakukan asesmen gaya komunikasi karyawan, memfasilitasi sesi <i>coaching</i> (pembinaan) berbasis hasil asesmen, dan menyediakan dasbor rekapitulasi untuk pimpinan. Aplikasi ini mendukung beberapa peran (Roles) dengan hak akses yang disesuaikan secara otomatis.
           </p>
         </section>
 
@@ -53,7 +75,7 @@ export default function UserManualPage() {
             <div className="space-y-4 text-slate-600 dark:text-slate-400">
               <p>Semua pengguna wajib masuk (login) menggunakan kredensial yang valid:</p>
               <ul className="list-decimal pl-5 space-y-2">
-                <li>Buka tautan website aplikasi COGNIT di browser Anda.</li>
+                <li>Buka tautan website aplikasi Belian di browser Anda.</li>
                 <li>Pada halaman Login, masukkan <strong>NPP</strong> (Nomor Pokok Pegawai) Anda.</li>
                 <li>Masukkan <strong>Password</strong> Anda pada kolom kedua.</li>
                 <li>Klik tombol <strong>Masuk</strong>.</li>
@@ -108,6 +130,3 @@ export default function UserManualPage() {
     </div>
   );
 }
-
-// Needed to silence lucide missing icon error due to arbitrary import for Database
-import { Database } from "lucide-react";

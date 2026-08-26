@@ -10,7 +10,7 @@ import { CoachingMasterTable } from "@/components/coaching/coaching-master-table
 import { cookies } from "next/headers";
 
 export const metadata = {
-  title: "Rekapitulasi Coaching - COGNIT",
+  title: "Rekapitulasi Coaching - Belian",
 };
 
 export const dynamic = "force-dynamic";

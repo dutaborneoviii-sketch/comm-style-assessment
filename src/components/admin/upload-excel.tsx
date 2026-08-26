@@ -41,7 +41,7 @@ export function UploadExcel() {
     ];
 
     // Unduh file
-    xlsx.writeFile(wb, "Template_Kuesioner_COGNIT.xlsx");
+    xlsx.writeFile(wb, "Template_Kuesioner_Belian.xlsx");
   };
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {

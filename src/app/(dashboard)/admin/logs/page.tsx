@@ -9,7 +9,7 @@ import { MaskedIP } from "@/components/admin/masked-ip";
 import { LocalTime } from "@/components/admin/local-time";
 
 export const metadata = {
-  title: "Log Aktivitas User - COGNIT",
+  title: "Log Aktivitas User - Belian",
 };
 
 export const dynamic = "force-dynamic";
@@ -73,7 +73,7 @@ export default async function AdminLogsPage() {
             Riwayat Akses Terbaru
           </CardTitle>
           <CardDescription>
-            Menampilkan 100 aktivitas login terakhir di sistem COGNIT.
+            Menampilkan 100 aktivitas login terakhir di sistem Belian.
           </CardDescription>
         </CardHeader>
         <CardContent className="p-0">
