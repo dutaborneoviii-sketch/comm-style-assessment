@@ -7,8 +7,15 @@ export const authConfig = {
   callbacks: {
     authorized({ auth, request: { nextUrl } }) {
       const isLoggedIn = !!auth?.user;
-      const isOnDashboard = nextUrl.pathname.startsWith('/profile') || nextUrl.pathname.startsWith('/questionnaire') || nextUrl.pathname.startsWith('/history');
-      if (isOnDashboard) {
+      const isProtectedRoute = 
+        nextUrl.pathname.startsWith('/profile') || 
+        nextUrl.pathname.startsWith('/questionnaire') || 
+        nextUrl.pathname.startsWith('/history') ||
+        nextUrl.pathname.startsWith('/admin') ||
+        nextUrl.pathname.startsWith('/team') ||
+        nextUrl.pathname.startsWith('/guide');
+        
+      if (isProtectedRoute) {
         if (isLoggedIn) return true;
         return false; // Redirect unauthenticated users to login page
       } else if (isLoggedIn && nextUrl.pathname === '/') {

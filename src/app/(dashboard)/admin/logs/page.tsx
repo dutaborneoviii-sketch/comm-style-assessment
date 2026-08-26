@@ -139,7 +139,7 @@ export default async function AdminLogsPage() {
                           <div className="flex items-center gap-1.5">
                             <Globe className="w-4 h-4 text-emerald-500" />
                             <span className="font-mono text-xs font-bold text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded border border-slate-200 dark:border-slate-700">
-                              {log.ipAddress || 'Unknown IP'}
+                              {log.ipAddress ? log.ipAddress.replace(/(\d{1,3}\.\d{1,3})\.\d{1,3}\.\d{1,3}/, '$1.***.***') : 'Unknown IP'}
                             </span>
                           </div>
                           <div className="flex items-center gap-1.5">
