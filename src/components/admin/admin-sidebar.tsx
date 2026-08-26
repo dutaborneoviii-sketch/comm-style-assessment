@@ -40,10 +40,10 @@ export default function AdminSidebar({ user, viewMode, asistenMode, featuresMap,
   const isAsistenCoacheeMode = isAsistenDeputi && asistenMode === 'coachee';
   const isAsdepSDM = isAsistenDeputi && user?.department === 'Bidang SDM, Umum dan Komunikasi (SDMUK)';
   
-  const showMenuAplikasi = isAdminView || (isAsistenCoachMode && featuresMap?.manajemen_menu_aplikasi);
-  const showBankSoal = isAdminView || (isAsistenCoachMode && featuresMap?.manajemen_bank_soal);
-  const showKamusPanduan = isAdminView || (isAsistenCoachMode && featuresMap?.manajemen_kamus_panduan);
-  const showJangkaAsesmenUlang = isAdminView || (isAsistenCoachMode && featuresMap?.jangka_asesmen_ulang);
+  const showMenuAplikasi = isAdminView || (isAsistenCoachMode && isAsdepSDM && featuresMap?.manajemen_menu_aplikasi);
+  const showBankSoal = isAdminView || (isAsistenCoachMode && isAsdepSDM && featuresMap?.manajemen_bank_soal);
+  const showKamusPanduan = isAdminView || (isAsistenCoachMode && isAsdepSDM && featuresMap?.manajemen_kamus_panduan);
+  const showJangkaAsesmenUlang = isAdminView || (isAsistenCoachMode && isAsdepSDM && featuresMap?.jangka_asesmen_ulang);
   const showPanduan = (isAsistenCoachMode && featuresMap?.panduan_komunikasi) || user?.position === 'Deputi Direksi Wilayah';
 
   // Staf-like view: regular user OR Asisten Deputi in coachee mode
