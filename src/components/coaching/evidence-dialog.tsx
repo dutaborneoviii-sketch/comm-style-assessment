@@ -10,7 +10,7 @@ interface EvidenceDialogProps {
 }
 
 export function EvidenceDialog({ url, name }: EvidenceDialogProps) {
-  const isImage = url.match(/\.(jpeg|jpg|gif|png|webp|svg)$/i);
+  const isImage = url.startsWith('data:image/') || url.match(/\.(jpeg|jpg|gif|png|webp|svg)$/i);
   const displayName = name || url;
 
   return (

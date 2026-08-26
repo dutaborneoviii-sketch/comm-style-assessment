@@ -1037,7 +1037,7 @@ export default function CoachingTracker({
             <DialogDescription className="sr-only">Pratinjau Dokumen Lampiran</DialogDescription>
           </DialogHeader>
           <div className="w-full flex justify-center items-center overflow-auto bg-slate-100/50 dark:bg-black/20 min-h-[300px] max-h-[75vh] p-4">
-            {previewEvidence?.url.match(/\.(jpeg|jpg|gif|png|webp|svg|bmp)(\?.*)?$/i) ? (
+            {(previewEvidence?.url.match(/\.(jpeg|jpg|gif|png|webp|svg|bmp)(\?.*)?$/i) || previewEvidence?.url.startsWith('data:image/')) ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img 
                 src={previewEvidence.url} 
