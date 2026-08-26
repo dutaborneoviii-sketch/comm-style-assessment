@@ -70,86 +70,11 @@ export default function UserManualPage() {
           </div>
         </section>
 
-        {/* 3. Staf */}
-        <section className="space-y-4 break-inside-avoid pt-6">
-          <h3 className="text-2xl font-bold flex items-center gap-2 text-slate-800 dark:text-slate-200">
-            <div className="w-8 h-8 rounded-full bg-slate-200 dark:bg-slate-800 flex items-center justify-center text-sm">3</div>
-            PANDUAN UNTUK ROLE: STAF / KARYAWAN
-          </h3>
-          <p className="text-slate-600 dark:text-slate-400">
-            Staf adalah pengguna akhir yang menjadi target dari asesmen komunikasi.
-          </p>
-          
-          <div className="grid grid-cols-1 gap-6">
-            <Card className="shadow-none border-slate-200">
-              <CardHeader className="bg-slate-50 border-b border-slate-100 pb-4">
-                <CardTitle className="text-lg flex items-center gap-2">
-                  <FileText className="w-5 h-5 text-orange-500" /> 
-                  3.1 Mengisi Kuisioner Asesmen
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="pt-4 flex flex-col md:flex-row gap-6">
-                <ol className="list-decimal pl-5 space-y-2 text-slate-600 flex-1">
-                  <li>Klik menu <strong>ASESMEN & LAPORAN -{'>'} Pengisian Kuisioner</strong>.</li>
-                  <li>Jawab seluruh pertanyaan yang disajikan dengan sejujur-jujurnya sesuai dengan kondisi Anda.</li>
-                  <li>Setelah selesai, klik tombol <strong>Simpan</strong> di bagian bawah halaman.</li>
-                  <li>Hasil dominasi gaya komunikasi Anda (Amiable, Driver, Expressive, Analytical) akan otomatis terhitung.</li>
-                </ol>
-                <div className="w-full md:w-1/3 bg-slate-100 rounded-lg flex items-center justify-center min-h-[150px] border border-slate-200">
-                  <span className="text-slate-400 text-sm text-center px-4">[Gambar Pengisian Kuisioner]</span>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className="shadow-none border-slate-200">
-              <CardHeader className="bg-slate-50 border-b border-slate-100 pb-4">
-                <CardTitle className="text-lg flex items-center gap-2">
-                  <Activity className="w-5 h-5 text-blue-500" /> 
-                  3.2 Melihat Riwayat Asesmen
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="pt-4">
-                <p className="text-slate-600 mb-4">
-                  Klik menu <strong>Riwayat Asesmen</strong> untuk melihat grafik Spider-Web dari hasil Anda sebelumnya. Di halaman ini, Anda juga bisa menanggapi Action Plan (Rencana Aksi) yang telah didiskusikan bersama atasan.
-                </p>
-              </CardContent>
-            </Card>
-          </div>
-        </section>
-
-        {/* 4. Asisten Deputi */}
-        <section className="space-y-4 break-inside-avoid pt-6">
-          <h3 className="text-2xl font-bold flex items-center gap-2 text-slate-800 dark:text-slate-200">
-            <div className="w-8 h-8 rounded-full bg-slate-200 dark:bg-slate-800 flex items-center justify-center text-sm">4</div>
-            PANDUAN UNTUK ROLE: ASISTEN DEPUTI (COACH)
-          </h3>
-          <p className="text-slate-600 dark:text-slate-400">
-            Asisten Deputi memiliki fungsi ganda: sebagai peserta (Coachee) untuk atasannya, dan sebagai pembina (Coach) untuk bawahannya.
-          </p>
-
-          <div className="space-y-6 mt-4">
-            <div>
-              <h4 className="font-bold text-lg mb-2">4.1 Mode Coach vs Mode Coachee</h4>
-              <p className="text-slate-600">Gunakan tombol sakelar (toggle) di pojok kanan atas layar untuk beralih mode. Mode Coach digunakan untuk menilai bawahan, sedangkan Mode Coachee digunakan untuk melihat rapor Anda sendiri.</p>
-            </div>
-            
-            <div>
-              <h4 className="font-bold text-lg mb-2">4.2 Melakukan Coaching & Action Item</h4>
-              <ul className="list-disc pl-5 space-y-2 text-slate-600">
-                <li>Buka menu <strong>Anggota Bidang</strong>, lalu pilih salah satu staf.</li>
-                <li>Klik tombol <strong>Rekapitulasi Coaching</strong> pada profil staf tersebut.</li>
-                <li>Gunakan form yang tersedia untuk menambahkan <strong>Action Item (R-O-W)</strong> baru.</li>
-                <li>Staf dapat mengunggah Eviden (Bukti) penyelesaian dalam bentuk file/gambar, dan Anda dapat memverifikasinya dari halaman ini.</li>
-              </ul>
-            </div>
-          </div>
-        </section>
-
-        {/* 5. Admin */}
+        {/* 3. Admin */}
         <section className="space-y-4 break-inside-avoid pt-6 pb-12">
           <h3 className="text-2xl font-bold flex items-center gap-2 text-slate-800 dark:text-slate-200">
-            <div className="w-8 h-8 rounded-full bg-slate-200 dark:bg-slate-800 flex items-center justify-center text-sm">5</div>
-            PANDUAN UNTUK ROLE: ADMIN UTAMA (SDMUK)
+            <div className="w-8 h-8 rounded-full bg-slate-200 dark:bg-slate-800 flex items-center justify-center text-sm">3</div>
+            PANDUAN UNTUK ROLE: ADMIN UTAMA
           </h3>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">

@@ -24,22 +24,26 @@ export default function AdminLayoutWrapper({ children, user, viewMode, asistenMo
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
 
   return (
-    <div className="flex h-screen overflow-hidden bg-[#f4f7fe] dark:bg-[#0b0f19] font-sans">
-      <AdminSidebar 
-        user={user} 
-        viewMode={viewMode} 
-        asistenMode={asistenMode} 
-        featuresMap={featuresMap} 
-        isCollapsed={isSidebarCollapsed}
-        toggleCollapse={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
-      />
-      <div className="flex-1 flex flex-col overflow-y-auto">
-        <AdminHeader user={user} viewMode={viewMode} asistenMode={asistenMode} notifications={notifications} />
-        <main className="flex-1 p-4 md:p-6 lg:p-8 z-10 relative flex flex-col">
+    <div className="flex h-screen print:h-auto print:block overflow-hidden print:overflow-visible bg-[#f4f7fe] print:bg-white dark:bg-[#0b0f19] font-sans">
+      <div className="print:hidden shrink-0 h-full">
+        <AdminSidebar 
+          user={user} 
+          viewMode={viewMode} 
+          asistenMode={asistenMode} 
+          featuresMap={featuresMap} 
+          isCollapsed={isSidebarCollapsed}
+          toggleCollapse={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
+        />
+      </div>
+      <div className="flex-1 flex flex-col overflow-y-auto print:overflow-visible print:block">
+        <div className="print:hidden shrink-0">
+          <AdminHeader user={user} viewMode={viewMode} asistenMode={asistenMode} notifications={notifications} />
+        </div>
+        <main className="flex-1 p-4 md:p-6 lg:p-8 print:p-0 z-10 relative flex flex-col print:block">
           {noCardWrapper ? (
             children
           ) : (
-            <div className="bg-white dark:bg-zinc-950 p-6 md:p-8 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 w-full max-w-[1920px] mx-auto min-h-[calc(100vh-16rem)] pt-2 -mt-10">
+            <div className="bg-white dark:bg-zinc-950 p-6 md:p-8 print:p-0 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 print:border-none print:shadow-none w-full max-w-[1920px] mx-auto min-h-[calc(100vh-16rem)] print:min-h-0 pt-2 -mt-10 print:mt-0">
               {children}
             </div>
           )}
