@@ -108,7 +108,14 @@ export function CoachingReportTable({ reports }: { reports: CoachingReportType[]
         
         // Members
         r.members.forEach((m, mIdx) => {
-          wsData.push([mIdx + 2, m.name, (m as any).position || "-", m.status, "", ""]);
+          wsData.push([
+            mIdx + 2, 
+            m.name, 
+            (m as any).position || "-", 
+            (m as any).selesai || 0, 
+            (m as any).proses || 0, 
+            (m as any).belumMulai || 0
+          ]);
         });
         
         // Gap between tables
@@ -183,10 +190,12 @@ export function CoachingReportTable({ reports }: { reports: CoachingReportType[]
         
         r.members.forEach((m, mIdx) => {
           tableData.push([
-            { content: String(mIdx + 2), colSpan: 1 }, 
-            { content: m.name, colSpan: 1 }, 
-            { content: (m as any).position || "-", colSpan: 1 },
-            { content: m.status, colSpan: 3 }
+            String(mIdx + 2), 
+            m.name, 
+            (m as any).position || "-",
+            String((m as any).selesai || 0),
+            String((m as any).proses || 0),
+            String((m as any).belumMulai || 0)
           ]);
         });
 
