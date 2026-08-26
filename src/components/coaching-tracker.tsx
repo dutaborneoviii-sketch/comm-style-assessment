@@ -103,6 +103,7 @@ export default function CoachingTracker({
   const [isDeleting, setIsDeleting] = useState<string | null>(null);
   const [isClosing, setIsClosing] = useState<string | null>(null);
   const [showCloseConfirmDialog, setShowCloseConfirmDialog] = useState<string | null>(null);
+  const [messageDialog, setMessageDialog] = useState<{title: string, description: string, type: 'success' | 'error'} | null>(null);
   const [closeNextSessionDate, setCloseNextSessionDate] = useState('');
   const [editingNextDate, setEditingNextDate] = useState<Record<string, string>>({});
   const [savingNextDateId, setSavingNextDateId] = useState<string | null>(null);
@@ -123,14 +124,12 @@ export default function CoachingTracker({
 
     setSavingNextDateId(logId);
     const res = await updateNextSessionDate(logId, targetCoacheeId || coacheeId, dateVal || null);
-    if (!res.success) {
-      alert('Gagal menyimpan jadwal sesi selanjutnya: ' + res.error);
+    if (res.error) {
+      setMessageDialog({ title: 'Gagal', description: 'Gagal menyimpan jadwal sesi selanjutnya: ' + res.error, type: 'error' });
     } else {
       setSavedNextDateId(logId);
-      alert('Jadwal sesi coaching selanjutnya berhasil disimpan!');
-      setTimeout(() => {
-        setSavedNextDateId(null);
-      }, 4000);
+      setMessageDialog({ title: 'Berhasil', description: 'Jadwal sesi coaching selanjutnya berhasil disimpan!', type: 'success' });
+      setTimeout(() => setSavedNextDateId(null), 2000);
     }
     setSavingNextDateId(null);
   }
@@ -226,15 +225,14 @@ export default function CoachingTracker({
     
     if (result.success) {
       if (data.isDraft) {
-        setEditingLog(result.log);
-        alert('Draft berhasil disimpan!');
+        setMessageDialog({ title: 'Berhasil', description: 'Draft berhasil disimpan!', type: 'success' });
       } else {
         setIsCreating(false);
         setIsCreatingContinued(null);
         setEditingLog(null);
       }
-    } else {
-      alert('Gagal menyimpan log: ' + result.error);
+    } else if (result.error) {
+      setMessageDialog({ title: 'Gagal', description: 'Gagal menyimpan log: ' + result.error, type: 'error' });
     }
     
     setIsSubmitting(false);
@@ -246,8 +244,8 @@ export default function CoachingTracker({
     setIsDeleting(id);
     const result = await deleteCoachingLog(id, coacheeId);
     
-    if (!result.success) {
-      alert('Gagal menghapus log: ' + result.error);
+    if (result.error) {
+      setMessageDialog({ title: 'Gagal', description: 'Gagal menghapus log: ' + result.error, type: 'error' });
     }
     setIsDeleting(null);
   }
@@ -260,8 +258,8 @@ export default function CoachingTracker({
     const targetCoacheeId = (targetLog as any)?.coacheeId || coacheeId;
     setShowCloseConfirmDialog(null);
     const result = await closeCoachingLog(id, targetCoacheeId, closeNextSessionDate || null);
-    if (!result.success) {
-      alert('Gagal menutup sesi: ' + result.error);
+    if (result.error) {
+      setMessageDialog({ title: 'Gagal', description: 'Gagal menutup sesi: ' + result.error, type: 'error' });
     }
     setCloseNextSessionDate('');
     setIsClosing(null);
@@ -285,8 +283,8 @@ export default function CoachingTracker({
     if (result.success) {
       setRespondingTo(null);
       form.reset();
-    } else {
-      alert('Gagal menyimpan tanggapan: ' + result.error);
+    } else if (result.error) {
+      setMessageDialog({ title: 'Gagal', description: 'Gagal menyimpan tanggapan: ' + result.error, type: 'error' });
     }
     setIsSubmitting(false);
   }
@@ -302,7 +300,7 @@ export default function CoachingTracker({
     const file = selectedFiles[actionItemId];
     if (file) {
       if (file.size > 1024 * 1024) {
-        alert('Gagal: Ukuran file melebihi batas 1MB.');
+        setMessageDialog({ title: 'Gagal', description: 'Gagal: Ukuran file melebihi batas 1MB.', type: 'error' });
         setIsSubmitting(false);
         return;
       }
@@ -313,14 +311,15 @@ export default function CoachingTracker({
     if (result.success) {
       setFollowingUpOn(prev => ({ ...prev, [actionItemId]: false }));
       setSelectedFiles(prev => ({ ...prev, [actionItemId]: null }));
-    } else {
-      alert('Gagal menyimpan tindak lanjut: ' + result.error);
+    } else if (result.error) {
+      setMessageDialog({ title: 'Gagal', description: 'Gagal menyimpan tindak lanjut: ' + result.error, type: 'error' });
     }
     setIsSubmitting(false);
   }
 
   return (
     <div className="w-full h-full">
+
       <Card className="shadow-md border-slate-200 dark:border-slate-800 bg-white dark:bg-zinc-950 flex flex-col h-fit max-h-[1000px]">
         {(!isCreating && !editingLog) && (
           <CardHeader className="pb-4 shrink-0">
@@ -1097,6 +1096,25 @@ export default function CoachingTracker({
             <Button variant="default" className="bg-red-600 hover:bg-red-700 text-white" onClick={confirmCloseSession} disabled={!!isClosing}>
               {isClosing && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
               Ya, Tutup Sesi
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Dialog Pesan/Notifikasi */}
+      <Dialog open={!!messageDialog} onOpenChange={(open) => !open && setMessageDialog(null)}>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle className={messageDialog?.type === 'success' ? 'text-emerald-600' : 'text-red-600'}>
+              {messageDialog?.title}
+            </DialogTitle>
+            <DialogDescription className="pt-2 text-slate-700 dark:text-slate-300 font-medium">
+              {messageDialog?.description}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex justify-end pt-4">
+            <Button variant="default" onClick={() => setMessageDialog(null)}>
+              OK
             </Button>
           </div>
         </DialogContent>
