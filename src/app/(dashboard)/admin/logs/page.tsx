@@ -6,6 +6,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Activity, MapPin, Globe, Clock, ShieldCheck, User as UserIcon } from "lucide-react";
 import { cookies } from "next/headers";
 import { MaskedIP } from "@/components/admin/masked-ip";
+import { LocalTime } from "@/components/admin/local-time";
 
 export const metadata = {
   title: "Log Aktivitas User - COGNIT",
@@ -110,10 +111,10 @@ export default async function AdminLogsPage() {
                         <div className="flex flex-col gap-1.5">
                           <div className="flex items-center gap-2 font-semibold text-slate-700 dark:text-slate-300 bg-white dark:bg-black/40 py-1.5 px-3 rounded-lg w-fit shadow-[0_2px_10px_rgba(0,0,0,0.04)] border border-slate-200/60 dark:border-slate-700/50">
                             <Clock className="w-3.5 h-3.5 text-orange-500" />
-                            {new Date(log.createdAt).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' })}
+                            <LocalTime date={log.createdAt} format="date" />
                           </div>
                           <span className="text-xs font-bold text-slate-500 pl-2">
-                            {new Date(log.createdAt).toLocaleTimeString('id-ID', { hour: '2-digit', minute:'2-digit', second:'2-digit' })}
+                            <LocalTime date={log.createdAt} format="time" />
                           </span>
                         </div>
                       </TableCell>
