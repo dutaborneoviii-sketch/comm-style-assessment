@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { Search, ChevronDown, ChevronRight, UserCircle2, FileSpreadsheet, FileText, Download } from 'lucide-react';
 import * as XLSX from 'xlsx';
 import jsPDF from 'jspdf';
-import 'jspdf-autotable';
+import autoTable from 'jspdf-autotable';
 import { Button } from '@/components/ui/button';
 
 function MetricCell({ count, names, activeClass, inactiveClass, isLast = false }: { count: number, names?: string[], activeClass: string, inactiveClass: string, isLast?: boolean }) {
@@ -128,7 +128,7 @@ export function CoachingReportTable({ reports }: { reports: CoachingReportType[]
       }
     });
 
-    (doc as any).autoTable({
+    autoTable(doc, {
       startY: 28,
       head: [["No", "Nama Pimpinan", "Jabatan", "Bidang", "Jumlah Sesi", "Selesai", "Proses", "Belum Mulai"]],
       body: tableData,
