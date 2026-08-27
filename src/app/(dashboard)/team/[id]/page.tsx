@@ -293,7 +293,7 @@ export default async function CoachingStrategyPage({ params }: { params: { id: s
                       <h3 className="font-extrabold text-slate-700 dark:text-slate-300 uppercase tracking-widest text-[9px] flex items-center gap-2 mb-2">
                         <Target className="w-3.5 h-3.5 text-blue-500 shrink-0" /> Fokus Utama
                       </h3>
-                      <p className="text-slate-600 dark:text-slate-400 capitalize text-xs leading-relaxed font-semibold">
+                      <p className="text-slate-600 dark:text-slate-400 capitalize text-xs leading-relaxed font-semibold text-justify">
                         {getStyleDescription(displayStyle).replace('Fokus utama Anda adalah ', '')}
                       </p>
                     </div>
@@ -303,7 +303,7 @@ export default async function CoachingStrategyPage({ params }: { params: { id: s
                       <h3 className="font-extrabold text-slate-700 dark:text-slate-300 uppercase tracking-widest text-[9px] flex items-center gap-2 mb-2">
                         <Sparkles className="w-3.5 h-3.5 text-purple-500 shrink-0" /> Ciri Khas
                       </h3>
-                      <p className="text-slate-600 dark:text-slate-400 text-xs leading-relaxed font-semibold">
+                      <p className="text-slate-600 dark:text-slate-400 text-xs leading-relaxed font-semibold text-justify">
                         {getStyleTrait(displayStyle)}
                       </p>
                     </div>
@@ -313,7 +313,7 @@ export default async function CoachingStrategyPage({ params }: { params: { id: s
                       <h3 className="font-extrabold text-slate-700 dark:text-slate-300 uppercase tracking-widest text-[9px] flex items-center gap-2 mb-2">
                         <Lightbulb className="w-3.5 h-3.5 text-amber-500 shrink-0" /> Saran Pendekatan
                       </h3>
-                      <p className="text-slate-600 dark:text-slate-400 text-xs leading-relaxed font-semibold">
+                      <p className="text-slate-600 dark:text-slate-400 text-xs leading-relaxed font-semibold text-justify">
                         {getStyleAdvice(displayStyle) || "Gunakan pendekatan fleksibel."}
                       </p>
                     </div>

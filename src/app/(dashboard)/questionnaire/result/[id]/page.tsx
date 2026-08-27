@@ -103,7 +103,7 @@ export default async function ResultPage({ params }: { params: { id: string } })
                   </div>
                   <h3 className="text-xs font-black uppercase tracking-widest text-slate-500">Fokus Utama</h3>
                 </div>
-                <p className="text-lg md:text-xl font-bold text-slate-900 dark:text-white pl-8 leading-snug">
+                <p className="text-lg md:text-xl font-bold text-slate-900 dark:text-white pl-8 leading-snug text-justify">
                   {getStyleDescription(assessment.primaryStyle).replace('Fokus utama Anda adalah ', '')}
                 </p>
              </div>
@@ -116,7 +116,7 @@ export default async function ResultPage({ params }: { params: { id: string } })
                     </div>
                     <h3 className="text-xs font-black uppercase tracking-widest text-slate-500">Gaya Pendukung</h3>
                   </div>
-                  <p className="text-base md:text-lg font-semibold text-slate-700 dark:text-slate-300 pl-8 leading-snug">
+                  <p className="text-base md:text-lg font-semibold text-slate-700 dark:text-slate-300 pl-8 leading-snug text-justify">
                     {getStyleDescription(assessment.secondaryStyle).replace('Fokus utama Anda adalah ', '')}
                   </p>
                </div>
@@ -168,7 +168,7 @@ export default async function ResultPage({ params }: { params: { id: string } })
                    </div>
                    <h4 className="text-xs font-bold text-slate-500 uppercase tracking-wide">Ciri Khas</h4>
                  </div>
-                 <p className="text-sm font-medium text-slate-800 dark:text-slate-200 pl-10">
+                 <p className="text-sm font-medium text-slate-800 dark:text-slate-200 pl-10 text-justify">
                    {getStyleTrait(assessment.primaryStyle)}
                  </p>
                </div>
@@ -182,7 +182,7 @@ export default async function ResultPage({ params }: { params: { id: string } })
                    </div>
                    <h4 className="text-xs font-bold text-slate-500 uppercase tracking-wide">Saran Komunikasi</h4>
                  </div>
-                 <p className="text-sm font-medium text-slate-800 dark:text-slate-200 pl-10">
+                 <p className="text-sm font-medium text-slate-800 dark:text-slate-200 pl-10 text-justify">
                    {getStyleAdvice(assessment.primaryStyle)}
                  </p>
                </div>
