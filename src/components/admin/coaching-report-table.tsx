@@ -341,27 +341,27 @@ export function CoachingReportTable({ reports }: { reports: CoachingReportType[]
                 {isExpanded && (
                   <tr>
                     <td colSpan={9} className="p-0 border-b-0">
-                      <div className="bg-[#f2fafa]/50 dark:bg-[#015249]/5 border-t border-slate-100 dark:border-slate-800/50 px-10 py-6 overflow-hidden animation-collapse">
-                        <div className="flex flex-col gap-4">
-                          <h4 className="font-extrabold text-[#015249] dark:text-[#57BC90] flex items-center gap-2">
-                            Rincian Anggota: {report.department || "N/A"}
+                      <div className="bg-slate-50/50 dark:bg-zinc-900/20 border-t border-slate-100 dark:border-slate-800/50 px-10 py-6 overflow-hidden animation-collapse">
+                        <div className="flex flex-col gap-5">
+                          <h4 className="text-[11px] font-bold uppercase tracking-widest text-slate-400 dark:text-slate-500 flex items-center gap-2">
+                            Anggota • {report.department || "N/A"}
                           </h4>
                           
                           {report.members.length > 0 ? (
-                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-x-8 gap-y-4">
                               {report.members.map((member, mIdx) => {
                                 const hasSession = member.status !== 'Belum Mengikuti Sesi Coaching';
                                 
                                 return (
-                                  <div key={mIdx} className="flex items-start gap-3 p-3 rounded-lg bg-white dark:bg-zinc-900 border border-slate-200 dark:border-slate-800 shadow-sm">
-                                    <div className={`mt-0.5 w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${hasSession ? 'bg-emerald-100 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400' : 'bg-slate-100 text-slate-400 dark:bg-slate-800 dark:text-slate-500'}`}>
-                                      <UserCircle2 className="w-5 h-5" />
+                                  <div key={mIdx} className="flex items-center gap-3 group">
+                                    <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 transition-colors ${hasSession ? 'bg-[#57BC90]/10 text-[#57BC90]' : 'bg-slate-100 text-slate-400 dark:bg-slate-800 dark:text-slate-500'}`}>
+                                      <UserCircle2 className="w-4 h-4" />
                                     </div>
                                     <div className="flex flex-col">
-                                      <span className="text-sm font-bold text-slate-800 dark:text-slate-200">
+                                      <span className="text-sm font-bold text-slate-700 dark:text-slate-200">
                                         {mIdx + 1}. {member.name}
                                       </span>
-                                      <span className={`text-xs font-medium mt-0.5 ${hasSession ? 'text-emerald-600 dark:text-emerald-400' : 'text-amber-600 dark:text-amber-500'}`}>
+                                      <span className={`text-[11px] font-medium mt-0.5 ${hasSession ? 'text-[#57BC90]' : 'text-slate-400'}`}>
                                         {member.status}
                                       </span>
                                     </div>
@@ -370,7 +370,7 @@ export function CoachingReportTable({ reports }: { reports: CoachingReportType[]
                               })}
                             </div>
                           ) : (
-                            <div className="text-sm text-slate-500 dark:text-slate-400 italic">
+                            <div className="text-sm text-slate-400 dark:text-slate-500 italic">
                               Tidak ada data anggota di bidang ini.
                             </div>
                           )}
