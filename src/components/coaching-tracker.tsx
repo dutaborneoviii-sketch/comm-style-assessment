@@ -671,6 +671,8 @@ export default function CoachingTracker({
                                 setIsCreating(true);
                                 setDraftActionItems([{ text: '', dueDate: '' }]);
                               }}
+                              disabled={logs.some(l => !l.isClosed)}
+                              title={logs.some(l => !l.isClosed) ? "Tutup sesi berjalan terlebih dahulu untuk membuat sesi lanjutan" : "Buat sesi lanjutan"}
                             >
                               Lanjutkan Sesi
                             </Button>
