@@ -168,8 +168,9 @@ export default function CoachingTracker({
   }
 
   function startCreatingContinued() {
-    if (logs.length > 0) {
-      setIsCreatingContinued(logs[0].id);
+    const sessionToContinue = logs.find(log => log.nextSessionDate);
+    if (sessionToContinue) {
+      setIsCreatingContinued(sessionToContinue.id);
       setIsCreating(true);
       setDraftActionItems([{ text: '', dueDate: '' }]);
     }
@@ -343,7 +344,7 @@ export default function CoachingTracker({
                         </div>
                         <span className="text-xs text-slate-500 pl-6">Buat sesi coaching baru dari awal (kosong).</span>
                       </DropdownMenuItem>
-                      {logs.length > 0 && logs[0].nextSessionDate && (
+                      {logs.some(log => !log.isClosed && log.nextSessionDate) && (
                         <DropdownMenuItem onClick={startCreatingContinued} className="flex flex-col items-start gap-1 p-3 cursor-pointer group">
                           <div className="flex items-center gap-2 font-bold text-slate-800 dark:text-slate-200 group-hover:text-[#015249] dark:group-hover:text-[#57BC90]">
                             <History className="w-4 h-4" /> Sesi Lanjutan
@@ -654,12 +655,19 @@ export default function CoachingTracker({
                       )}
 
                       {/* Tanggal Sesi Coaching Selanjutnya */}
-                      {!log.isDraft && log.nextSessionDate && (
+                      {!log.isDraft && (
                         <div className="flex items-center gap-2">
-                          <div className="flex items-center gap-1.5 px-3 py-1 bg-blue-50 dark:bg-blue-950/50 rounded-full border border-blue-200 dark:border-blue-800 text-xs font-extrabold text-blue-700 dark:text-blue-400 whitespace-nowrap shadow-sm">
-                            <CalendarDays className="w-3.5 h-3.5 text-blue-500" />
-                            <span>Sesi Selanjutnya: {new Date(log.nextSessionDate).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
-                          </div>
+                          {log.nextSessionDate ? (
+                            <div className="flex items-center gap-1.5 px-3 py-1 bg-blue-50 dark:bg-blue-950/50 rounded-full border border-blue-200 dark:border-blue-800 text-xs font-extrabold text-blue-700 dark:text-blue-400 whitespace-nowrap shadow-sm">
+                              <CalendarDays className="w-3.5 h-3.5 text-blue-500" />
+                              <span>Sesi Selanjutnya: {new Date(log.nextSessionDate).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
+                            </div>
+                          ) : (
+                            <div className="flex items-center gap-1.5 px-3 py-1 bg-slate-50 dark:bg-slate-900 rounded-full border border-slate-200 dark:border-slate-800 text-xs font-bold text-slate-500 dark:text-slate-400 whitespace-nowrap shadow-sm">
+                              <CalendarDays className="w-3.5 h-3.5 text-slate-400" />
+                              <span>Sesi Selanjutnya: Belum ditentukan</span>
+                            </div>
+                          )}
                           {!isReadOnly && !isCoachee && (
                             <Button
                               variant="default"
@@ -671,8 +679,12 @@ export default function CoachingTracker({
                                 setIsCreating(true);
                                 setDraftActionItems([{ text: '', dueDate: '' }]);
                               }}
-                              disabled={logs.some(l => !l.isClosed)}
-                              title={logs.some(l => !l.isClosed) ? "Tutup sesi berjalan terlebih dahulu untuk membuat sesi lanjutan" : "Buat sesi lanjutan"}
+                              disabled={log.isClosed || !log.nextSessionDate || logs.some(l => !l.isClosed)}
+                              title={
+                                log.isClosed ? "Coaching telah ditutup, gunakan dropdown Sesi Baru untuk membuat sesi lanjutan" :
+                                !log.nextSessionDate ? "Tentukan tanggal sesi selanjutnya terlebih dahulu" : 
+                                logs.some(l => !l.isClosed) ? "Tutup sesi berjalan terlebih dahulu untuk membuat sesi lanjutan" : "Buat sesi lanjutan"
+                              }
                             >
                               Lanjutkan Sesi
                             </Button>
@@ -941,6 +953,24 @@ export default function CoachingTracker({
                   const hasCoacheeFollowedUp = log.actionItems.length === 0 || log.actionItems.some(
                     item => (item.followUpNotes && item.followUpNotes.trim().length > 0) || !!item.evidenceUrl
                   );
+                  const notesStr = log.notes || '';
+                  const hasIGrowFormat = ['**Goal**', '**Reality**', '**Options**', '**Will**'].some(k => notesStr.includes(k));
+                  let isGrowComplete = false;
+                  if (!hasIGrowFormat) {
+                    isGrowComplete = notesStr.trim().length > 0;
+                  } else {
+                    const sections = ['Goal', 'Reality', 'Options', 'Will'];
+                    isGrowComplete = true;
+                    for (const section of sections) {
+                      const regex = new RegExp(`\\*\\*${section}\\*\\*\\s*([\\s\\S]*?)(?=(?:\\*\\*Goal\\*\\*|\\*\\*Reality\\*\\*|\\*\\*Options\\*\\*|\\*\\*Will\\*\\*|$))`, 'i');
+                      const match = notesStr.match(regex);
+                      if (!match || !match[1].trim()) {
+                        isGrowComplete = false;
+                        break;
+                      }
+                    }
+                  }
+                  const canCloseSession = hasCoacheeFollowedUp && isGrowComplete;
                   return (
                     <div className="px-5 pb-5 pt-4 flex flex-col gap-4 relative z-10 border-t border-slate-100 dark:border-slate-800/50 mt-2">
                       {/* Schedule Next Session Date Input & Button */}
@@ -1012,26 +1042,26 @@ export default function CoachingTracker({
                           <Button 
                             variant="default" 
                             className={
-                              (!hasCoacheeFollowedUp || isClosing === log.id)
+                              (!canCloseSession || isClosing === log.id)
                               ? "bg-slate-200 text-slate-400 dark:bg-slate-800 dark:text-slate-600 cursor-not-allowed border-none shadow-none" 
                               : "bg-red-600 hover:bg-red-700 text-white"
                             }
                             onClick={() => {
-                              if (!hasCoacheeFollowedUp) return;
+                              if (!canCloseSession) return;
                               setShowCloseConfirmDialog(log.id);
                               const selectedDate = editingNextDate[log.id] ?? (log.nextSessionDate ? new Date(log.nextSessionDate).toISOString().split('T')[0] : '');
                               setCloseNextSessionDate(selectedDate);
                             }}
-                            disabled={!hasCoacheeFollowedUp || isClosing === log.id}
-                            title={!hasCoacheeFollowedUp ? "Tutup sesi aktif setelah coachee melengkapi isian renaksi/eviden" : "Tutup sesi ini"}
+                            disabled={!canCloseSession || isClosing === log.id}
+                            title={!canCloseSession ? "Lengkapi isian GROW dan renaksi/eviden coachee terlebih dahulu" : "Tutup sesi ini"}
                           >
                             {isClosing === log.id && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                             Tutup Sesi Coaching
                           </Button>
                         </div>
-                        {!hasCoacheeFollowedUp && (
-                          <p className="text-[11px] text-slate-400 dark:text-slate-500 italic">
-                            * Tombol Tutup Sesi Coaching akan aktif setelah coachee melengkapi isian renaksi / melampirkan eviden.
+                        {!canCloseSession && (
+                          <p className="text-[11px] text-slate-400 dark:text-slate-500 italic mt-2 text-right">
+                            * Tombol Tutup Sesi Coaching akan aktif setelah deskripsi GROW terisi semua dan coachee melengkapi isian renaksi / melampirkan eviden.
                           </p>
                         )}
                       </div>
