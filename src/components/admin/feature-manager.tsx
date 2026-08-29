@@ -20,10 +20,20 @@ type FeatureFlag = {
 
 const ROLE_GROUPS = ["Staf", "Asisten Deputi", "Deputi Direksi Wilayah"];
 const DEPARTMENTS = [
+  "Bagian Mutu Layanan Kepesertaan (KC)",
+  "Bagian Mutu Layanan Fasilitas Kesehatan (KC)",
+  "Bagian SDM, Umum dan Komunikasi (KC)",
+  "Bagian Penjaminan Manfaat dan Utilisasi (KC)",
+  "Bagian Kepesertaan (KC)",
+  "Bagian Perencanaan, Keuangan dan Pemeriksaan (KC)",
+  "Kedeputian Wilayah VIII",
   "Bidang SDM, Umum dan Komunikasi (SDMUK)",
   "Bidang Jaminan Pelayanan Kesehatan (JPK)",
   "Bidang Kepesertaan dan Mutu Layanan (KML)",
   "Bidang Perencanaan dan Keuangan (PK)",
+  "Kepesertaan dan Penagihan Iuran (Kabupaten)",
+  "Penjaminan Manfaat dan Pengelolaan Fasilitas Kesehatan (Kabupaten)",
+  "Kantor Kabupaten",
   "TI Wilayah"
 ];
 

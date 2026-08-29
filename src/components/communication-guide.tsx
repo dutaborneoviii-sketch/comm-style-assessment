@@ -339,7 +339,7 @@ export async function CommunicationGuide() {
                               <MessageSquareQuote className="w-4 h-4" />
                               Contoh Kalimat
                            </h4>
-                           <p className="text-sm leading-relaxed italic text-slate-700 dark:text-slate-300 whitespace-pre-line">
+                           <p className="text-sm leading-relaxed italic text-slate-700 dark:text-slate-300 whitespace-pre-line text-justify">
                              {row.contohKalimat || row.contoh}
                            </p> 
                         </div>

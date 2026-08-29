@@ -22,9 +22,12 @@ model User {
   emailVerified DateTime?
   image         String?
   password      String?
+  workUnit      String?
+  employeeLocation String?
   department    String?
   departmentRel Department?     @relation(fields: [department], references: [name], onDelete: SetNull)
   position      String?
+  positionDetail String?
   accounts      Account[]
   sessions      Session[]
   assessments   Assessment[]

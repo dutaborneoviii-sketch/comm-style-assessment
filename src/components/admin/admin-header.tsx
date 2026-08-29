@@ -36,7 +36,7 @@ export default function AdminHeader({ user, viewMode, asistenMode, notifications
             </div>
           )}
           
-          {user?.position === 'Asisten Deputi' && (user?.role !== 'ADMIN' || viewMode !== 'user') && (
+          {(user?.position === 'Asisten Deputi' || user?.position === 'Kepala Kabupaten' || user?.position === 'Kepala Kantor Kabupaten' || user?.position === 'Asisten Manager') && (user?.role !== 'ADMIN' || viewMode !== 'user') && (
             <div className="bg-white/10 p-1.5 rounded-full flex items-center gap-2 border border-white/20">
                <AsistenModeToggle currentMode={(asistenMode === 'coachee' ? 'coachee' : 'coach')} />
             </div>

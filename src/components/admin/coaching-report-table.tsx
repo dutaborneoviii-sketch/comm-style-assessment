@@ -42,6 +42,8 @@ export type CoachingReportType = {
   name: string | null;
   department: string | null;
   position: string | null;
+  positionDetail?: string | null;
+  employeeLocation?: string | null;
   totalSesi: number;
   selesai: number;
   proses: number;
@@ -70,14 +72,14 @@ export function CoachingReportTable({ reports }: { reports: CoachingReportType[]
     
     // Excel Top Table
     wsData.push(["Rincian Kedeputian Wilayah VIII"]);
-    wsData.push(["No", "Nama Pimpinan", "Jabatan", "Bidang", "Sesi Selesai", "Sedang Proses", "Belum Mulai"]);
+    wsData.push(["No", "Nama Pimpinan", "Detail Jabatan", "Lokasi Pegawai", "Sesi Selesai", "Sedang Proses", "Belum Mulai"]);
     
     reports.forEach((r, idx) => {
       wsData.push([
         idx + 1,
         r.name || "-",
-        r.position || "-",
-        r.department || "-",
+        r.positionDetail || r.position || "-",
+        r.employeeLocation || "-",
         r.selesai,
         r.proses,
         r.belumMulai
@@ -94,13 +96,13 @@ export function CoachingReportTable({ reports }: { reports: CoachingReportType[]
         wsData.push([`Rincian Anggota: ${r.department || "-"}`]);
         
         // Header per Bidang
-        wsData.push(["No", "Nama Pimpinan", "Jabatan", "Sesi Selesai", "Sedang Proses", "Belum Mulai"]);
+        wsData.push(["No", "Nama Pimpinan", "Detail Jabatan", "Sesi Selesai", "Sedang Proses", "Belum Mulai"]);
         
         // Leader as first row
         wsData.push([
           1,
           r.name || "-",
-          r.position || "-",
+          r.positionDetail || r.position || "-",
           r.selesai,
           r.proses,
           r.belumMulai
@@ -111,7 +113,7 @@ export function CoachingReportTable({ reports }: { reports: CoachingReportType[]
           wsData.push([
             mIdx + 2, 
             m.name, 
-            (m as any).position || "-", 
+            (m as any).positionDetail || (m as any).position || "-", 
             (m as any).selesai || 0, 
             (m as any).proses || 0, 
             (m as any).belumMulai || 0
@@ -144,8 +146,8 @@ export function CoachingReportTable({ reports }: { reports: CoachingReportType[]
     const topTableData = reports.map((r, idx) => [
       idx + 1,
       r.name || "-",
-      r.position || "-",
-      r.department || "-",
+      r.positionDetail || r.position || "-",
+      r.employeeLocation || "-",
       r.selesai,
       r.proses,
       r.belumMulai
@@ -153,7 +155,7 @@ export function CoachingReportTable({ reports }: { reports: CoachingReportType[]
 
     autoTable(doc, {
       startY: currentY,
-      head: [["No", "Nama Pimpinan", "Jabatan", "Bidang", "Sesi Selesai", "Sedang Proses", "Belum Mulai"]],
+      head: [["No", "Nama Pimpinan", "Detail Jabatan", "Lokasi Pegawai", "Sesi Selesai", "Sedang Proses", "Belum Mulai"]],
       body: topTableData,
       theme: 'grid',
       headStyles: { fillColor: [1, 82, 73], halign: 'center' },
@@ -182,7 +184,7 @@ export function CoachingReportTable({ reports }: { reports: CoachingReportType[]
         tableData.push([
           1,
           r.name || "-",
-          r.position || "-",
+          r.positionDetail || r.position || "-",
           r.selesai,
           r.proses,
           r.belumMulai
@@ -192,7 +194,7 @@ export function CoachingReportTable({ reports }: { reports: CoachingReportType[]
           tableData.push([
             String(mIdx + 2), 
             m.name, 
-            (m as any).position || "-",
+            (m as any).positionDetail || (m as any).position || "-",
             String((m as any).selesai || 0),
             String((m as any).proses || 0),
             String((m as any).belumMulai || 0)
@@ -201,7 +203,7 @@ export function CoachingReportTable({ reports }: { reports: CoachingReportType[]
 
         autoTable(doc, {
           startY: currentY,
-          head: [["No", "Nama Pimpinan", "Jabatan", "Sesi Selesai", "Sedang Proses", "Belum Mulai"]],
+          head: [["No", "Nama Pimpinan", "Detail Jabatan", "Sesi Selesai", "Sedang Proses", "Belum Mulai"]],
           body: tableData,
           theme: 'grid',
           headStyles: { fillColor: [1, 82, 73], halign: 'center' },
@@ -249,152 +251,149 @@ export function CoachingReportTable({ reports }: { reports: CoachingReportType[]
         </div>
       </div>
       
-      <div className="overflow-x-auto md:overflow-visible pb-20">
-      <table className="w-full text-sm text-left">
-        <thead className="bg-[#f2fafa] dark:bg-[#015249]/20 text-[#015249] dark:text-[#57BC90] font-bold border-b border-slate-200 dark:border-slate-800/50">
-          <tr>
-            <th className="px-4 py-4 rounded-tl-xl w-10"></th>
-            <th className="px-2 py-4 w-12">No</th>
-            <th className="px-6 py-4">Nama Pimpinan</th>
-            <th className="px-6 py-4">Jabatan</th>
-            <th className="px-6 py-4">Bidang</th>
-            <th className="px-4 py-4 text-center">Jumlah Sesi</th>
-            <th className="px-4 py-4 text-center text-emerald-600 dark:text-emerald-400">Selesai Coaching</th>
-            <th className="px-4 py-4 text-center text-blue-600 dark:text-blue-400">Proses Coaching</th>
-            <th className="px-4 py-4 text-center text-amber-600 dark:text-amber-400 rounded-tr-xl">Belum Mulai</th>
-          </tr>
-        </thead>
-        <tbody className="divide-y divide-slate-100 dark:divide-slate-800/50">
-          {reports.map((report, index) => {
-            const isExpanded = !!expandedRows[report.id];
-            
-            return (
-              <React.Fragment key={report.id}>
-                <tr 
-                  className={`hover:bg-slate-50 dark:hover:bg-zinc-900/50 transition-colors group ${report.position !== 'Deputi Direksi Wilayah' ? 'cursor-pointer' : ''} ${isExpanded ? 'bg-slate-50/50 dark:bg-zinc-900/30' : ''}`}
-                  onClick={() => report.position !== 'Deputi Direksi Wilayah' && toggleRow(report.id)}
-                >
-                  <td className="px-4 py-4 text-slate-400">
-                    {report.position !== 'Deputi Direksi Wilayah' && (
-                      isExpanded ? <ChevronDown className="w-5 h-5 text-[#015249] dark:text-[#57BC90]" /> : <ChevronRight className="w-5 h-5" />
+      <div className="overflow-x-auto pb-20">
+        <div className="bg-white dark:bg-zinc-950">
+          <table className="w-full text-sm text-left border-separate border-spacing-0">
+            <thead>
+              <tr className="bg-[#015249] text-white">
+                <th className="px-4 py-3 w-10 font-semibold rounded-l-full"></th>
+                <th className="px-2 py-3 w-12 font-semibold">No</th>
+                <th className="px-4 py-3 font-semibold">Nama Pimpinan</th>
+                <th className="px-4 py-3 font-semibold">Detail Jabatan</th>
+                <th className="px-4 py-3 font-semibold">Lokasi Pegawai</th>
+                <th className="px-4 py-3 text-center font-semibold">Jumlah Sesi</th>
+                <th className="px-4 py-3 text-center font-semibold text-emerald-300">Selesai</th>
+                <th className="px-4 py-3 text-center font-semibold text-blue-300">Proses</th>
+                <th className="px-4 py-3 text-center font-semibold text-amber-300 rounded-r-full">Belum Mulai</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-100 dark:divide-slate-800/60">
+              {reports.map((report, index) => {
+                const isExpanded = !!expandedRows[report.id];
+                const isClickable = report.position !== 'Deputi Direksi Wilayah';
+                
+                return (
+                  <React.Fragment key={report.id}>
+                    <tr 
+                      className={`transition-colors ${isClickable ? 'cursor-pointer hover:bg-slate-50 dark:hover:bg-zinc-900/50' : ''} ${isExpanded ? 'bg-slate-50/50 dark:bg-zinc-900/30' : 'bg-white dark:bg-zinc-950'}`}
+                      onClick={() => isClickable && toggleRow(report.id)}
+                    >
+                      <td className="px-4 py-4 text-slate-400">
+                        {isClickable && (
+                          <div className="w-6 h-6 flex items-center justify-center text-slate-400">
+                            {isExpanded ? <ChevronDown className="w-4 h-4" /> : <ChevronRight className="w-4 h-4" />}
+                          </div>
+                        )}
+                      </td>
+                      <td className="px-2 py-4 text-slate-500 font-medium">
+                        {String.fromCharCode(65 + index)}
+                      </td>
+                      <td className="px-4 py-4">
+                        <div className="flex flex-col">
+                          <span className="font-semibold text-slate-800 dark:text-slate-200">
+                            {report.name || "N/A"}
+                          </span>
+                        </div>
+                      </td>
+                      <td className="px-4 py-4">
+                        <span className="text-slate-600 dark:text-slate-400 text-xs">
+                          {report.positionDetail || report.position || "-"}
+                        </span>
+                      </td>
+                      <td className="px-4 py-4">
+                        <span className="text-slate-600 dark:text-slate-400 text-xs">
+                          {report.employeeLocation || "-"}
+                        </span>
+                      </td>
+                      <td className="px-4 py-4">
+                        <MetricCell 
+                          count={report.totalSesi} 
+                          names={report.totalSesiNames} 
+                          activeClass="bg-slate-200 text-slate-800 dark:bg-slate-800 dark:text-slate-200" 
+                          inactiveClass="bg-slate-50 text-slate-300 dark:bg-zinc-900 dark:text-slate-600" 
+                        />
+                      </td>
+                      <td className="px-4 py-4">
+                        <MetricCell 
+                          count={report.selesai} 
+                          names={report.selesaiNames} 
+                          activeClass="bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-400" 
+                          inactiveClass="text-slate-300 dark:text-slate-600" 
+                        />
+                      </td>
+                      <td className="px-4 py-4">
+                        <MetricCell 
+                          count={report.proses} 
+                          names={report.prosesNames} 
+                          activeClass="bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-400" 
+                          inactiveClass="text-slate-300 dark:text-slate-600" 
+                        />
+                      </td>
+                      <td className="px-4 py-4">
+                        <MetricCell 
+                          count={report.belumMulai} 
+                          names={report.belumMulaiNames} 
+                          activeClass="bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-400" 
+                          inactiveClass="text-slate-300 dark:text-slate-600"
+                          isLast={true}
+                        />
+                      </td>
+                    </tr>
+                    
+                    {/* Expanded Details Row */}
+                    {isExpanded && (
+                      <tr>
+                        <td colSpan={9} className="p-0 border-b-0">
+                          <div className="bg-slate-50 dark:bg-zinc-900 border-t border-slate-100 dark:border-slate-800 px-6 py-5">
+                            <h4 className="text-xs font-semibold text-slate-500 mb-4">
+                              Rincian Anggota
+                            </h4>
+                            
+                            {report.members.length > 0 ? (
+                              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                                {report.members.map((member, mIdx) => {
+                                  const hasSession = member.status !== 'Belum Mengikuti Sesi Coaching';
+                                  
+                                  return (
+                                    <div key={mIdx} className="flex items-center gap-3">
+                                      <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${hasSession ? 'bg-emerald-100 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-500' : 'bg-slate-200 text-slate-400 dark:bg-zinc-800 dark:text-slate-600'}`}>
+                                        <UserCircle2 className="w-4 h-4" />
+                                      </div>
+                                      <div className="flex flex-col">
+                                        <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
+                                          {mIdx + 1}. {member.name}
+                                        </span>
+                                        <span className={`text-[11px] mt-0.5 ${hasSession ? 'text-emerald-600 dark:text-emerald-500' : 'text-slate-400 dark:text-slate-500'}`}>
+                                          {member.status}
+                                        </span>
+                                      </div>
+                                    </div>
+                                  );
+                                })}
+                              </div>
+                            ) : (
+                              <div className="text-sm text-slate-500 py-2">
+                                Tidak ada data anggota.
+                              </div>
+                            )}
+                          </div>
+                        </td>
+                      </tr>
                     )}
-                  </td>
-                  <td className="px-2 py-4 text-slate-400 dark:text-slate-500 font-medium">
-                    {String.fromCharCode(65 + index)}
-                  </td>
-                  <td className="px-6 py-4">
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#015249]/10 to-[#57BC90]/20 flex items-center justify-center text-[#015249] dark:text-[#57BC90] font-bold text-xs ring-2 ring-white dark:ring-zinc-950 group-hover:scale-110 transition-transform">
-                        {getInitials(report.name || "")}
-                      </div>
-                      <div className="font-bold text-slate-800 dark:text-slate-200 uppercase text-xs tracking-wide">
-                        {report.name || "N/A"}
-                      </div>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4">
-                    <span className="text-slate-500 dark:text-slate-400 text-xs font-medium">
-                      {report.position || "-"}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4">
-                    <span className="text-slate-500 dark:text-slate-400 text-xs">
-                      {report.department || "-"}
-                    </span>
-                  </td>
-                  <td className="px-4 py-4">
-                    <MetricCell 
-                      count={report.totalSesi} 
-                      names={report.totalSesiNames} 
-                      activeClass="bg-[#164732] text-white shadow-sm" 
-                      inactiveClass="bg-slate-100 text-slate-400 dark:bg-slate-800/80 dark:text-slate-500" 
-                    />
-                  </td>
-                  <td className="px-4 py-4">
-                    <MetricCell 
-                      count={report.selesai} 
-                      names={report.selesaiNames} 
-                      activeClass="bg-emerald-100 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-400" 
-                      inactiveClass="text-slate-300 dark:text-slate-600" 
-                    />
-                  </td>
-                  <td className="px-4 py-4">
-                    <MetricCell 
-                      count={report.proses} 
-                      names={report.prosesNames} 
-                      activeClass="bg-blue-100 text-blue-700 dark:bg-blue-500/20 dark:text-blue-400" 
-                      inactiveClass="text-slate-300 dark:text-slate-600" 
-                    />
-                  </td>
-                  <td className="px-4 py-4">
-                    <MetricCell 
-                      count={report.belumMulai} 
-                      names={report.belumMulaiNames} 
-                      activeClass="bg-amber-100 text-amber-700 dark:bg-amber-500/20 dark:text-amber-400" 
-                      inactiveClass="text-slate-300 dark:text-slate-600"
-                      isLast={true}
-                    />
+                  </React.Fragment>
+                );
+              })}
+              {reports.length === 0 && (
+                <tr>
+                  <td colSpan={9} className="px-6 py-12 text-center text-slate-500">
+                    Tidak ada data pimpinan
                   </td>
                 </tr>
-                
-                {/* Expanded Details Row */}
-                {isExpanded && (
-                  <tr>
-                    <td colSpan={9} className="p-0 border-b-0">
-                      <div className="bg-slate-50/50 dark:bg-zinc-900/20 border-t border-slate-100 dark:border-slate-800/50 px-10 py-6 overflow-hidden animation-collapse">
-                        <div className="flex flex-col gap-5">
-                          <h4 className="text-[11px] font-bold uppercase tracking-widest text-slate-400 dark:text-slate-500 flex items-center gap-2">
-                            Anggota • {report.department || "N/A"}
-                          </h4>
-                          
-                          {report.members.length > 0 ? (
-                            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-x-8 gap-y-4">
-                              {report.members.map((member, mIdx) => {
-                                const hasSession = member.status !== 'Belum Mengikuti Sesi Coaching';
-                                
-                                return (
-                                  <div key={mIdx} className="flex items-center gap-3 group">
-                                    <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 transition-colors ${hasSession ? 'bg-[#57BC90]/10 text-[#57BC90]' : 'bg-slate-100 text-slate-400 dark:bg-slate-800 dark:text-slate-500'}`}>
-                                      <UserCircle2 className="w-4 h-4" />
-                                    </div>
-                                    <div className="flex flex-col">
-                                      <span className="text-sm font-bold text-slate-700 dark:text-slate-200">
-                                        {mIdx + 1}. {member.name}
-                                      </span>
-                                      <span className={`text-[11px] font-medium mt-0.5 ${hasSession ? 'text-[#57BC90]' : 'text-slate-400'}`}>
-                                        {member.status}
-                                      </span>
-                                    </div>
-                                  </div>
-                                );
-                              })}
-                            </div>
-                          ) : (
-                            <div className="text-sm text-slate-400 dark:text-slate-500 italic">
-                              Tidak ada data anggota di bidang ini.
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    </td>
-                  </tr>
-                )}
-              </React.Fragment>
-            );
-          })}
-          {reports.length === 0 && (
-            <tr>
-              <td colSpan={9} className="px-6 py-12 text-center">
-                <div className="flex flex-col items-center justify-center gap-2">
-                  <Search className="w-8 h-8 text-slate-300" />
-                  <span className="text-slate-500 dark:text-slate-400 font-medium">Tidak ada data pimpinan.</span>
-                </div>
-              </td>
-            </tr>
-          )}
-        </tbody>
-      </table>
-    </div>
+              )}
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
   );
 }

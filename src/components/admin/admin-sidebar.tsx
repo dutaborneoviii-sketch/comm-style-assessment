@@ -36,19 +36,20 @@ export default function AdminSidebar({ user, viewMode, asistenMode, featuresMap,
   };
 
   const isAdminView = user?.role === 'ADMIN' && viewMode === 'admin';
-  const isAsistenDeputi = user?.position === 'Asisten Deputi';
+  const isDeputi = user?.position === 'Deputi Direksi Wilayah' || user?.position === 'Kepala Cabang';
+  const isAsistenDeputi = user?.position === 'Asisten Deputi' || user?.position === 'Kepala Kabupaten' || user?.position === 'Kepala Kantor Kabupaten' || user?.position === 'Asisten Manager';
   const isAsistenCoachMode = isAsistenDeputi && asistenMode !== 'coachee';
   const isAsistenCoacheeMode = isAsistenDeputi && asistenMode === 'coachee';
-  const isAsdepSDM = isAsistenDeputi && user?.department === 'Bidang SDM, Umum dan Komunikasi (SDMUK)';
+  const isAsdepSDM = isAsistenDeputi && (user?.department === 'Bidang SDM, Umum dan Komunikasi (SDMUK)' || user?.department?.includes('SDM, Umum dan Komunikasi'));
   
   const showMenuAplikasi = isAdminView || (isAsistenCoachMode && isAsdepSDM && featuresMap?.manajemen_menu_aplikasi);
   const showBankSoal = isAdminView || (isAsistenCoachMode && isAsdepSDM && featuresMap?.manajemen_bank_soal);
   const showKamusPanduan = isAdminView || (isAsistenCoachMode && isAsdepSDM && featuresMap?.manajemen_kamus_panduan);
   const showJangkaAsesmenUlang = isAdminView || (isAsistenCoachMode && isAsdepSDM && featuresMap?.jangka_asesmen_ulang);
-  const showPanduan = isAdminView || isAsistenCoachMode || user?.position === 'Deputi Direksi Wilayah';
+  const showPanduan = isAdminView || isAsistenCoachMode || isDeputi;
 
   // Staf-like view: regular user OR Asisten Deputi in coachee mode
-  const isStafView = (!isAdminView && !isAsistenCoachMode && user?.position !== 'Deputi Direksi Wilayah');
+  const isStafView = (!isAdminView && !isAsistenCoachMode && !isDeputi);
 
   const navGroups = [
     {
@@ -66,7 +67,7 @@ export default function AdminSidebar({ user, viewMode, asistenMode, featuresMap,
       headerClass: "bg-[#96c1e9] text-white dark:bg-[#4375a3]",
       iconClass: "text-white",
       items: [
-        { href: "/team", label: "Anggota Bidang", icon: Users, show: isAdminView || isAsistenCoachMode || user?.position === 'Deputi Direksi Wilayah' },
+        { href: "/team", label: "Anggota Bidang", icon: Users, show: isAdminView || isAsistenCoachMode || isDeputi },
         { href: "/guide", label: "Panduan Gaya Komunikasi", icon: BookOpen, show: showPanduan },
         { href: "/admin/dictionary", label: "Kamus Panduan", icon: FileSpreadsheet, show: showKamusPanduan },
         { href: "/admin/questions", label: "Bank Soal", icon: Database, show: showBankSoal },

@@ -6,7 +6,7 @@ export async function getCoachingReport() {
   const leaders = await prisma.user.findMany({
     where: {
       position: {
-        in: ["Asisten Deputi", "Deputi Direksi Wilayah"]
+        in: ["Asisten Deputi", "Deputi Direksi Wilayah", "Kepala Cabang", "Kepala Kabupaten", "Kepala Kantor Kabupaten", "Asisten Manager"]
       },
       status: "APPROVED"
     },
@@ -15,6 +15,9 @@ export async function getCoachingReport() {
       name: true,
       department: true,
       position: true,
+      positionDetail: true,
+      employeeLocation: true,
+      workUnit: true,
       coachLogs: {
         select: {
           isClosed: true,
@@ -35,10 +38,10 @@ export async function getCoachingReport() {
     where: {
       status: "APPROVED",
       position: {
-        notIn: ["Deputi Direksi Wilayah"]
+        notIn: ["Deputi Direksi Wilayah", "Kepala Cabang"]
       }
     },
-    select: { id: true, name: true, department: true, position: true }
+    select: { id: true, name: true, department: true, position: true, employeeLocation: true, workUnit: true }
   });
 
   const report = leaders.map(leader => {
@@ -62,11 +65,33 @@ export async function getCoachingReport() {
     
     const uniqueCoacheeIds = new Set(leader.coachLogs.map(log => log.coacheeId));
     
-    let eligibleStaff = [];
-    if (leader.position === 'Deputi Direksi Wilayah') {
-      eligibleStaff = allStaff.filter(s => s.position === 'Asisten Deputi');
-    } else {
-      eligibleStaff = allStaff.filter(s => s.department === leader.department && s.id !== leader.id && s.position !== 'Asisten Deputi');
+    let eligibleStaff: typeof allStaff = [];
+    
+    const isDeputi = leader.position === 'Deputi Direksi Wilayah' || leader.position === 'Kepala Cabang';
+    const isKepalaCabupatenOrBagian = leader.position === 'Kepala Kabupaten' || leader.position === 'Kepala Kantor Kabupaten' || leader.position === 'Asisten Manager' || leader.position === 'Asisten Deputi';
+
+    if (isDeputi) {
+      eligibleStaff = allStaff.filter(s => {
+        let targets: string[] = [];
+        if (leader.position === 'Kepala Cabang') {
+          targets = ['Asisten Manager', 'Kepala Kabupaten', 'Kepala Kantor Kabupaten'];
+        } else {
+          targets = ['Asisten Deputi'];
+        }
+        const isTarget = targets.includes(s.position!);
+        const isSameUnit = leader.position === 'Kepala Cabang' ? s.workUnit === leader.workUnit : true;
+        return isTarget && isSameUnit;
+      });
+    } else if (isKepalaCabupatenOrBagian) {
+      eligibleStaff = allStaff.filter(s => {
+        let targets = ['Staf Pelaksana', 'PTT/PATT'];
+        if (leader.position === 'Asisten Deputi') targets.push('Asisten Manager');
+        const isTarget = leader.role === 'ADMIN' ? true : targets.includes(s.position!);
+        const isSameDept = (leader.position === 'Kepala Kabupaten' || leader.position === 'Kepala Kantor Kabupaten') ? true : (!leader.department || s.department === leader.department);
+        const isSameLocation = !leader.employeeLocation || s.employeeLocation === leader.employeeLocation;
+        const isSameUnit = !leader.workUnit || s.workUnit === leader.workUnit;
+        return isTarget && isSameDept && isSameLocation && isSameUnit;
+      });
     }
     
     const belumMulaiStaff = eligibleStaff.filter(s => !uniqueCoacheeIds.has(s.id));
@@ -108,6 +133,9 @@ export async function getCoachingReport() {
       name: leader.name,
       department: leader.department,
       position: leader.position,
+      positionDetail: leader.positionDetail,
+      employeeLocation: leader.employeeLocation,
+      workUnit: leader.workUnit,
       totalSesi: leader.coachLogs.length,
       selesai: selesaiLogs.length,
       proses: prosesLogs.length,

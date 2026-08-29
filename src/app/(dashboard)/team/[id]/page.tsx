@@ -71,7 +71,7 @@ function GuideRowCards({ rows, colorClass, bgClass, borderClass, lightBgClass }:
                   <MessageSquareQuote className="w-4 h-4" />
                   Contoh Kalimat
                </h4>
-               <p className="text-sm leading-relaxed italic text-foreground/90">{row.contohKalimat}</p> 
+               <p className="text-sm leading-relaxed italic text-foreground/90 text-justify">{row.contohKalimat}</p> 
             </div>
           </div>
 
@@ -189,7 +189,7 @@ export default async function CoachingStrategyPage({ params }: { params: { id: s
   const asistenMode = cookies().get('asisten-mode')?.value || 'coach';
   
   const isViewModeUser = currentUser?.role === 'ADMIN' && viewMode === 'user';
-  const isAsistenModeCoachee = currentUser?.position === 'Asisten Deputi' && asistenMode === 'coachee';
+  const isAsistenModeCoachee = (currentUser?.position === 'Asisten Deputi' || currentUser?.position === 'Kepala Kabupaten') && asistenMode === 'coachee';
   
   if (currentUser) {
     if (isViewModeUser) {
@@ -201,7 +201,7 @@ export default async function CoachingStrategyPage({ params }: { params: { id: s
   }
 
   // Security check: Only Manager/Admin can view team details
-  const isManager = currentUser?.role === 'ADMIN' || currentUser?.position === 'Asisten Deputi' || currentUser?.position === 'Deputi Direksi Wilayah';
+  const isManager = currentUser?.role === 'ADMIN' || currentUser?.position === 'Asisten Deputi' || currentUser?.position === 'Deputi Direksi Wilayah' || currentUser?.position === 'Kepala Kabupaten';
   if (!isManager) {
     redirect("/profile");
   }
@@ -227,7 +227,7 @@ export default async function CoachingStrategyPage({ params }: { params: { id: s
   });
 
   return (
-    <div className={cn("w-full max-w-[1920px] mx-auto relative pt-2 -mt-10 pb-8 md:pb-12 px-4 sm:px-6 lg:px-8 xl:px-12")}>
+    <div className={cn("w-full max-w-[1920px] mx-auto relative pt-2 -mt-10 pb-2 px-4 sm:px-6 lg:px-8 xl:px-12")}>
       
 
 
@@ -357,8 +357,8 @@ export default async function CoachingStrategyPage({ params }: { params: { id: s
         <CoachingSectionLayout
           hasByteSizedCard={!!guide}
           coachingTracker={
-            <div className="lg:sticky lg:top-[175px] z-30 h-fit">
-              <div>
+            <div className="lg:sticky lg:top-4 z-30 h-fit lg:h-[calc(100vh-32px)]">
+              <div className="h-full">
                 <CoachingTracker 
                   logs={coachingLogs.filter(log => !log.title.startsWith('Diskusi: ')).sort((a, b) => {
                     if (a.isClosed === b.isClosed) {

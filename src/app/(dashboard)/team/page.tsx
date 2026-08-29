@@ -2,7 +2,7 @@ import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Users, User as UserIcon, MessageCircle, ArrowRight, ArrowLeft } from "lucide-react";
+import { Users, User as UserIcon, MessageCircle, ArrowRight, ArrowLeft, Info } from "lucide-react";
 import { cookies } from "next/headers";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -52,14 +52,14 @@ export default async function TeamPage() {
   // Get current user's department and position
   const currentUser = await prisma.user.findUnique({
     where: { id: session.user.id },
-    select: { department: true, position: true, role: true }
+    select: { department: true, position: true, role: true, employeeLocation: true }
   });
 
   const viewMode = cookies().get('view-mode')?.value || 'admin';
   const asistenMode = cookies().get('asisten-mode')?.value || 'coach';
   
   const isViewModeUser = currentUser?.role === 'ADMIN' && viewMode === 'user';
-  const isAsistenModeCoachee = currentUser?.position === 'Asisten Deputi' && asistenMode === 'coachee';
+  const isAsistenModeCoachee = (currentUser?.position === 'Asisten Deputi' || currentUser?.position === 'Kepala Kabupaten') && asistenMode === 'coachee';
   
   if (currentUser) {
     if (isViewModeUser) {
@@ -71,20 +71,38 @@ export default async function TeamPage() {
   }
 
   // Redirect if not a manager
-  const isManager = currentUser?.role === 'ADMIN' || currentUser?.position === 'Asisten Deputi' || currentUser?.position === 'Deputi Direksi Wilayah';
+  const isManager = currentUser?.role === 'ADMIN' || 
+                    currentUser?.position === 'Asisten Deputi' || 
+                    currentUser?.position === 'Deputi Direksi Wilayah' || 
+                    currentUser?.position === 'Kepala Cabang' ||
+                    currentUser?.position === 'Kepala Kabupaten' ||
+                    currentUser?.position === 'Kepala Kantor Kabupaten' ||
+                    currentUser?.position === 'Asisten Manager';
   if (!isManager) {
     redirect("/profile");
   }
 
+  const isDeputi = currentUser?.position === 'Deputi Direksi Wilayah' || currentUser?.position === 'Kepala Cabang';
+  const isKepalaCabupatenOrBagian = currentUser?.role === 'ADMIN' ||
+                                    currentUser?.position === 'Kepala Kabupaten' || 
+                                    currentUser?.position === 'Kepala Kantor Kabupaten' || 
+                                    currentUser?.position === 'Asisten Manager' ||
+                                    currentUser?.position === 'Asisten Deputi';
   const department = currentUser?.department;
-  const isDeputi = currentUser?.position === 'Deputi Direksi Wilayah';
   
   let teamMembers: any[] = [];
   if (isDeputi) {
     teamMembers = await prisma.user.findMany({
       where: {
         ...(currentUser?.role !== 'ADMIN' ? { id: { not: session.user.id } } : {}),
-        position: 'Asisten Deputi',
+        OR: currentUser?.position === 'Kepala Cabang' ? [
+          { position: 'Asisten Manager' },
+          { position: 'Kepala Kabupaten' },
+          { position: 'Kepala Kantor Kabupaten' }
+        ] : [
+          { position: 'Asisten Deputi' }
+        ],
+        ...(currentUser?.position === 'Kepala Cabang' ? { workUnit: currentUser.workUnit || undefined } : {}),
         status: 'APPROVED'
       },
       include: {
@@ -101,12 +119,21 @@ export default async function TeamPage() {
         { name: 'asc' }
       ]
     });
-  } else if (department) {
+  } else if (isKepalaCabupatenOrBagian) {
     teamMembers = await prisma.user.findMany({
       where: {
-        department: department,
         ...(currentUser?.role !== 'ADMIN' ? { id: { not: session.user.id } } : {}),
-        position: { not: 'Deputi Direksi Wilayah' },
+        ...(currentUser?.position === 'Kepala Kabupaten' || currentUser?.position === 'Kepala Kantor Kabupaten' 
+          ? {} 
+          : { department: currentUser.department || undefined }
+        ),
+        employeeLocation: currentUser.employeeLocation || undefined,
+        workUnit: currentUser.workUnit || undefined,
+        ...(currentUser.role !== 'ADMIN' ? {
+          position: {
+            in: currentUser.position === 'Asisten Deputi' ? ['Staf Pelaksana', 'PTT/PATT', 'Asisten Manager'] : ['Staf Pelaksana', 'PTT/PATT']
+          }
+        } : {}),
         status: 'APPROVED'
       },
       include: {
@@ -124,17 +151,39 @@ export default async function TeamPage() {
 
   return (
     <div className="w-full flex flex-col gap-6">
-      {/* Header */}
-      <div className="mb-6 flex flex-col md:flex-row md:items-end gap-2 md:gap-4">
-        <h1 className="text-3xl font-extrabold text-[#015249] dark:text-white tracking-tight flex items-center gap-3">
-          <Users className="w-8 h-8 text-[#57BC90]" />
-          Anggota Bidang
-        </h1>
-        <p className="text-slate-500 dark:text-slate-400 text-lg md:mb-1">
-          {isDeputi ? "Memonitoring Seluruh Bidang Kedeputian Wilayah VIII" : (department ? `Bidang ${department}` : "Anda belum tergabung dalam bidang apapun.")}
-        </p>
+      {/* Header Section */}
+      <div className="flex flex-col gap-4">
+        <div className="flex flex-col md:flex-row md:items-end gap-2 md:gap-4">
+          <h1 className="text-3xl font-extrabold text-[#015249] dark:text-white tracking-tight flex items-center gap-3">
+            <Users className="w-8 h-8 text-[#57BC90]" />
+            Anggota Bidang
+          </h1>
+          <p className="text-slate-500 dark:text-slate-400 text-lg md:mb-1">
+            {isKepalaCabupatenOrBagian 
+              ? `${(currentUser.department || "Staf Pelaksana").replace(/\s*\([^)]*\)$/, '')} - ${currentUser.employeeLocation || "Unit Kerja"}` 
+              : isDeputi 
+                ? (currentUser.position === 'Kepala Cabang' 
+                    ? `Pimpinan Bawahan di ${currentUser.workUnit || "Cabang"}` 
+                    : "Memonitoring Seluruh Bidang Kedeputian Wilayah VIII") 
+                : (department ? `Bidang ${department}` : "Anda belum tergabung dalam bidang apapun.")}
+          </p>
+        </div>
+        
+        {/* Information Alert */}
+        {isManager && (
+          <div className="bg-amber-50 dark:bg-amber-900/20 border-l-4 border-amber-500 text-amber-800 dark:text-amber-300 px-5 py-4 rounded-r-lg shadow-sm flex items-start gap-3">
+            <Info className="w-6 h-6 flex-shrink-0 mt-0.5 text-amber-600 dark:text-amber-400 animate-pulse" />
+            <div className="flex flex-col">
+              <span className="font-bold text-amber-900 dark:text-amber-200 text-base mb-1">Informasi Penting</span>
+              <p className="text-sm">
+                Pastikan Anggota Anda telah mengisi <strong>Kuisioner Gaya Komunikasi</strong> untuk dapat memulai sesi coaching.
+              </p>
+            </div>
+          </div>
+        )}
       </div>
-      {(!department && !isDeputi) ? (
+
+      {(!department && !isDeputi && !isKepalaCabupatenOrBagian) ? (
         <Card className="bg-slate-50 dark:bg-slate-900/50 border-dashed border-2">
           <CardContent className="flex flex-col items-center justify-center py-16 text-center">
             <div className="w-20 h-20 bg-slate-200 dark:bg-slate-800 rounded-full flex items-center justify-center mb-6">

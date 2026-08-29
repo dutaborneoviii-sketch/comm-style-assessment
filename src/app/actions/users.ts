@@ -19,8 +19,11 @@ export async function getUsers() {
       npp: true,
       name: true,
       email: true,
+      workUnit: true,
+      employeeLocation: true,
       department: true,
       position: true,
+      positionDetail: true,
       role: true,
       status: true,
       createdAt: true,
@@ -104,8 +107,11 @@ export async function createUser(data: any) {
         name: data.name || `User ${data.npp}`,
         email: data.email || null,
         password: hashedPassword,
+        workUnit: data.workUnit || null,
+        employeeLocation: data.employeeLocation || null,
         department: data.department || null,
         position: data.position || null,
+        positionDetail: data.positionDetail || null,
         role: data.role || "USER",
       }
     });
@@ -130,8 +136,11 @@ export async function updateUser(id: string, data: any) {
       npp: data.npp,
       name: data.name,
       email: data.email || null,
+      workUnit: data.workUnit,
+      employeeLocation: data.employeeLocation,
       department: data.department,
       position: data.position,
+      positionDetail: data.positionDetail,
       role: data.role,
     };
 
@@ -265,7 +274,7 @@ export async function forgotPassword(formData: FormData) {
       data: { password: hashedPassword }
     });
 
-    const emailResult = await sendResetPasswordEmail(targetUser.email, targetUser.name, rawPassword);
+    const emailResult = await sendResetPasswordEmail(targetUser.email, targetUser.name || 'Pengguna', rawPassword);
     
     if (emailResult.success) {
       return { success: true, message: `Password baru telah dikirim ke email: ${targetUser.email}` };
@@ -299,7 +308,7 @@ export async function resetUserPassword(id: string) {
 
     let emailSent = false;
     if (targetUser.email) {
-      const emailResult = await sendResetPasswordEmail(targetUser.email, targetUser.name, rawPassword);
+      const emailResult = await sendResetPasswordEmail(targetUser.email, targetUser.name || 'Pengguna', rawPassword);
       emailSent = emailResult.success;
     }
 
@@ -351,23 +360,29 @@ export async function migrateUsers(base64Data: string) {
       return { error: "File excel kosong atau tidak valid." };
     }
 
-    const results: { name: string; npp: string; email: string; department: string; position: string; role: string; passwordGenerated: string; status: "SUCCESS" | "FAILED"; message?: string }[] = [];
+    const results: { name: string; npp: string; email: string; workUnit: string; department: string; position: string; positionDetail?: string; role: string; passwordGenerated: string; status: "SUCCESS" | "FAILED"; message?: string }[] = [];
 
     for (const row of rows) {
       const npp = String(row.npp || row.NPP || "").trim();
-      const name = String(row.name || row.nama || row.Nama || "").trim();
-      const email = String(row.email || row.Email || "").trim();
+      const name = String(row.name || row.nama || row.Nama || row["Nama User"] || "").trim();
+      const email = String(row.email || row.Email || row["Email (Opsional)"] || "").trim();
+      const workUnit = String(row.satuankerja || row.Satuankerja || row.workUnit || row["Satuan Kerja"] || "").trim();
       const department = String(row.department || row.bidang || row.Bidang || "").trim();
       const position = String(row.position || row.jabatan || row.Jabatan || "").trim();
-      const role = String(row.role || row.peran || row.Peran || "USER").trim().toUpperCase();
+      const role = String(row.role || row.peran || row.Peran || row["Hak Akses (Role)"] || "USER").trim().toUpperCase();
+      const employeeLocation = String(row.lokasipegawai || row["Lokasi Pegawai"] || row.lokasi_pegawai || row.employeeLocation || "").trim();
+      const positionDetail = String(row.positionDetail || row.detailjabatan || row["Detail Jabatan"] || row.detail_jabatan || "").trim();
 
       if (!npp) {
         results.push({
           name: name || "-",
           npp: "-",
           email: email || "-",
+          workUnit: workUnit || "-",
+          employeeLocation: employeeLocation || "-",
           department: department || "-",
           position: position || "-",
+          positionDetail: positionDetail || "-",
           role: role || "USER",
           passwordGenerated: "-",
           status: "FAILED",
@@ -383,14 +398,38 @@ export async function migrateUsers(base64Data: string) {
           name: name || existingUser.name || "-",
           npp,
           email: email || existingUser.email || "-",
+          workUnit: workUnit || existingUser.workUnit || "-",
+          employeeLocation: employeeLocation || existingUser.employeeLocation || "-",
           department: department || existingUser.department || "-",
           position: position || existingUser.position || "-",
+          positionDetail: positionDetail || existingUser.positionDetail || "-",
           role: role || existingUser.role || "USER",
           passwordGenerated: "-",
           status: "FAILED",
           message: "NPP sudah terdaftar"
         });
         continue;
+      }
+
+      if (department) {
+        const deptExists = await prisma.department.findUnique({ where: { name: department } });
+        if (!deptExists) {
+          results.push({
+            name: name || "-",
+            npp,
+            email: email || "-",
+            workUnit: workUnit || "-",
+            employeeLocation: employeeLocation || "-",
+            department: department,
+            position: position || "-",
+            positionDetail: positionDetail || "-",
+            role: role || "USER",
+            passwordGenerated: "-",
+            status: "FAILED",
+            message: `Bidang '${department}' tidak valid`
+          });
+          continue;
+        }
       }
 
       const generatedPassword = generateRandomPassword();
@@ -402,9 +441,12 @@ export async function migrateUsers(base64Data: string) {
             npp,
             name: name || `User ${npp}`,
             email: email || null,
+            workUnit: workUnit || null,
             password: hashedPassword,
             department: department || null,
             position: position || null,
+            positionDetail: positionDetail || null,
+            employeeLocation: employeeLocation || null,
             role: (role === "ADMIN" || role === "USER") ? role : "USER",
             status: "APPROVED"
           }
@@ -414,8 +456,11 @@ export async function migrateUsers(base64Data: string) {
           name: name || `User ${npp}`,
           npp,
           email: email || "-",
+          workUnit: workUnit || "-",
+          employeeLocation: employeeLocation || "-",
           department: department || "-",
           position: position || "-",
+          positionDetail: positionDetail || "-",
           role: role === "ADMIN" ? "ADMIN" : "USER",
           passwordGenerated: generatedPassword,
           status: "SUCCESS"
@@ -425,8 +470,11 @@ export async function migrateUsers(base64Data: string) {
           name: name || "-",
           npp,
           email: email || "-",
+          workUnit: workUnit || "-",
+          employeeLocation: employeeLocation || "-",
           department: department || "-",
           position: position || "-",
+          positionDetail: positionDetail || "-",
           role: role || "USER",
           passwordGenerated: "-",
           status: "FAILED",

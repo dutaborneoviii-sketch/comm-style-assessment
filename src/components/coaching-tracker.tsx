@@ -27,6 +27,7 @@ type CoachingLog = {
   date: Date;
   title: string;
   notes: string;
+  isDraft?: boolean;
   nextSessionDate?: Date | string | null;
   actionItems: ActionItem[];
   response: string | null;
@@ -321,11 +322,13 @@ export default function CoachingTracker({
   return (
     <div className="w-full h-full">
 
-      <Card className="shadow-md border-slate-200 dark:border-slate-800 bg-white dark:bg-zinc-950 flex flex-col h-fit max-h-[1000px]">
+      <Card className="shadow-md border-slate-200 dark:border-slate-800 bg-white dark:bg-zinc-950 flex flex-col h-full max-h-full">
         {(!isCreating && !editingLog) && (
-          <CardHeader className="pb-4 shrink-0">
-            <div className="flex items-center justify-end mb-2">
-              {(!isCreating && !editingLog && !isReadOnly && !hideNewSessionButton) && (
+          <CardHeader className="pb-4 shrink-0 border-b border-slate-100 dark:border-slate-800/60 bg-slate-50/50 dark:bg-slate-900/20 mb-4 rounded-t-xl">
+            <div className="flex items-center justify-between">
+              <CardTitle className="text-lg font-bold text-slate-800 dark:text-slate-200">Riwayat Coaching</CardTitle>
+              <div className="flex items-center justify-end">
+                {(!isCreating && !editingLog && !isReadOnly && !hideNewSessionButton) && (
                 logs.length > 0 ? (
                   <DropdownMenu>
                     <DropdownMenuTrigger 
@@ -367,6 +370,7 @@ export default function CoachingTracker({
                   </Button>
                 )
               )}
+              </div>
             </div>
           </CardHeader>
         )}
@@ -455,18 +459,7 @@ export default function CoachingTracker({
                       <div className="flex flex-col gap-4">
                         {renderNotes()}
 
-                        {/* Coachee Actions */}
-                        {isCoachee && !log.isClosed && !log.isDraft && log.actionItems.length > 0 && (
-                          <Button 
-                            variant="outline"
-                            size="sm"
-                            onClick={() => setShowEvidenUploadFor(log.id)}
-                            className="text-xs justify-start border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-zinc-900 h-8 text-[#015249] dark:text-[#57BC90]"
-                          >
-                            <FileCheck className="w-3.5 h-3.5 mr-2" />
-                            Update Eviden/Tindak Lanjut
-                          </Button>
-                        )}
+                        {/* Removed invalid coachee actions block */}
 
                         {/* Action Items from Prev Log */}
                         {prevLog.actionItems && prevLog.actionItems.length > 0 && (

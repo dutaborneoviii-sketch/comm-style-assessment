@@ -28,7 +28,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
     
     const isCoachView = (dbUser?.role === 'ADMIN' && viewMode === 'admin') || 
                         dbUser?.position === 'Deputi Direksi Wilayah' || 
-                        (dbUser?.position === 'Asisten Deputi' && (cookies().get('asisten-mode')?.value || 'coach') !== 'coachee');
+                        ((dbUser?.position === 'Asisten Deputi' || dbUser?.position === 'Kepala Kabupaten') && (cookies().get('asisten-mode')?.value || 'coach') !== 'coachee');
     
     if (isCoachView) {
       // Get logs where action items have been created/updated recently, and logs with responses

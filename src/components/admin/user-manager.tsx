@@ -11,6 +11,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Trash2, Search, Edit, Shield, User as UserIcon, CheckCircle2, XCircle, Power, PowerOff, KeyRound, AlertTriangle, Upload, FileUp, Download, Check, AlertCircle, Copy, RefreshCw } from "lucide-react";
 import * as XLSX from "xlsx";
+import ExcelJS from "exceljs";
+import { employeeLocations } from "@/lib/locations";
 
 interface ConfirmState {
   open: boolean;
@@ -281,13 +283,16 @@ export function UserManager({ initialUsers, currentUserId }: { initialUsers: any
               <table className="w-full text-sm text-left">
                 <thead className="text-xs uppercase bg-slate-50 dark:bg-slate-900/50 text-slate-500 dark:text-slate-400 border-b border-slate-200 dark:border-slate-800">
                   <tr>
-                    <th className="px-6 py-4 font-semibold">NPP</th>
-                    <th className="px-6 py-4 font-semibold">Nama User</th>
-                    <th className="px-6 py-4 font-semibold">Bidang</th>
-                    <th className="px-6 py-4 font-semibold">Jabatan</th>
-                    <th className="px-6 py-4 font-semibold">Peran</th>
-                    <th className="px-6 py-4 font-semibold">Status</th>
-                    <th className="px-6 py-4 font-semibold text-right">Aksi</th>
+                    <th className="px-3 py-3 font-semibold">NPP</th>
+                    <th className="px-3 py-3 font-semibold">Nama User</th>
+                    <th className="px-3 py-3 font-semibold">Satuan Kerja</th>
+                    <th className="px-3 py-3 font-semibold">Lokasi Pegawai</th>
+                    <th className="px-3 py-3 font-semibold">Bidang</th>
+                    <th className="px-3 py-3 font-semibold">Jabatan</th>
+                    <th className="px-3 py-3 font-semibold">Detail Jabatan</th>
+                    <th className="px-3 py-3 font-semibold">Peran</th>
+                    <th className="px-3 py-3 font-semibold">Status</th>
+                    <th className="px-3 py-3 font-semibold text-right">Aksi</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100 dark:divide-slate-800/50">
@@ -300,10 +305,10 @@ export function UserManager({ initialUsers, currentUserId }: { initialUsers: any
                   ) : (
                     registeredUsers.map((user) => (
                       <tr key={user.id} className={`transition-colors ${user.status === 'INACTIVE' ? 'bg-slate-50/50 dark:bg-slate-900/20 opacity-70 grayscale-[30%]' : 'hover:bg-slate-50/50 dark:hover:bg-slate-900/20'}`}>
-                        <td className="px-6 py-4 font-medium text-slate-900 dark:text-white">
+                        <td className="px-3 py-3 font-medium text-slate-900 dark:text-white">
                           {user.npp || "-"}
                         </td>
-                        <td className="px-6 py-4">
+                        <td className="px-3 py-3">
                           <div className="flex flex-col items-start">
                             <div className="flex items-center gap-2">
                               <span className="font-semibold text-slate-900 dark:text-white">{user.name || "Tanpa Nama"}</span>
@@ -316,10 +321,16 @@ export function UserManager({ initialUsers, currentUserId }: { initialUsers: any
                             {user.email && <span className="text-slate-500 dark:text-slate-400 text-xs mt-0.5">{user.email}</span>}
                           </div>
                         </td>
-                        <td className="px-6 py-4 text-slate-600 dark:text-slate-300">
+                        <td className="px-3 py-3 text-slate-600 dark:text-slate-300 max-w-[120px] truncate" title={user.workUnit || ""}>
+                          {user.workUnit || "-"}
+                        </td>
+                        <td className="px-3 py-3 text-slate-600 dark:text-slate-300 max-w-[120px] truncate" title={user.employeeLocation || ""}>
+                          {user.employeeLocation || "-"}
+                        </td>
+                        <td className="px-3 py-3 text-slate-600 dark:text-slate-300 max-w-[150px] truncate" title={user.department || ""}>
                           {user.department || "-"}
                         </td>
-                        <td className="px-6 py-4">
+                        <td className="px-3 py-3">
                           {user.position ? (
                             <span className={`inline-flex items-center px-2 py-1 rounded-md text-xs font-medium ${
                               user.position === 'Atasan' 
@@ -332,7 +343,10 @@ export function UserManager({ initialUsers, currentUserId }: { initialUsers: any
                             <span className="text-slate-400 dark:text-slate-500">-</span>
                           )}
                         </td>
-                        <td className="px-6 py-4">
+                        <td className="px-3 py-3 text-slate-600 dark:text-slate-300 max-w-[150px] truncate" title={user.positionDetail || ""}>
+                          {user.positionDetail || "-"}
+                        </td>
+                        <td className="px-3 py-3">
                           <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${
                             user.role === "ADMIN" 
                               ? "bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400" 
@@ -342,7 +356,7 @@ export function UserManager({ initialUsers, currentUserId }: { initialUsers: any
                             {user.role === "ADMIN" ? "Admin" : "User"}
                           </span>
                         </td>
-                        <td className="px-6 py-4">
+                        <td className="px-3 py-3">
                           <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${
                             user.status === "INACTIVE" 
                               ? "bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-400" 
@@ -351,7 +365,7 @@ export function UserManager({ initialUsers, currentUserId }: { initialUsers: any
                             {user.status === "INACTIVE" ? "Nonaktif" : "Aktif"}
                           </span>
                         </td>
-                        <td className="px-6 py-4 text-right">
+                        <td className="px-3 py-3 text-right">
                           <div className="flex items-center justify-end gap-1">
                             <Button 
                               variant="ghost" 
@@ -419,12 +433,15 @@ export function UserManager({ initialUsers, currentUserId }: { initialUsers: any
               <table className="w-full text-sm text-left">
                 <thead className="text-xs uppercase bg-slate-50 dark:bg-slate-900/50 text-slate-500 dark:text-slate-400 border-b border-slate-200 dark:border-slate-800">
                   <tr>
-                    <th className="px-6 py-4 font-semibold">NPP</th>
-                    <th className="px-6 py-4 font-semibold">Nama User</th>
-                    <th className="px-6 py-4 font-semibold">Bidang</th>
-                    <th className="px-6 py-4 font-semibold">Jabatan</th>
-                    <th className="px-6 py-4 font-semibold">Tgl Daftar</th>
-                    <th className="px-6 py-4 font-semibold text-right">Aksi</th>
+                    <th className="px-3 py-3 font-semibold">NPP</th>
+                    <th className="px-3 py-3 font-semibold">Nama User</th>
+                    <th className="px-3 py-3 font-semibold">Satuan Kerja</th>
+                    <th className="px-3 py-3 font-semibold">Lokasi Pegawai</th>
+                    <th className="px-3 py-3 font-semibold">Bidang</th>
+                    <th className="px-3 py-3 font-semibold">Jabatan</th>
+                    <th className="px-3 py-3 font-semibold">Detail Jabatan</th>
+                    <th className="px-3 py-3 font-semibold">Tgl Daftar</th>
+                    <th className="px-3 py-3 font-semibold text-right">Aksi</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100 dark:divide-slate-800/50">
@@ -437,25 +454,34 @@ export function UserManager({ initialUsers, currentUserId }: { initialUsers: any
                   ) : (
                     pendingUsers.map((user) => (
                       <tr key={user.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-900/20 transition-colors">
-                        <td className="px-6 py-4 font-medium text-slate-900 dark:text-white">
+                        <td className="px-3 py-3 font-medium text-slate-900 dark:text-white">
                           {user.npp || "-"}
                         </td>
-                        <td className="px-6 py-4">
+                        <td className="px-3 py-3">
                           <div className="flex flex-col">
                             <span className="font-semibold text-slate-900 dark:text-white">{user.name || "Tanpa Nama"}</span>
                             {user.email && <span className="text-slate-500 dark:text-slate-400 text-xs mt-0.5">{user.email}</span>}
                           </div>
                         </td>
-                        <td className="px-6 py-4 text-slate-600 dark:text-slate-300">
+                        <td className="px-3 py-3 text-slate-600 dark:text-slate-300 max-w-[120px] truncate" title={user.workUnit || ""}>
+                          {user.workUnit || "-"}
+                        </td>
+                        <td className="px-3 py-3 text-slate-600 dark:text-slate-300 max-w-[120px] truncate" title={user.employeeLocation || ""}>
+                          {user.employeeLocation || "-"}
+                        </td>
+                        <td className="px-3 py-3 text-slate-600 dark:text-slate-300 max-w-[150px] truncate" title={user.department || ""}>
                           {user.department || "-"}
                         </td>
-                        <td className="px-6 py-4 text-slate-600 dark:text-slate-300">
+                        <td className="px-3 py-3 text-slate-600 dark:text-slate-300">
                           {user.position || "-"}
                         </td>
-                        <td className="px-6 py-4 text-slate-500 dark:text-slate-400 text-xs" suppressHydrationWarning>
+                        <td className="px-3 py-3 text-slate-600 dark:text-slate-300 max-w-[150px] truncate" title={user.positionDetail || ""}>
+                          {user.positionDetail || "-"}
+                        </td>
+                        <td className="px-3 py-3 text-slate-500 dark:text-slate-400 text-xs" suppressHydrationWarning>
                           {user.createdAt ? new Intl.DateTimeFormat('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }).format(new Date(user.createdAt)) : "-"}
                         </td>
-                        <td className="px-6 py-4 text-right">
+                        <td className="px-3 py-3 text-right">
                           <div className="flex items-center justify-end gap-2">
                             <Button 
                               variant="outline" 
@@ -558,20 +584,174 @@ function MigrationDialog() {
     setTimeout(() => setCopiedIndex(null), 2000);
   };
 
-  const downloadTemplate = () => {
-    // Generate a simple Excel sheet template
-    const templateData = [
-      { npp: "10234", name: "Budi Santoso", email: "budi@domain.com", bidang: "TI Wilayah", jabatan: "Staf Pelaksana", role: "USER" },
-      { npp: "10235", name: "Rina Melati", email: "rina@domain.com", bidang: "Bidang SDM, Umum dan Komunikasi (SDMUK)", jabatan: "Asisten Deputi", role: "USER" }
+  const downloadTemplate = async () => {
+    const workbook = new ExcelJS.Workbook();
+    
+    // Create hidden options sheet
+    const optionsSheet = workbook.addWorksheet('Options', { state: 'hidden' });
+    
+    const satuanKerjaList = [
+      "Kedeputian Bidang Operasional dan Keamanan Teknologi Informasi",
+      "Kedeputian Wilayah VIII",
+      "Kantor Cabang Balikpapan",
+      "Kantor Cabang Banjarmasin",
+      "Kantor Cabang Barabai",
+      "Kantor Cabang Muara Teweh",
+      "Kantor Cabang Palangka Raya",
+      "Kantor Cabang Samarinda",
+      "Kantor Cabang Sampit",
+      "Kantor Cabang Tarakan"
+    ];
+    
+    const lokasiPegawaiList = Array.from(new Set(Object.values(employeeLocations).flat())).sort();
+    
+    const bidangList = [
+      "Bagian Mutu Layanan Kepesertaan (KC)",
+      "Bagian Mutu Layanan Fasilitas Kesehatan (KC)",
+      "Bagian SDM, Umum dan Komunikasi (KC)",
+      "Bagian Penjaminan Manfaat dan Utilisasi (KC)",
+      "Bagian Kepesertaan (KC)",
+      "Bagian Perencanaan, Keuangan dan Pemeriksaan (KC)",
+      "Kedeputian Wilayah VIII",
+      "Bidang SDM, Umum dan Komunikasi (SDMUK)",
+      "Bidang Jaminan Pelayanan Kesehatan (JPK)",
+      "Bidang Kepesertaan dan Mutu Layanan (KML)",
+      "Bidang Perencanaan dan Keuangan (PK)",
+      "Kepesertaan dan Penagihan Iuran (Kabupaten)",
+      "Penjaminan Manfaat dan Pengelolaan Fasilitas Kesehatan (Kabupaten)",
+      "Kantor Kabupaten",
+      "TI Wilayah"
+    ];
+    
+    const jabatanList = [
+      "Deputi Direksi Wilayah",
+      "Asisten Deputi",
+      "Kepala Cabang",
+      "Asisten Manager",
+      "Kepala Kabupaten",
+      "Staf Pelaksana",
+      "PTT/PATT"
+    ];
+    
+    const detailJabatanList = [
+      "Analis Jaminan Pelayanan Kesehatan Pratama",
+      "Analis Komunikasi dan Kesekretariatan Pratama",
+      "Analis Mutu Layanan Pratama",
+      "Analis Perencanaan dan Keuangan",
+      "Analis Perluasan dan Kepatuhan Pendaftaran Peserta Pratama",
+      "Asisten Deputi Jaminan Pelayanan Kesehatan",
+      "Asisten Deputi Kepesertaan dan Mutu Layanan",
+      "Asisten Deputi Perencanaan dan Keuangan",
+      "Asisten Deputi SDM, Umum dan Komunikasi",
+      "Claim Advisor Pratama",
+      "Deputi Direksi Wilayah",
+      "Kasir",
+      "Kepala Bagian Kepesertaan",
+      "Kepala Bagian Mutu Layanan Fasilitas Kesehatan",
+      "Kepala Bagian Mutu Layanan Kepesertaan",
+      "Kepala Bagian Penjaminan Manfaat dan Utilisasi",
+      "Kepala Bagian Perencanaan, Keuangan dan Pemeriksaan",
+      "Kepala Bagian SDM, Umum dan Komunikasi",
+      "Kepala Bagian Teknologi Informasi Wilayah VIII",
+      "Kepala Cabang",
+      "Kepala Kantor Kabupaten",
+      "Koordinator Edukasi dan Penanganan Pengaduan Peserta di Rumah Sakit",
+      "Koordinator Frontliner",
+      "Petugas Pemeriksa",
+      "Relationship Officer",
+      "PTT Staf Kepesertaan dan Penagihan Iuran Kabupaten",
+      "PTT Staf Kepesertaan Kabupaten",
+      "Staf Administrasi Kepesertaan",
+      "Staf Edukasi dan Penanganan Pengaduan",
+      "Staf Edukasi dan Penanganan Pengaduan Peserta di Rumah Sakit",
+      "Staf Frontliner",
+      "Staf Jaminan Pelayanan Kesehatan",
+      "Staf Kepesertaan dan Mutu Layanan",
+      "Staf Kepesertaan dan Penagihan Iuran Kabupaten",
+      "Staf Kepesertaan Kabupaten",
+      "Staf Kerja Sama Fasilitas Kesehatan",
+      "Staf Komunikasi dan Kesekretariatan",
+      "Staf Mutu Layanan Fasilitas Kesehatan",
+      "Staf Penagihan",
+      "Staf Penagihan dan Keuangan Kabupaten",
+      "Staf Penjaminan Manfaat dan Pengelolaan Fasilitas Kesehatan Kabupaten",
+      "Staf Perencanaan dan Keuangan",
+      "Staf Perencanaan dan Pembukuan",
+      "Staf Promotif Preventif",
+      "Staf SDM dan Umum",
+      "Staf Teknologi Informasi Wilayah",
+      "Staf Utilisasi dan Pencegahan Kecurangan",
+      "Verifikator Klaim"
+    ];
+    
+    const roleList = ["User Biasa", "Admin"];
+
+    // Fill Options Sheet
+    satuanKerjaList.forEach((v, i) => { optionsSheet.getCell(`A${i+1}`).value = v; });
+    lokasiPegawaiList.forEach((v, i) => { optionsSheet.getCell(`B${i+1}`).value = v; });
+    bidangList.forEach((v, i) => { optionsSheet.getCell(`C${i+1}`).value = v; });
+    jabatanList.forEach((v, i) => { optionsSheet.getCell(`D${i+1}`).value = v; });
+    detailJabatanList.forEach((v, i) => { optionsSheet.getCell(`E${i+1}`).value = v; });
+    roleList.forEach((v, i) => { optionsSheet.getCell(`F${i+1}`).value = v; });
+
+    // Create Main Template Sheet
+    const sheet = workbook.addWorksheet("Template");
+    const headers = ["NPP", "Nama User", "Email (Opsional)", "Satuan Kerja", "Lokasi Pegawai", "Bidang", "Jabatan", "Detail Jabatan", "Hak Akses (Role)"];
+    sheet.addRow(headers);
+
+    // Style Headers
+    const headerRow = sheet.getRow(1);
+    headerRow.font = { bold: true };
+    headerRow.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFD3D3D3' } };
+
+    // Column widths
+    sheet.columns = [
+      { width: 15 }, { width: 25 }, { width: 25 }, 
+      { width: 30 }, { width: 30 }, { width: 30 },
+      { width: 25 }, { width: 35 }, { width: 20 }
     ];
 
-    const worksheet = XLSX.utils.json_to_sheet(templateData);
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Template");
-    
+    // Data validations for rows 2 to 100
+    for (let i = 2; i <= 100; i++) {
+      sheet.getCell(`D${i}`).dataValidation = {
+        type: 'list',
+        allowBlank: true,
+        formulae: [`Options!$A$1:$A$${satuanKerjaList.length}`]
+      };
+      sheet.getCell(`E${i}`).dataValidation = {
+        type: 'list',
+        allowBlank: true,
+        formulae: [`Options!$B$1:$B$${lokasiPegawaiList.length}`]
+      };
+      sheet.getCell(`F${i}`).dataValidation = {
+        type: 'list',
+        allowBlank: true,
+        formulae: [`Options!$C$1:$C$${bidangList.length}`]
+      };
+      sheet.getCell(`G${i}`).dataValidation = {
+        type: 'list',
+        allowBlank: true,
+        formulae: [`Options!$D$1:$D$${jabatanList.length}`]
+      };
+      sheet.getCell(`H${i}`).dataValidation = {
+        type: 'list',
+        allowBlank: true,
+        formulae: [`Options!$E$1:$E$${detailJabatanList.length}`]
+      };
+      sheet.getCell(`I${i}`).dataValidation = {
+        type: 'list',
+        allowBlank: true,
+        formulae: [`Options!$F$1:$F$${roleList.length}`]
+      };
+    }
+
+    // Sample Data
+    sheet.addRow(["10234", "Budi Santoso", "budi@domain.com", "Kantor Cabang Muara Teweh", "Kantor Cabang Muara Teweh", "Bagian SDM, Umum dan Komunikasi (KC)", "Asisten Manager", "Kepala Bagian SDM, Umum dan Komunikasi", "User Biasa"]);
+    sheet.addRow(["10235", "Rina Melati", "rina@domain.com", "Kedeputian Wilayah VIII", "Kedeputian Wilayah VIII", "Bidang SDM, Umum dan Komunikasi (SDMUK)", "Asisten Deputi", "Kepala Bagian SDM, Umum dan Komunikasi", "Admin"]);
+
     // Write buffer and download
-    const excelBuffer = XLSX.write(workbook, { bookType: "xlsx", type: "array" });
-    const blob = new Blob([excelBuffer], { type: "application/octet-stream" });
+    const buffer = await workbook.xlsx.writeBuffer();
+    const blob = new Blob([buffer], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;
@@ -656,6 +836,7 @@ function MigrationDialog() {
                     <tr className="bg-slate-50 dark:bg-zinc-900 border-b border-slate-200/60 dark:border-slate-800 font-bold text-slate-500 uppercase tracking-wider">
                       <th className="p-2.5">NPP</th>
                       <th className="p-2.5">Nama</th>
+                      <th className="p-2.5">Satuan Kerja</th>
                       <th className="p-2.5">Status</th>
                       <th className="p-2.5">Password Baru</th>
                       <th className="p-2.5 text-center">Salin</th>
@@ -664,14 +845,28 @@ function MigrationDialog() {
                   <tbody className="divide-y divide-slate-100 dark:divide-slate-800/80">
                     {results.map((r, idx) => (
                       <tr key={idx} className="hover:bg-slate-50/50 dark:hover:bg-zinc-900/30 font-medium text-slate-700 dark:text-slate-300">
-                        <td className="p-2.5 font-bold text-slate-900 dark:text-white">{r.npp}</td>
+                        <td className="p-2.5 font-medium text-slate-900 dark:text-white" title={r.npp}>{r.npp}</td>
                         <td className="p-2.5 truncate max-w-[120px]" title={r.name}>{r.name}</td>
+                        <td className="p-2.5 truncate max-w-[120px]" title={r.workUnit}>{r.workUnit}</td>
+                        <td className="p-2.5 truncate max-w-[120px]" title={r.employeeLocation}>{r.employeeLocation || "-"}</td>
                         <td className="p-2.5">
-                          {r.status === "SUCCESS" ? (
-                            <span className="inline-flex px-2 py-0.5 bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600 dark:text-emerald-400 rounded-md font-bold text-[9px]">Berhasil</span>
-                          ) : (
-                            <span className="inline-flex px-2 py-0.5 bg-red-50 dark:bg-red-950/30 text-red-600 dark:text-red-400 rounded-md font-bold text-[9px] cursor-help" title={r.message}>Gagal</span>
-                          )}
+                          <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium bg-slate-100 text-slate-800 dark:bg-slate-800 dark:text-slate-200">
+                            {r.department}
+                          </span>
+                        </td>
+                        <td className="p-2.5 truncate max-w-[100px]">{r.position}</td>
+                        <td className="p-2.5 truncate max-w-[100px]">{r.positionDetail || "-"}</td>
+                        <td className="p-2.5">
+                          <div className="flex flex-col gap-1">
+                            {r.status === "SUCCESS" ? (
+                              <span className="inline-flex w-fit px-2 py-0.5 bg-emerald-50 dark:bg-emerald-950/30 text-emerald-600 dark:text-emerald-400 rounded-md font-bold text-[9px]">Berhasil</span>
+                            ) : (
+                              <>
+                                <span className="inline-flex w-fit px-2 py-0.5 bg-red-50 dark:bg-red-950/30 text-red-600 dark:text-red-400 rounded-md font-bold text-[9px]">Gagal</span>
+                                <span className="text-[10px] text-red-500 dark:text-red-400 leading-tight max-w-[120px]">{r.message}</span>
+                              </>
+                            )}
+                          </div>
                         </td>
                         <td className="p-2.5 font-mono font-bold text-slate-900 dark:text-slate-100 bg-slate-50 dark:bg-zinc-900 px-1.5 py-0.5 rounded border border-slate-200/40 dark:border-slate-800/40">
                           {r.status === "SUCCESS" ? r.passwordGenerated : "-"}

@@ -53,7 +53,7 @@ export default async function ProfilePage() {
   const asistenMode = cookies().get('asisten-mode')?.value || 'coach';
   
   const isViewModeUser = user.role === 'ADMIN' && viewMode === 'user';
-  const isAsistenModeCoachee = user.position === 'Asisten Deputi' && asistenMode === 'coachee';
+  const isAsistenModeCoachee = (user.position === 'Asisten Deputi' || user.position === 'Kepala Kabupaten') && asistenMode === 'coachee';
   
   if (isViewModeUser) {
     user.role = 'USER';
@@ -90,13 +90,42 @@ export default async function ProfilePage() {
   let quadrantMembers: any[] = [];
   let chartTitle = user.department || "Keseluruhan";
 
-  if (user.position === 'Deputi Direksi Wilayah' || user.position === 'Asisten Deputi' || user.role === 'ADMIN') {
-    // Deputi or Admin sees all departments, Asisten Deputi sees only their own department
+  const isDeputi = user.position === 'Deputi Direksi Wilayah' || user.position === 'Kepala Cabang';
+  const isKepalaCabupatenOrBagian = user.position === 'Kepala Kabupaten' || user.position === 'Kepala Kantor Kabupaten' || user.position === 'Asisten Manager' || user.position === 'Asisten Deputi';
+  const isManager = isDeputi || isKepalaCabupatenOrBagian || user.role === 'ADMIN';
+
+  if (isManager) {
     let userFilter: any = { status: 'APPROVED' };
-    if (user.position === 'Asisten Deputi' && user.department) {
-      userFilter = { department: user.department, status: 'APPROVED' };
-    } else {
-      chartTitle = "Seluruh Bidang di Wilayah";
+    
+    if (isKepalaCabupatenOrBagian) {
+      userFilter = {
+        ...(user.position === 'Kepala Kabupaten' || user.position === 'Kepala Kantor Kabupaten' 
+          ? {} 
+          : { department: user.department || undefined }
+        ),
+        employeeLocation: user.employeeLocation || undefined,
+        workUnit: user.workUnit || undefined,
+        position: {
+          in: user.position === 'Asisten Deputi' ? ['Staf Pelaksana', 'PTT/PATT', 'Asisten Manager'] : ['Staf Pelaksana', 'PTT/PATT']
+        },
+        status: 'APPROVED'
+      };
+      chartTitle = "Staf Pelaksana di " + (user.department || "").replace(/\s*\([^)]*\)$/, '') + " - " + (user.employeeLocation || user.workUnit || "Unit Kerja");
+    } else if (isDeputi) {
+      userFilter = {
+        OR: user.position === 'Kepala Cabang' ? [
+          { position: 'Asisten Manager' },
+          { position: 'Kepala Kabupaten' },
+          { position: 'Kepala Kantor Kabupaten' }
+        ] : [
+          { position: 'Asisten Deputi' }
+        ],
+        ...(user.position === 'Kepala Cabang' ? { workUnit: user.workUnit || undefined } : {}),
+        status: 'APPROVED'
+      };
+      chartTitle = user.position === 'Kepala Cabang' ? "Pimpinan Bawahan di " + (user.workUnit || "Cabang") : "Pimpinan Bawahan di Wilayah";
+    } else if (user.role === 'ADMIN') {
+      chartTitle = "Seluruh Wilayah";
     }
 
     let departmentUsers = await prisma.user.findMany({
@@ -111,13 +140,6 @@ export default async function ProfilePage() {
         }
       }
     });
-
-    // Exclude Asisten Deputi and Deputi Direksi Wilayah from Asisten Deputi's dashboard view
-    if (user.position === 'Asisten Deputi') {
-      departmentUsers = departmentUsers.filter(
-        (u) => u.position !== 'Asisten Deputi' && u.position !== 'Deputi Direksi Wilayah'
-      );
-    }
 
     const normalizeStyle = (style: string) => {
       if (!style) return "";
@@ -188,8 +210,12 @@ export default async function ProfilePage() {
 
     // Calculate Dashboard Stats
     let statsUsers = departmentUsers;
-    if (user.position === 'Deputi Direksi Wilayah') {
+    if (user.role === 'ADMIN' || user.position === 'Deputi Direksi Wilayah') {
       statsUsers = departmentUsers.filter(u => u.position === 'Asisten Deputi');
+    } else if (user.position === 'Asisten Deputi') {
+      statsUsers = departmentUsers;
+    } else if (user.position === 'Kepala Kabupaten') {
+      statsUsers = departmentUsers;
     }
     
     const totalMembers = statsUsers.length;
@@ -288,20 +314,22 @@ export default async function ProfilePage() {
 
   // Determine role group for this user
   let userRoleGroup = "Staf";
-  if (user.position === 'Asisten Deputi') userRoleGroup = "Asisten Deputi";
-  else if (user.position === 'Deputi Direksi Wilayah') userRoleGroup = "Deputi Direksi Wilayah";
+  if (user.position === 'Deputi Direksi Wilayah') userRoleGroup = "Deputi Direksi Wilayah";
+  if (user.position === 'Asisten Deputi' || user.position === 'Kepala Kabupaten') userRoleGroup = "Asisten Deputi";
 
   // Feature flags
   const featureFlags = await getFeatureFlagsMap(userRoleGroup, user.department);
 
-  const showAsesmen = user.role !== 'ADMIN'
+  const isNormalUserView = user.role !== 'ADMIN' 
+    && user.position !== 'Deputi Direksi Wilayah' 
     && user.position !== 'Asisten Deputi'
-    && user.position !== 'Deputi Direksi Wilayah'
+    && user.position !== 'Kepala Kabupaten'
+    && !isAsistenModeCoachee
     && (featureFlags['ulangi_asesmen'] ?? true);
 
-  const showBankSoal = user.role === 'ADMIN' || (user.position === 'Asisten Deputi' && (featureFlags['manajemen_bank_soal'] ?? false));
-  const showCooldownSettings = user.role === 'ADMIN' || (user.position === 'Asisten Deputi' && (featureFlags['jangka_asesmen_ulang'] ?? false));
-  const showPanduan = (user.position === 'Asisten Deputi' && featureFlags['panduan_komunikasi']) || user.position === 'Deputi Direksi Wilayah';
+  const showBankSoal = user.role === 'ADMIN' || ((user.position === 'Asisten Deputi' || user.position === 'Kepala Kabupaten') && (featureFlags['manajemen_bank_soal'] ?? false));
+  const showCooldownSettings = user.role === 'ADMIN' || ((user.position === 'Asisten Deputi' || user.position === 'Kepala Kabupaten') && (featureFlags['jangka_asesmen_ulang'] ?? false));
+  const showPanduan = ((user.position === 'Asisten Deputi' || user.position === 'Kepala Kabupaten') && featureFlags['panduan_komunikasi']) || user.position === 'Deputi Direksi Wilayah';
 
   // Cooldown check for reassessment
   const cooldownMonths = await getCooldownSetting();
@@ -320,7 +348,7 @@ export default async function ProfilePage() {
     }
   }
 
-  const isStafOrAsistenManager = user.role !== 'ADMIN' && user.position !== 'Asisten Deputi' && user.position !== 'Deputi Direksi Wilayah';
+  const isStafOrAsistenManager = user.role !== 'ADMIN' && user.position !== 'Asisten Deputi' && user.position !== 'Deputi Direksi Wilayah' && user.position !== 'Kepala Kabupaten';
   let myCoachingLogs: any[] = [];
   if (isStafOrAsistenManager) {
     myCoachingLogs = await prisma.coachingLog.findMany({
@@ -333,7 +361,7 @@ export default async function ProfilePage() {
     });
   }
 
-  const isCoach = ['Deputi Direksi Wilayah', 'Asisten Deputi'].includes(user.position || '');
+  const isCoach = ['Deputi Direksi Wilayah', 'Asisten Deputi', 'Kepala Kabupaten'].includes(user.position || '');
   let coachActiveLogs: any[] = [];
   if (isCoach) {
     coachActiveLogs = await prisma.coachingLog.findMany({
@@ -349,9 +377,9 @@ export default async function ProfilePage() {
     });
   }
 
-  const hasLeftColumnContent = (showPanduan && user.role !== 'ADMIN' && user.position !== 'Asisten Deputi' && user.position !== 'Deputi Direksi Wilayah') || 
-    (user.role !== 'ADMIN' && user.position !== 'Asisten Deputi' && user.position !== 'Deputi Direksi Wilayah' && showBankSoal) || 
-    (user.role !== 'ADMIN' && user.position !== 'Asisten Deputi' && user.position !== 'Deputi Direksi Wilayah' && showCooldownSettings);
+  const hasLeftColumnContent = (showPanduan && user.role !== 'ADMIN' && user.position !== 'Asisten Deputi' && user.position !== 'Deputi Direksi Wilayah' && user.position !== 'Kepala Kabupaten') || 
+    (user.role !== 'ADMIN' && user.position !== 'Asisten Deputi' && user.position !== 'Deputi Direksi Wilayah' && user.position !== 'Kepala Kabupaten' && showBankSoal) || 
+    (user.role !== 'ADMIN' && user.position !== 'Asisten Deputi' && user.position !== 'Deputi Direksi Wilayah' && user.position !== 'Kepala Kabupaten' && showCooldownSettings);
 
   return (
     <div className={cn("w-full max-w-[1920px] mx-auto relative pt-2 -mt-10 pb-8 md:pb-12 px-4 sm:px-6 lg:px-8 xl:px-12")}>
@@ -383,7 +411,7 @@ export default async function ProfilePage() {
 
 
           {/* Bank Soal card for non-admin role groups with flag enabled */}
-          {user.role !== 'ADMIN' && user.position !== 'Asisten Deputi' && showBankSoal && (
+          {user.role !== 'ADMIN' && user.position !== 'Asisten Deputi' && user.position !== 'Kepala Kabupaten' && showBankSoal && (
             <div className="flex items-center gap-3 px-4 py-3 rounded-xl border border-emerald-500/30 dark:border-emerald-500/20 bg-white dark:bg-zinc-950 shadow-sm hover:shadow-md transition-all group">
               <div className="inline-flex items-center justify-center p-2 rounded-lg bg-emerald-500/10 dark:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 shrink-0">
                 <Database className="w-4 h-4" />
@@ -398,7 +426,7 @@ export default async function ProfilePage() {
             </div>
           )}
           {/* Jangka Asesmen Ulang card for non-admin role groups with flag enabled */}
-          {user.role !== 'ADMIN' && user.position !== 'Asisten Deputi' && showCooldownSettings && (
+          {user.role !== 'ADMIN' && user.position !== 'Asisten Deputi' && user.position !== 'Kepala Kabupaten' && showCooldownSettings && (
             <div className="flex items-center gap-3 px-4 py-3 rounded-xl border border-teal-500/30 dark:border-teal-500/20 bg-white dark:bg-zinc-950 shadow-sm hover:shadow-md transition-all group">
               <div className="inline-flex items-center justify-center p-2 rounded-lg bg-teal-500/10 dark:bg-teal-500/20 text-teal-600 dark:text-teal-400 shrink-0">
                 <Clock className="w-4 h-4" />
@@ -420,8 +448,8 @@ export default async function ProfilePage() {
         <div className="w-full flex-1 flex flex-col gap-4 md:gap-6 min-w-0">
           
           {/* Rekapitulasi Coaching (Admin, Asisten Deputi, Deputi) */}
-          {/* Rekapitulasi Coaching (Admin, Asisten Deputi, Deputi) */}
-          {(['ADMIN'].includes(user.role) || ['Deputi Direksi Wilayah', 'Asisten Deputi'].includes(user.position || '')) && (
+          {/* Rekapitulasi Coaching (Admin, Asisten Deputi, Deputi, Kepala Kabupaten) */}
+          {(['ADMIN'].includes(user.role) || ['Deputi Direksi Wilayah', 'Asisten Deputi', 'Kepala Kabupaten'].includes(user.position || '')) && (
             <>
               {/* Standalone Dashboard Stats Cards */}
               <div className="w-full grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6 relative z-50">

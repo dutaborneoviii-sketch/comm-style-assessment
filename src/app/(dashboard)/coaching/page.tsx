@@ -31,7 +31,7 @@ export default async function CoachingMasterPage() {
   const asistenMode = cookies().get('asisten-mode')?.value || 'coach';
   
   const isViewModeUser = currentUser?.role === 'ADMIN' && viewMode === 'user';
-  const isAsistenModeCoachee = currentUser?.position === 'Asisten Deputi' && asistenMode === 'coachee';
+  const isAsistenModeCoachee = (currentUser?.position === 'Asisten Deputi' || currentUser?.position === 'Kepala Kabupaten') && asistenMode === 'coachee';
   
   if (currentUser) {
     if (isViewModeUser) {
@@ -42,7 +42,7 @@ export default async function CoachingMasterPage() {
     }
   }
 
-  const isAuthorized = currentUser?.role === 'ADMIN' || currentUser?.position === 'Deputi Direksi Wilayah' || currentUser?.position === 'Asisten Deputi';
+  const isAuthorized = currentUser?.role === 'ADMIN' || currentUser?.position === 'Deputi Direksi Wilayah' || currentUser?.position === 'Asisten Deputi' || currentUser?.position === 'Kepala Kabupaten';
   if (!isAuthorized) {
     redirect("/profile");
   }
@@ -51,7 +51,9 @@ export default async function CoachingMasterPage() {
 
   const whereClause = (currentUser?.role === 'ADMIN' || currentUser?.position === 'Deputi Direksi Wilayah')
     ? {}
-    : { coachee: { department: currentUser?.department } };
+    : (currentUser?.position === 'Kepala Kabupaten' 
+        ? { coachee: { employeeLocation: currentUser?.employeeLocation, position: 'Staf Pelaksana' } } 
+        : { coachee: { department: currentUser?.department } });
 
   // Fetch coaching logs
   const logs = await prisma.coachingLog.findMany({

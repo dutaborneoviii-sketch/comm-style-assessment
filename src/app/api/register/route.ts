@@ -5,9 +5,9 @@ import bcrypt from 'bcryptjs';
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { name, npp, email, department, position, password } = body;
+    const { name, npp, email, workUnit, department, position, password } = body;
 
-    if (!name || !npp || !email || !department || !position || !password) {
+    if (!name || !npp || !email || !workUnit || !department || !position || !password) {
       return NextResponse.json({ error: 'Semua field wajib diisi' }, { status: 400 });
     }
 
@@ -31,6 +31,7 @@ export async function POST(request: Request) {
         name,
         npp,
         email,
+        workUnit,
         department,
         position,
         password: hashedPassword,

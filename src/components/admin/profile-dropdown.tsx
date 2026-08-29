@@ -99,10 +99,10 @@ export function ProfileDropdown({ user }: ProfileDropdownProps) {
               <p className="text-[15px] font-bold tracking-tight text-slate-900 dark:text-slate-100 leading-tight">
                 {user?.name || "Tanpa Nama"} {user?.npp ? `(${user.npp})` : ''}
               </p>
-              {(user?.position || user?.department) && (
+              {(user?.employeeLocation || user?.positionDetail) && (
                 <div className="text-[12px] text-slate-500 dark:text-slate-400 mt-1 space-y-0.5">
-                  {user?.position && <p className="font-medium text-slate-700 dark:text-slate-300">{user.position}</p>}
-                  {user?.department && <p>{user.department}</p>}
+                  {user?.employeeLocation && <p className="font-medium text-slate-700 dark:text-slate-300">{user.employeeLocation}</p>}
+                  {user?.positionDetail && <p>{user.positionDetail}</p>}
                 </div>
               )}
             </div>

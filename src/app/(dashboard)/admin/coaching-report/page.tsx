@@ -17,7 +17,17 @@ export default async function CoachingReportPage() {
   const isAsdepSDM = currentUser?.position === 'Asisten Deputi' && currentUser?.department === 'Bidang SDM, Umum dan Komunikasi (SDMUK)';
   if (!currentUser || (currentUser.role !== "ADMIN" && !isAsdepSDM)) redirect("/profile");
 
-  const reports = await getCoachingReport();
+  let reports = await getCoachingReport();
+
+  if (isAsdepSDM) {
+    const allowedPositions = ['Deputi Direksi Wilayah', 'Asisten Deputi', 'Kepala Cabang', 'Kepala Kabupaten', 'Asisten Manager'];
+    reports = reports.filter(r => {
+      if (!allowedPositions.includes(r.position!)) return false;
+      // Exclude Asisten Manager from Kedeputian Wilayah VIII
+      if (r.position === 'Asisten Manager' && r.workUnit === 'Kedeputian Wilayah VIII') return false;
+      return true;
+    });
+  }
 
   return (
     <div className="space-y-8">

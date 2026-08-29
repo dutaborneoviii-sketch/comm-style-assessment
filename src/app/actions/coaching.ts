@@ -155,8 +155,8 @@ export async function addCoachingResponse(id: string, response: string, coacheeI
       select: { position: true, role: true }
     });
 
-    if (user?.position !== 'Deputi Direksi Wilayah' && user?.position !== 'Asisten Deputi' && user?.role !== 'ADMIN') {
-      throw new Error('Unauthorized: Only Deputi or Asisten Deputi can add responses');
+    if (user?.position !== 'Deputi Direksi Wilayah' && user?.position !== 'Asisten Deputi' && user?.position !== 'Kepala Kabupaten' && user?.role !== 'ADMIN') {
+      throw new Error('Unauthorized: Only Deputi, Asisten Deputi, or Kepala Kabupaten can add responses');
     }
 
     const existingLog = await prisma.coachingLog.findUnique({

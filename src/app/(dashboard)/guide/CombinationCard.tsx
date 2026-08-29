@@ -64,20 +64,20 @@ export function CombinationGuideCard({ data, colorClass, bgClass, borderClass, l
                </h4>
                <p className="text-sm leading-relaxed text-foreground/90 font-medium">{row.cara}</p>
             </div>
-            <div className={`space-y-3 p-4 rounded-xl shadow-sm border ${bgClass} ${borderClass} ${!row.donts ? 'md:col-span-2' : ''}`}>
+            <div className={`space-y-3 p-4 rounded-xl shadow-sm border ${bgClass} ${borderClass} md:col-span-2`}>
                <h4 className={`font-semibold text-sm flex items-center gap-2 ${colorClass}`}>
                   <MessageSquareQuote className="w-4 h-4" />
                   Contoh Kalimat
                </h4>
-               <p className="text-sm leading-relaxed italic text-foreground/90">{row.contoh}</p> 
+               <p className="text-sm leading-relaxed italic text-foreground/90 text-justify">{row.contoh}</p> 
             </div>
             {row.donts && (
-              <div className="space-y-3 bg-red-50/50 dark:bg-red-950/20 p-4 rounded-xl border border-red-100 dark:border-red-900/30">
+              <div className="space-y-3 bg-red-50/50 dark:bg-red-950/20 p-4 rounded-xl border border-red-100 dark:border-red-900/30 md:col-span-2">
                  <h4 className="font-semibold text-sm text-red-600 dark:text-red-400 flex items-center gap-2">
                     <AlertTriangle className="w-4 h-4" />
                     The Don&apos;ts
                  </h4>
-                 <p className="text-sm leading-relaxed text-red-800 dark:text-red-200">{row.donts}</p> 
+                 <p className="text-sm leading-relaxed text-red-800 dark:text-red-200 text-justify">{row.donts}</p> 
               </div>
             )}
           </div>
