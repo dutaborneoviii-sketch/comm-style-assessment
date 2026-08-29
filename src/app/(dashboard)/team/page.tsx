@@ -278,7 +278,7 @@ export default async function TeamPage() {
                               {member.email}
                             </p>
                             <div className="mt-1.5 inline-flex w-fit items-center px-1.5 py-0.5 bg-slate-100 dark:bg-slate-800/80 rounded text-[9px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 border border-slate-200 dark:border-slate-700">
-                              {member.position || "-"} &bull; {member.department || "-"} - {member.employeeLocation || "-"}
+                              {member.department || "-"} - {member.employeeLocation || "-"}
                             </div>
                           </div>
                         </div>
@@ -390,7 +390,7 @@ export default async function TeamPage() {
                         {member.email}
                       </p>
                       <div className="mt-1.5 inline-flex w-fit items-center px-1.5 py-0.5 bg-slate-100 dark:bg-slate-800/80 rounded text-[9px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 border border-slate-200 dark:border-slate-700">
-                        {member.position || "-"} &bull; {member.department || "-"} - {member.employeeLocation || "-"}
+                        {member.department || "-"} - {member.employeeLocation || "-"}
                       </div>
                     </div>
                   </div>
