@@ -221,36 +221,38 @@ export default async function TeamPage() {
         </Card>
       ) : isDeputi ? (
         // Grouped by department for Deputi view
-        <div className="space-y-10">
-          {Object.entries(
-            teamMembers.reduce((groups: Record<string, typeof teamMembers>, member) => {
-              const dept = member.department || "Tanpa Bidang";
-              if (!groups[dept]) groups[dept] = [];
-              groups[dept].push(member);
-              return groups;
-            }, {})
-          ).sort(([a], [b]) => a.localeCompare(b, 'id')).map(([dept, members]) => (
-            <div key={dept}>
-              {/* Department Header */}
-              <div className="flex items-center gap-4 mb-5">
-                <div className="flex items-center gap-3">
-                  <div className="w-1.5 h-8 rounded-full bg-gradient-to-b from-[#57BC90] to-[#015249]" />
-                  <h2 className="text-xl font-extrabold text-slate-800 tracking-tight">{dept}</h2>
+        <div className="flex flex-col gap-6">
+          {/* Table Header (Global) */}
+          <div className="hidden sm:grid sm:grid-cols-[2fr_1.2fr_1.2fr_120px] items-center p-3.5 px-6 gap-4 sm:gap-6 bg-[#164732] text-white rounded-full shadow-sm">
+            <div className="font-bold text-sm tracking-wide">Anggota</div>
+            <div className="font-bold text-sm tracking-wide">Gaya Komunikasi</div>
+            <div className="font-bold text-sm tracking-wide">Status Coaching</div>
+            <div className="font-bold text-sm tracking-wide text-center">Aksi</div>
+          </div>
+          
+          <div className="space-y-10">
+            {Object.entries(
+              teamMembers.reduce((groups: Record<string, typeof teamMembers>, member) => {
+                const dept = member.department || "Tanpa Bidang";
+                if (!groups[dept]) groups[dept] = [];
+                groups[dept].push(member);
+                return groups;
+              }, {})
+            ).sort(([a], [b]) => a.localeCompare(b, 'id')).map(([dept, members]) => (
+              <div key={dept}>
+                {/* Department Header */}
+                <div className="flex items-center gap-4 mb-5">
+                  <div className="flex items-center gap-3">
+                    <div className="w-1.5 h-8 rounded-full bg-gradient-to-b from-[#57BC90] to-[#015249]" />
+                    <h2 className="text-xl font-extrabold text-slate-800 tracking-tight">{dept}</h2>
+                  </div>
+                  <div className="flex-1 h-px bg-gradient-to-r from-slate-200 dark:from-slate-800 to-transparent" />
+                  <span className="text-xs font-bold text-slate-400 bg-slate-100 dark:bg-slate-800 px-3 py-1 rounded-full border border-slate-200 dark:border-slate-700">
+                    {members.length} anggota
+                  </span>
                 </div>
-                <div className="flex-1 h-px bg-gradient-to-r from-white/20 to-transparent" />
-                <span className="text-xs font-bold text-slate-400 bg-white/10 px-3 py-1 rounded-full border border-slate-200">
-                  {members.length} anggota
-                </span>
-              </div>
-              {/* Table Header */}
-              <div className="hidden sm:grid sm:grid-cols-[2fr_1.2fr_1.2fr_120px] items-center p-3.5 px-6 gap-4 sm:gap-6 bg-[#164732] text-white rounded-full mb-3 shadow-sm">
-                <div className="font-bold text-sm tracking-wide">Anggota</div>
-                <div className="font-bold text-sm tracking-wide">Gaya Komunikasi</div>
-                <div className="font-bold text-sm tracking-wide">Status Coaching</div>
-                <div className="font-bold text-sm tracking-wide text-center">Aksi</div>
-              </div>
-              
-              {/* Members List (Table Rows) */}
+                
+                {/* Members List (Table Rows) */}
               <div className="flex flex-col gap-2.5 w-full">
                 {(members as typeof teamMembers).map((member) => {
                   const latestAssessment = member.assessments[0];
@@ -276,7 +278,7 @@ export default async function TeamPage() {
                               {member.email}
                             </p>
                             <div className="mt-1.5 inline-flex w-fit items-center px-1.5 py-0.5 bg-slate-100 dark:bg-slate-800/80 rounded text-[9px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 border border-slate-200 dark:border-slate-700">
-                              {member.position || "-"}
+                              {member.position || "-"} &bull; {member.department || "-"} - {member.employeeLocation || "-"}
                             </div>
                           </div>
                         </div>
@@ -379,13 +381,16 @@ export default async function TeamPage() {
                     <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#57BC90]/10 to-[#015249]/10 dark:from-[#57BC90]/20 dark:to-[#015249]/20 flex items-center justify-center text-[#57BC90] flex-shrink-0 shadow-sm ring-2 ring-white dark:ring-zinc-950 group-hover:scale-105 transition-all duration-300">
                       <UserIcon className="w-5 h-5" />
                     </div>
-                    <div className="min-w-0">
+                    <div className="min-w-0 flex flex-col">
                       <h4 className="text-sm font-bold text-foreground group-hover:text-[#015249] dark:group-hover:text-blue-400 transition-colors truncate">
                         {member.name || "Tanpa Nama"} {member.npp && <span className="text-muted-foreground font-normal ml-1">({member.npp})</span>}
                       </h4>
                       <p className="text-[10px] text-muted-foreground font-medium mt-0.5 truncate">
                         {member.email}
                       </p>
+                      <div className="mt-1.5 inline-flex w-fit items-center px-1.5 py-0.5 bg-slate-100 dark:bg-slate-800/80 rounded text-[9px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 border border-slate-200 dark:border-slate-700">
+                        {member.position || "-"} &bull; {member.department || "-"} - {member.employeeLocation || "-"}
+                      </div>
                     </div>
                   </div>
 
