@@ -52,7 +52,7 @@ export default async function TeamPage() {
   // Get current user's department and position
   const currentUser = await prisma.user.findUnique({
     where: { id: session.user.id },
-    select: { department: true, position: true, role: true, employeeLocation: true }
+    select: { department: true, position: true, role: true, employeeLocation: true, workUnit: true }
   });
 
   const viewMode = cookies().get('view-mode')?.value || 'admin';
