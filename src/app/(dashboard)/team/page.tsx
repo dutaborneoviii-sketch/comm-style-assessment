@@ -172,7 +172,7 @@ export default async function TeamPage() {
               ? `${(currentUser.department || "Staf Pelaksana").replace(/\s*\([^)]*\)$/, '')} - ${currentUser.employeeLocation || "Unit Kerja"}` 
               : isDeputi 
                 ? (currentUser.position === 'Kepala Cabang' 
-                    ? `Pimpinan Bawahan di ${currentUser.workUnit || "Cabang"}` 
+                    ? currentUser.workUnit || "Cabang"
                     : "Memonitoring Seluruh Bidang Kedeputian Wilayah VIII") 
                 : (department ? `Bidang ${department}` : "Anda belum tergabung dalam bidang apapun.")}
           </p>
