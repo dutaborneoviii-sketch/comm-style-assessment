@@ -353,6 +353,7 @@ export default async function TeamPage() {
             </div>
           ))}
         </div>
+        </div>
       ) : (
         <>
           {/* Table Header */}
