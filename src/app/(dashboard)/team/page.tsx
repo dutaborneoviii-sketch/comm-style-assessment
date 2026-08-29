@@ -96,7 +96,7 @@ export default async function TeamPage() {
       where: {
         ...(currentUser?.role !== 'ADMIN' ? { id: { not: session.user.id } } : {}),
         OR: currentUser?.position === 'Kepala Cabang' ? [
-          { position: 'Asisten Manager' },
+          { position: 'Asisten Manager', department: { notIn: ['Kantor Kabupaten', 'Kepesertaan dan Penagihan Iuran (Kabupaten)', 'Penjaminan Manfaat dan Pengelolaan Fasilitas Kesehatan (Kabupaten)'] } },
           { position: 'Kepala Kabupaten' },
           { position: 'Kepala Kantor Kabupaten' }
         ] : [
@@ -131,9 +131,18 @@ export default async function TeamPage() {
         workUnit: currentUser.workUnit || undefined,
         ...(currentUser.role !== 'ADMIN' ? {
           position: {
-            in: currentUser.position === 'Asisten Deputi' ? ['Staf Pelaksana', 'PTT/PATT', 'Asisten Manager'] : ['Staf Pelaksana', 'PTT/PATT']
+            in: (currentUser.position === 'Asisten Deputi' || currentUser.position === 'Kepala Kabupaten' || currentUser.position === 'Kepala Kantor Kabupaten')
+              ? ['Staf Pelaksana', 'PTT/PATT', 'Asisten Manager'] 
+              : ['Staf Pelaksana', 'PTT/PATT']
           }
         } : {}),
+        // Kecualikan Asisten Manager dari Kedeputian Wilayah VIII
+        NOT: {
+          AND: [
+            { position: 'Asisten Manager' },
+            { workUnit: 'Kedeputian Wilayah VIII' }
+          ]
+        },
         status: 'APPROVED'
       },
       include: {
