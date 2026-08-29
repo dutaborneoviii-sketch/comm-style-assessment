@@ -760,6 +760,57 @@ function MigrationDialog() {
     URL.revokeObjectURL(url);
   };
 
+  const downloadResultsReport = async () => {
+    if (!results) return;
+    const workbook = new ExcelJS.Workbook();
+    const sheet = workbook.addWorksheet('Laporan Migrasi');
+
+    sheet.columns = [
+      { header: 'NPP', key: 'npp', width: 15 },
+      { header: 'Nama User', key: 'name', width: 25 },
+      { header: 'Satuan Kerja', key: 'workUnit', width: 25 },
+      { header: 'Bidang', key: 'department', width: 25 },
+      { header: 'Jabatan', key: 'position', width: 20 },
+      { header: 'Status', key: 'status', width: 15 },
+      { header: 'Password Baru', key: 'passwordGenerated', width: 20 },
+      { header: 'Keterangan Error', key: 'message', width: 30 },
+    ];
+
+    // Style the header row
+    sheet.getRow(1).font = { bold: true, color: { argb: 'FFFFFFFF' } };
+    sheet.getRow(1).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF015249' } };
+    sheet.getRow(1).alignment = { vertical: 'middle', horizontal: 'center' };
+
+    results.forEach(r => {
+      const row = sheet.addRow({
+        npp: r.npp,
+        name: r.name,
+        workUnit: r.workUnit,
+        department: r.department,
+        position: r.position,
+        status: r.status === "SUCCESS" ? "Berhasil" : "Gagal",
+        passwordGenerated: r.passwordGenerated,
+        message: r.message || "-"
+      });
+      
+      // Highlight failed rows
+      if (r.status === "FAILED") {
+        row.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFFF0F0' } };
+      }
+    });
+
+    const buffer = await workbook.xlsx.writeBuffer();
+    const blob = new Blob([buffer], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `Laporan_Migrasi_User_${new Date().toISOString().split('T')[0]}.xlsx`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
   return (
     <Dialog open={open} onOpenChange={(val) => {
       setOpen(val);
@@ -830,7 +881,13 @@ function MigrationDialog() {
           {/* Results Table of Generated Passwords */}
           {results && (
             <div className="space-y-3 pt-2">
-              <h4 className="text-xs font-black text-slate-600 dark:text-slate-400 uppercase tracking-widest">Laporan Status Migrasi</h4>
+              <div className="flex items-center justify-between">
+                <h4 className="text-xs font-black text-slate-600 dark:text-slate-400 uppercase tracking-widest">Laporan Status Migrasi</h4>
+                <Button onClick={downloadResultsReport} variant="outline" className="h-7 text-[10px] font-bold text-[#015249] border-[#015249]/30 hover:bg-[#015249]/5 gap-1 rounded-md px-3">
+                  <Download className="w-3 h-3" />
+                  Unduh Excel Laporan
+                </Button>
+              </div>
               <div className="overflow-x-auto rounded-xl border border-slate-200/60 dark:border-slate-800 shadow-sm max-h-[220px]">
                 <table className="w-full text-left border-collapse text-[11px]">
                   <thead>
