@@ -135,8 +135,6 @@ export function CreateUserDialog() {
                 <option value="" disabled>Pilih Bidang...</option>
                 <option value="Bagian Mutu Layanan Kepesertaan (KC)">Bagian Mutu Layanan Kepesertaan (KC)</option>
                 <option value="Bagian Mutu Layanan Fasilitas Kesehatan (KC)">Bagian Mutu Layanan Fasilitas Kesehatan (KC)</option>
-                <option value="Bagian Mutu Layanan Kepesertaan (KC)">Bagian Mutu Layanan Kepesertaan (KC)</option>
-                <option value="Bagian Mutu Layanan Fasilitas Kesehatan (KC)">Bagian Mutu Layanan Fasilitas Kesehatan (KC)</option>
                 <option value="Bagian SDM, Umum dan Komunikasi (KC)">Bagian SDM, Umum dan Komunikasi (KC)</option>
                 <option value="Bagian Penjaminan Manfaat dan Utilisasi (KC)">Bagian Penjaminan Manfaat dan Utilisasi (KC)</option>
                 <option value="Bagian Kepesertaan (KC)">Bagian Kepesertaan (KC)</option>
@@ -148,6 +146,7 @@ export function CreateUserDialog() {
                 <option value="Bidang Perencanaan dan Keuangan (PK)">Bidang Perencanaan dan Keuangan (PK)</option>
                 <option value="Kepesertaan dan Penagihan Iuran (Kabupaten)">Kepesertaan dan Penagihan Iuran (Kabupaten)</option>
                 <option value="Penjaminan Manfaat dan Pengelolaan Fasilitas Kesehatan (Kabupaten)">Penjaminan Manfaat dan Pengelolaan Fasilitas Kesehatan (Kabupaten)</option>
+                <option value="Kantor Cabang">Kantor Cabang</option>
                 <option value="Kantor Kabupaten">Kantor Kabupaten</option>
                 <option value="TI Wilayah">TI Wilayah</option>
               </select>
@@ -382,8 +381,6 @@ export function EditUserDialog({ user, children }: { user: any, children: React.
                 <option value="" disabled>Pilih Bidang...</option>
                 <option value="Bagian Mutu Layanan Kepesertaan (KC)">Bagian Mutu Layanan Kepesertaan (KC)</option>
                 <option value="Bagian Mutu Layanan Fasilitas Kesehatan (KC)">Bagian Mutu Layanan Fasilitas Kesehatan (KC)</option>
-                <option value="Bagian Mutu Layanan Kepesertaan (KC)">Bagian Mutu Layanan Kepesertaan (KC)</option>
-                <option value="Bagian Mutu Layanan Fasilitas Kesehatan (KC)">Bagian Mutu Layanan Fasilitas Kesehatan (KC)</option>
                 <option value="Bagian SDM, Umum dan Komunikasi (KC)">Bagian SDM, Umum dan Komunikasi (KC)</option>
                 <option value="Bagian Penjaminan Manfaat dan Utilisasi (KC)">Bagian Penjaminan Manfaat dan Utilisasi (KC)</option>
                 <option value="Bagian Kepesertaan (KC)">Bagian Kepesertaan (KC)</option>
@@ -395,6 +392,7 @@ export function EditUserDialog({ user, children }: { user: any, children: React.
                 <option value="Bidang Perencanaan dan Keuangan (PK)">Bidang Perencanaan dan Keuangan (PK)</option>
                 <option value="Kepesertaan dan Penagihan Iuran (Kabupaten)">Kepesertaan dan Penagihan Iuran (Kabupaten)</option>
                 <option value="Penjaminan Manfaat dan Pengelolaan Fasilitas Kesehatan (Kabupaten)">Penjaminan Manfaat dan Pengelolaan Fasilitas Kesehatan (Kabupaten)</option>
+                <option value="Kantor Cabang">Kantor Cabang</option>
                 <option value="Kantor Kabupaten">Kantor Kabupaten</option>
                 <option value="TI Wilayah">TI Wilayah</option>
               </select>

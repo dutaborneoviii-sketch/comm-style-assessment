@@ -561,7 +561,6 @@ function MigrationDialog() {
           setError(res.error);
         } else if (res.results) {
           setResults(res.results);
-          router.refresh();
         }
         setLoading(false);
       };
@@ -620,6 +619,7 @@ function MigrationDialog() {
       "Kepesertaan dan Penagihan Iuran (Kabupaten)",
       "Penjaminan Manfaat dan Pengelolaan Fasilitas Kesehatan (Kabupaten)",
       "Kantor Kabupaten",
+      "Kantor Cabang",
       "TI Wilayah"
     ];
     
@@ -764,6 +764,7 @@ function MigrationDialog() {
     <Dialog open={open} onOpenChange={(val) => {
       setOpen(val);
       if (!val) {
+        if (results) router.refresh();
         setFile(null);
         setError("");
         setResults(null);

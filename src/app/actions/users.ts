@@ -362,6 +362,20 @@ export async function migrateUsers(base64Data: string) {
 
     const results: { name: string; npp: string; email: string; workUnit: string; department: string; position: string; positionDetail?: string; role: string; passwordGenerated: string; status: "SUCCESS" | "FAILED"; message?: string }[] = [];
 
+    const nppsToImport = rows.map((r: any) => String(r.npp || r.NPP || "").trim()).filter(Boolean);
+    const existingUsers = await prisma.user.findMany({
+      where: { npp: { in: nppsToImport } },
+      select: { npp: true, name: true, email: true, workUnit: true, employeeLocation: true, department: true, position: true, positionDetail: true, role: true }
+    });
+    const existingNppMap = new Map(existingUsers.map(u => [u.npp, u]));
+
+    const deptsToImport = [...new Set(rows.map((r: any) => String(r.department || r.bidang || r.Bidang || "").trim()).filter(Boolean))];
+    const validDepartments = await prisma.department.findMany({
+      where: { name: { in: deptsToImport } },
+      select: { name: true }
+    });
+    const validDeptSet = new Set(validDepartments.map(d => d.name));
+
     for (const row of rows) {
       const npp = String(row.npp || row.NPP || "").trim();
       const name = String(row.name || row.nama || row.Nama || row["Nama User"] || "").trim();
@@ -392,7 +406,7 @@ export async function migrateUsers(base64Data: string) {
       }
 
       // Check if user already exists
-      const existingUser = await prisma.user.findUnique({ where: { npp } });
+      const existingUser = existingNppMap.get(npp);
       if (existingUser) {
         results.push({
           name: name || existingUser.name || "-",
@@ -412,8 +426,7 @@ export async function migrateUsers(base64Data: string) {
       }
 
       if (department) {
-        const deptExists = await prisma.department.findUnique({ where: { name: department } });
-        if (!deptExists) {
+        if (!validDeptSet.has(department)) {
           results.push({
             name: name || "-",
             npp,
@@ -483,7 +496,6 @@ export async function migrateUsers(base64Data: string) {
       }
     }
 
-    revalidatePath("/admin/users");
     return { success: true, results };
   } catch (err: any) {
     console.error("Migration error:", err);
