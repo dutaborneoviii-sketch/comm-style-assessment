@@ -27,34 +27,53 @@ export default async function CoachingReportPage() {
   
   if (!isAdmin && !isEnabled && !isAsdepSDM) redirect("/profile");
 
-  let reports = await getCoachingReport();
+  let reports: any[] = [];
+  let errorMsg = null;
+  try {
+    reports = await getCoachingReport();
+  } catch(e: any) {
+    errorMsg = e.message || e.toString();
+  }
 
   const allowedPositions = [
     'Senior Manager', 'Manager', 'Asisten Manager', 
     'Deputi Direksi Wilayah', 'Asisten Deputi', 'Kepala Cabang', 'Kepala Kabupaten', 'Kepala Kantor Kabupaten'
   ];
   
-  reports = reports.filter(r => {
-    const isAllowedRole = allowedPositions.includes(r.pangkat!) || allowedPositions.includes(r.positionDetail!);
-    if (!isAllowedRole) return false;
-    
-    // Exclude Asisten Manager from Kedeputian Wilayah VIII
-    if ((r.pangkat === 'Asisten Manager' || r.positionDetail === 'Asisten Manager') && r.workUnit === 'Kedeputian Wilayah VIII') return false;
-    
-    return true;
-  });
+  try {
+    reports = reports.filter(r => {
+      const isAllowedRole = allowedPositions.includes(r.pangkat!) || allowedPositions.includes(r.positionDetail!);
+      if (!isAllowedRole) return false;
+      if ((r.pangkat === 'Asisten Manager' || r.positionDetail === 'Asisten Manager') && r.workUnit === 'Kedeputian Wilayah VIII') return false;
+      return true;
+    });
 
-  // Filter specific to Manager SDMUK Kedeputian Wilayah VIII
-  if (!isAdmin && isAsdepSDM) {
-    reports = reports.filter(r => 
-      r.workUnit === 'Kedeputian Wilayah VIII' || 
-      (r.workUnit && r.workUnit.startsWith('Kantor Cabang')) || 
-      (r.workUnit && r.workUnit.startsWith('Kantor Kabupaten'))
-    );
-  } else if (!isAdmin) {
-    // If other non-admins get access via feature flags, restrict them to their own workUnit
-    reports = reports.filter(r => r.workUnit === currentUser.workUnit);
+    if (!isAdmin && isAsdepSDM) {
+      reports = reports.filter(r => 
+        r.workUnit === 'Kedeputian Wilayah VIII' || 
+        (r.workUnit && r.workUnit.startsWith('Kantor Cabang')) || 
+        (r.workUnit && r.workUnit.startsWith('Kantor Kabupaten'))
+      );
+    } else if (!isAdmin) {
+      reports = reports.filter(r => r.workUnit === currentUser.workUnit);
+    }
+  } catch(e: any) {
+    errorMsg = errorMsg || e.message || e.toString();
   }
+
+  
+  // Ensure no undefined values are passed to Client Components
+  const sanitize = (obj: any): any => {
+    if (obj === undefined) return null;
+    if (obj === null || typeof obj !== 'object') return obj;
+    if (Array.isArray(obj)) return obj.map(sanitize);
+    const newObj: any = {};
+    for (const key in obj) {
+      newObj[key] = sanitize(obj[key]);
+    }
+    return newObj;
+  };
+  reports = sanitize(reports);
 
   return (
     <div className="space-y-8">
@@ -70,7 +89,11 @@ export default async function CoachingReportPage() {
 
       <Card className="border border-slate-200 dark:border-slate-800 shadow-sm rounded-xl bg-white dark:bg-zinc-950">
         <CardContent className="p-0">
-          <CoachingReportTable reports={reports} />
+          {errorMsg ? (
+            <div className="p-8 text-red-500 font-mono whitespace-pre-wrap">{errorMsg}</div>
+          ) : (
+            <CoachingReportTable reports={reports} />
+          )}
         </CardContent>
       </Card>
     </div>
