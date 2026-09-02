@@ -2,6 +2,7 @@ import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
 import Link from "next/link";
+import { getUserAccess } from "@/lib/access";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowLeft, CalendarDays, Clock, MessageSquare, Paperclip, CheckCircle2, Circle } from "lucide-react";
@@ -16,7 +17,7 @@ export const dynamic = "force-dynamic";
 export default async function CoachingDetailPage({ params }: { params: { id: string } }) {
   const session = await auth();
   if (!session?.user?.id) {
-    redirect("/login");
+    redirect("/");
   }
 
   const logId = params.id;
@@ -24,8 +25,8 @@ export default async function CoachingDetailPage({ params }: { params: { id: str
   const coachingLog = await prisma.coachingLog.findUnique({
     where: { id: logId },
     include: {
-      coach: { select: { name: true, position: true, department: true } },
-      coachee: { select: { name: true, position: true } },
+      coach: { select: { name: true, positionDetail: true, department: true } },
+      coachee: { select: { name: true, positionDetail: true } },
       actionItems: { orderBy: { createdAt: 'asc' } }
     }
   });
@@ -39,6 +40,20 @@ export default async function CoachingDetailPage({ params }: { params: { id: str
         </Link>
       </div>
     );
+  }
+
+  // Get current user details to check if they have access
+  const currentUser = await prisma.user.findUnique({
+    where: { id: session.user.id },
+    select: { id: true, role: true, positionDetail: true, department: true, employeeLocation: true, workUnit: true, pangkat: true }
+  });
+
+  const access = getUserAccess(currentUser as any);
+  const isOwner = session.user.id === coachingLog.coacheeId || session.user.id === coachingLog.coachId;
+  const isAuthorized = isOwner || access.isAdmin || (access.isCoach && currentUser?.pangkat === 'Deputi Direksi Wilayah');
+  
+  if (!isAuthorized) {
+    redirect("/profile");
   }
 
   const isCoachee = session.user.id === coachingLog.coacheeId;
@@ -148,7 +163,7 @@ export default async function CoachingDetailPage({ params }: { params: { id: str
               <div>
                 <p className="text-xs text-slate-500 font-semibold uppercase tracking-wider mb-1">Coach</p>
                 <p className="font-medium text-slate-800">{coachingLog.coach.name}</p>
-                <p className="text-sm text-slate-500">{coachingLog.coach.position}</p>
+                <p className="text-sm text-slate-500">{coachingLog.coach.positionDetail}</p>
                 {coachingLog.coach.department && (
                   <p className="text-xs text-slate-400 mt-0.5">{coachingLog.coach.department}</p>
                 )}
@@ -157,7 +172,7 @@ export default async function CoachingDetailPage({ params }: { params: { id: str
               <div>
                 <p className="text-xs text-slate-500 font-semibold uppercase tracking-wider mb-1">Coachee</p>
                 <p className="font-medium text-slate-800">{coachingLog.coachee.name}</p>
-                <p className="text-sm text-slate-500">{coachingLog.coachee.position}</p>
+                <p className="text-sm text-slate-500">{coachingLog.coachee.positionDetail}</p>
               </div>
             </CardContent>
           </Card>

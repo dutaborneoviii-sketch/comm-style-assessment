@@ -101,8 +101,8 @@ export function ProfileDropdown({ user }: ProfileDropdownProps) {
               </p>
               {(user?.employeeLocation || user?.positionDetail) && (
                 <div className="text-[12px] text-slate-500 dark:text-slate-400 mt-1 space-y-0.5">
-                  {user?.employeeLocation && <p className="font-medium text-slate-700 dark:text-slate-300">{user.employeeLocation}</p>}
-                  {user?.positionDetail && <p>{user.positionDetail}</p>}
+                  {user?.positionDetail && <p className="font-medium text-slate-700 dark:text-slate-300">{user.positionDetail}</p>}
+                  {user?.employeeLocation && <p>{user.employeeLocation}</p>}
                 </div>
               )}
             </div>

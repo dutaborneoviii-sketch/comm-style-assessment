@@ -2,6 +2,7 @@ import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
 import Link from "next/link";
+import { getUserAccess } from "@/lib/access";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { History, Calendar, MessageCircle, FileText, ArrowLeft } from "lucide-react";
@@ -18,42 +19,79 @@ export const dynamic = "force-dynamic";
 export default async function CoachingMasterPage() {
   const session = await auth();
   if (!session?.user?.id) {
-    redirect("/login");
+    redirect("/");
   }
 
   // Authorize user
   const currentUser = await prisma.user.findUnique({
     where: { id: session.user.id },
-    select: { role: true, position: true, department: true }
+    select: { id: true, role: true, positionDetail: true, department: true, employeeLocation: true, workUnit: true, pangkat: true }
   });
 
   const viewMode = cookies().get('view-mode')?.value || 'admin';
   const asistenMode = cookies().get('asisten-mode')?.value || 'coach';
   
   const isViewModeUser = currentUser?.role === 'ADMIN' && viewMode === 'user';
-  const isAsistenModeCoachee = (currentUser?.position === 'Asisten Deputi' || currentUser?.position === 'Kepala Kabupaten') && asistenMode === 'coachee';
+  const isAsistenModeCoachee = (currentUser?.positionDetail === 'Asisten Deputi' || currentUser?.positionDetail === 'Kepala Kabupaten' || currentUser?.positionDetail === 'Kepala Kantor Kabupaten') && asistenMode === 'coachee';
   
   if (currentUser) {
     if (isViewModeUser) {
       currentUser.role = 'USER';
-      currentUser.position = 'Staf Pelaksana';
+      currentUser.positionDetail = 'Staf Pelaksana';
     } else if (isAsistenModeCoachee) {
-      currentUser.position = 'Staf Pelaksana';
+      currentUser.positionDetail = 'Staf Pelaksana';
     }
   }
 
-  const isAuthorized = currentUser?.role === 'ADMIN' || currentUser?.position === 'Deputi Direksi Wilayah' || currentUser?.position === 'Asisten Deputi' || currentUser?.position === 'Kepala Kabupaten';
+  const access = getUserAccess(currentUser as any);
+  const isAuthorized = access.isAdmin || access.isCoach;
   if (!isAuthorized) {
     redirect("/profile");
   }
   
-  const isDeputi = currentUser?.position === 'Deputi Direksi Wilayah';
+  const isDeputi = currentUser?.pangkat === 'Deputi Direksi Wilayah' || currentUser?.positionDetail === 'Deputi Direksi Wilayah';
+  const isTopLevel = isDeputi || currentUser?.pangkat === 'Senior Manager' || currentUser?.positionDetail === 'Kepala Cabang';
+  const isKepalaKabupaten = currentUser?.positionDetail === 'Kepala Kabupaten' || currentUser?.positionDetail === 'Kepala Kantor Kabupaten';
+  const isManager = currentUser?.pangkat === 'Manager';
 
-  const whereClause = (currentUser?.role === 'ADMIN' || currentUser?.position === 'Deputi Direksi Wilayah')
-    ? {}
-    : (currentUser?.position === 'Kepala Kabupaten' 
-        ? { coachee: { employeeLocation: currentUser?.employeeLocation, position: 'Staf Pelaksana' } } 
-        : { coachee: { department: currentUser?.department } });
+  let targetPangkat: string[] = [];
+  if (isTopLevel) {
+    if (currentUser?.positionDetail === 'Kepala Cabang' || (currentUser?.workUnit?.startsWith('Kantor Cabang') && currentUser?.pangkat === 'Manager')) {
+      targetPangkat = ['Asisten Manager'];
+    } else if (currentUser?.pangkat === 'Senior Manager') {
+      targetPangkat = ['Manager'];
+    } else {
+      targetPangkat = ['Manager', 'Asisten Manager', 'Pelaksana', 'PTT/PATT', 'Asisten Deputi', 'Kepala Kabupaten', 'Kepala Kantor Kabupaten', 'Staf Pelaksana'];
+    }
+  } else if (isManager || currentUser?.positionDetail === 'Asisten Deputi' || isKepalaKabupaten) {
+    targetPangkat = ['Asisten Manager', 'Pelaksana', 'PTT/PATT', 'Staf Pelaksana'];
+  } else if (currentUser?.pangkat === 'Asisten Manager' || currentUser?.positionDetail === 'Asisten Manager') {
+    targetPangkat = ['Pelaksana', 'PTT/PATT', 'Staf Pelaksana'];
+  }
+
+  let whereClause: any = { coachId: currentUser?.id };
+
+  if (access.isAdmin) {
+    whereClause = {};
+  } else {
+    whereClause = {
+      OR: [
+        { coachId: currentUser?.id },
+        {
+          coachee: {
+            workUnit: currentUser?.workUnit,
+            ...((isTopLevel || isKepalaKabupaten) ? {} : { department: currentUser?.department }),
+            ...(isKepalaKabupaten ? { employeeLocation: currentUser?.employeeLocation } : {}),
+            OR: [
+              { pangkat: { in: targetPangkat } },
+              { positionDetail: { in: targetPangkat } }
+            ],
+            status: 'APPROVED'
+          }
+        }
+      ]
+    };
+  }
 
   // Fetch coaching logs
   const logs = await prisma.coachingLog.findMany({

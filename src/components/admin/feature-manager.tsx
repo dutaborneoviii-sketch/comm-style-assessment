@@ -7,18 +7,20 @@ import { BookOpen, RefreshCw, Loader2, Database, CheckCircle2, Clock, Plus, Tras
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { employeeLocations } from "@/lib/locations";
 
 type FeatureFlag = {
   id: string;
   featureKey: string;
   roleGroup: string;
   department: string | null;
+  location: string | null;
   enabled: boolean;
   label: string;
-  description: string;
+  description: string | null;
 };
 
-const ROLE_GROUPS = ["Staf", "Asisten Deputi", "Deputi Direksi Wilayah"];
+const ROLE_GROUPS = ["Deputi Direksi Wilayah", "Senior Manager", "Manager", "Asisten Manager", "Pelaksana", "PTT/PATT"];
 const DEPARTMENTS = [
   "Bagian Mutu Layanan Kepesertaan (KC)",
   "Bagian Mutu Layanan Fasilitas Kesehatan (KC)",
@@ -46,9 +48,12 @@ const FEATURE_ICONS: Record<string, React.ReactNode> = {
 };
 
 const ROLE_COLORS: Record<string, string> = {
-  Staf: "bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700",
-  "Asisten Deputi": "bg-blue-50 dark:bg-blue-950/30 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-800",
-  "Deputi Direksi Wilayah": "bg-indigo-50 dark:bg-indigo-950/30 text-indigo-700 dark:text-indigo-300 border-indigo-200 dark:border-indigo-800",
+  "Pelaksana": "bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700",
+  "PTT/PATT": "bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700",
+  "Asisten Manager": "bg-blue-50 dark:bg-blue-950/30 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-800",
+  "Manager": "bg-indigo-50 dark:bg-indigo-950/30 text-indigo-700 dark:text-indigo-300 border-indigo-200 dark:border-indigo-800",
+  "Senior Manager": "bg-purple-50 dark:bg-purple-950/30 text-purple-700 dark:text-purple-300 border-purple-200 dark:border-purple-800",
+  "Deputi Direksi Wilayah": "bg-emerald-50 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800",
 };
 
 function ToggleSwitch({
@@ -95,8 +100,10 @@ export function FeatureManager({ flags }: { flags: FeatureFlag[] }) {
   const router = useRouter();
   const [openAddDept, setOpenAddDept] = useState(false);
   const [selectedFeature, setSelectedFeature] = useState("panduan_komunikasi");
-  const [selectedRole, setSelectedRole] = useState("Staf");
+  const [selectedRole, setSelectedRole] = useState(ROLE_GROUPS[0]);
   const [selectedDept, setSelectedDept] = useState(DEPARTMENTS[0]);
+  const [selectedWorkUnit, setSelectedWorkUnit] = useState("");
+  const [selectedLoc, setSelectedLoc] = useState("");
   const [enabledStatus, setEnabledStatus] = useState(true);
   const [loading, setLoading] = useState(false);
 
@@ -119,12 +126,17 @@ export function FeatureManager({ flags }: { flags: FeatureFlag[] }) {
       selectedFeature,
       selectedRole,
       selectedDept,
+      selectedLoc || "GLOBAL",
       enabledStatus,
       targetFeature?.label || selectedFeature,
       targetFeature?.desc || ""
     );
     setLoading(false);
     setOpenAddDept(false);
+    setSelectedDept(DEPARTMENTS[0]);
+    setSelectedWorkUnit("");
+    setSelectedLoc("");
+    setEnabledStatus(true);
     router.refresh();
   };
 
@@ -135,7 +147,7 @@ export function FeatureManager({ flags }: { flags: FeatureFlag[] }) {
         <div className="flex items-center justify-between">
           <h2 className="text-lg font-black text-[#015249] dark:text-blue-400 uppercase tracking-wider flex items-center gap-2">
             <CheckSquare className="w-5 h-5 text-[#57BC90]" />
-            Akses Global Per Jabatan
+            Akses Global Per Pangkat
           </h2>
           
           <Dialog open={openAddDept} onOpenChange={setOpenAddDept}>
@@ -149,7 +161,7 @@ export function FeatureManager({ flags }: { flags: FeatureFlag[] }) {
               <DialogHeader>
                 <DialogTitle className="text-base font-black text-[#015249] dark:text-blue-400">Atur Spesifik Menu Per Bidang</DialogTitle>
                 <DialogDescription className="text-xs">
-                  Gunakan form ini untuk membuat pengecualian akses menu yang lebih spesifik bagi Jabatan & Bidang tertentu.
+                  Gunakan form ini untuk membuat pengecualian akses menu yang lebih spesifik bagi Pangkat & Bidang tertentu.
                 </DialogDescription>
               </DialogHeader>
               <div className="space-y-4 py-3">
@@ -168,7 +180,7 @@ export function FeatureManager({ flags }: { flags: FeatureFlag[] }) {
                 </div>
 
                 <div className="grid gap-1">
-                  <label className="text-[10px] font-black uppercase text-slate-400">Pilih Jabatan</label>
+                  <label className="text-[10px] font-black uppercase text-slate-400">Pilih Pangkat</label>
                   <select 
                     value={selectedRole} 
                     onChange={e => setSelectedRole(e.target.value)}
@@ -189,6 +201,38 @@ export function FeatureManager({ flags }: { flags: FeatureFlag[] }) {
                   >
                     {DEPARTMENTS.map(d => (
                       <option key={d} value={d} className="text-black">{d}</option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="grid gap-1">
+                  <label className="text-[10px] font-black uppercase text-slate-400">Satuan Kerja (Opsional)</label>
+                  <select 
+                    value={selectedWorkUnit}
+                    onChange={(e) => {
+                      setSelectedWorkUnit(e.target.value);
+                      setSelectedLoc("");
+                    }}
+                    className="flex h-9 w-full rounded-md border border-slate-200 dark:border-slate-800 bg-transparent px-3 text-xs focus:ring-1 focus:ring-[#57BC90] text-slate-800 dark:text-slate-100"
+                  >
+                    <option value="" className="text-black">Semua Satuan Kerja (Global)</option>
+                    {Object.keys(employeeLocations).map((wu) => (
+                      <option key={wu} value={wu} className="text-black">{wu}</option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="grid gap-1">
+                  <label className="text-[10px] font-black uppercase text-slate-400">Lokasi Pegawai (Opsional)</label>
+                  <select 
+                    value={selectedLoc}
+                    onChange={e => setSelectedLoc(e.target.value)}
+                    disabled={!selectedWorkUnit}
+                    className="flex h-9 w-full rounded-md border border-slate-200 dark:border-slate-800 bg-transparent px-3 text-xs focus:ring-1 focus:ring-[#57BC90] text-slate-800 dark:text-slate-100 disabled:opacity-50"
+                  >
+                    <option value="" className="text-black">Semua Lokasi (Global)</option>
+                    {selectedWorkUnit && employeeLocations[selectedWorkUnit]?.map((loc) => (
+                      <option key={loc} value={loc} className="text-black">{loc}</option>
                     ))}
                   </select>
                 </div>
@@ -262,14 +306,14 @@ export function FeatureManager({ flags }: { flags: FeatureFlag[] }) {
       <div className="space-y-4">
         <h2 className="text-lg font-black text-[#015249] dark:text-blue-400 uppercase tracking-wider flex items-center gap-2">
           <Layers className="w-5 h-5 text-[#57BC90]" />
-          Pengecualian Khusus Per Bidang & Jabatan
+          Pengecualian Khusus Per Bidang & Pangkat
         </h2>
 
         {departmentFlags.length === 0 ? (
           <div className="bg-slate-50 dark:bg-zinc-900/50 p-6 rounded-2xl border border-slate-200/60 dark:border-slate-800 text-center space-y-2">
             <HelpCircle className="w-8 h-8 text-slate-400 mx-auto" />
             <h4 className="text-xs font-bold text-slate-700 dark:text-slate-300">Belum Ada Pengecualian Spesifik</h4>
-            <p className="text-[11px] text-slate-400 max-w-sm mx-auto">Semua hak akses menu saat ini mengikuti aturan global per kelompok jabatan di atas. Klik "Spesifik Bidang Baru" untuk membuat aturan khusus.</p>
+            <p className="text-[11px] text-slate-400 max-w-sm mx-auto">Semua hak akses menu saat ini mengikuti aturan global per kelompok pangkat di atas. Klik "Spesifik Bidang Baru" untuk membuat aturan khusus.</p>
           </div>
         ) : (
           <Card className="border-slate-200 dark:border-slate-800 bg-white dark:bg-zinc-950 shadow-sm overflow-hidden rounded-2xl">
@@ -278,14 +322,15 @@ export function FeatureManager({ flags }: { flags: FeatureFlag[] }) {
                 <thead className="text-[10px] uppercase bg-slate-50 dark:bg-slate-900/50 text-slate-500 font-bold border-b border-slate-200 dark:border-slate-800">
                   <tr>
                     <th className="px-5 py-3">Menu / Fitur</th>
-                    <th className="px-5 py-3">Jabatan</th>
+                    <th className="px-5 py-3">Pangkat</th>
                     <th className="px-5 py-3">Bidang</th>
+                    <th className="px-5 py-3">Lokasi</th>
                     <th className="px-5 py-3 text-center">Status</th>
                     <th className="px-5 py-3 text-right">Hapus</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100 dark:divide-slate-800/50">
-                  {departmentFlags.map((df) => (
+                  {departmentFlags.filter(flag => ROLE_GROUPS.includes(flag.roleGroup)).map((df) => (
                     <tr key={df.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-900/10 transition-colors font-medium">
                       <td className="px-5 py-3 font-semibold text-[#015249] dark:text-blue-400">{df.label}</td>
                       <td className="px-5 py-3">
@@ -294,6 +339,7 @@ export function FeatureManager({ flags }: { flags: FeatureFlag[] }) {
                         </span>
                       </td>
                       <td className="px-5 py-3 text-slate-600 dark:text-slate-300">{df.department}</td>
+                      <td className="px-5 py-3 text-slate-600 dark:text-slate-300">{df.location}</td>
                       <td className="px-5 py-3 text-center">
                         <ToggleSwitch flag={df} onToggle={handleToggle} />
                       </td>

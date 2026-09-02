@@ -14,7 +14,7 @@ export const metadata = {
 export default async function UserManualPage() {
   const session = await auth();
   if (!session?.user?.id) {
-    redirect("/login");
+    redirect("/");
   }
 
   // Authorize only real admin

@@ -9,13 +9,13 @@ const DEFAULT_FLAGS = [
     featureKey: "panduan_komunikasi",
     label: "Panduan Gaya Komunikasi",
     description: "Menampilkan menu akses ke halaman panduan gaya komunikasi.",
-    defaultEnabled: (roleGroup: string) => roleGroup !== "Staf",
+    defaultEnabled: (roleGroup: string) => !["Pelaksana", "PTT/PATT"].includes(roleGroup),
   },
   {
     featureKey: "ulangi_asesmen",
     label: "Ulangi / Perbarui Asesmen",
     description: "Menampilkan tombol untuk mengulang kuesioner asesmen gaya komunikasi.",
-    defaultEnabled: (roleGroup: string) => roleGroup === "Staf",
+    defaultEnabled: (roleGroup: string) => ["Pelaksana", "PTT/PATT"].includes(roleGroup),
   },
   {
     featureKey: "manajemen_bank_soal",
@@ -49,7 +49,7 @@ const DEFAULT_FLAGS = [
   },
 ];
 
-const ROLE_GROUPS = ["Staf", "Asisten Deputi", "Deputi Direksi Wilayah"];
+const ROLE_GROUPS = ["Deputi Direksi Wilayah", "Senior Manager", "Manager", "Asisten Manager", "Pelaksana", "PTT/PATT"];
 
 // Seed/upsert data — selalu jalankan agar flag baru langsung tersedia dengan department "GLOBAL"
 export async function seedDefaultFlagsIfEmpty() {
@@ -59,18 +59,22 @@ export async function seedDefaultFlagsIfEmpty() {
 
   for (const flag of DEFAULT_FLAGS) {
     for (const roleGroup of ROLE_GROUPS) {
-      await prisma.featureFlag.upsert({
-        where: { featureKey_roleGroup_department: { featureKey: flag.featureKey, roleGroup, department: "GLOBAL" } },
-        update: {}, // Jangan timpa nilai yang sudah diubah admin
-        create: {
-          featureKey: flag.featureKey,
-          roleGroup,
-          department: "GLOBAL",
-          enabled: flag.defaultEnabled(roleGroup),
-          label: flag.label,
-          description: flag.description,
-        },
+      const existing = await prisma.featureFlag.findUnique({
+        where: { featureKey_roleGroup_department_location: { featureKey: flag.featureKey, roleGroup, department: "GLOBAL", location: "GLOBAL" } },
       });
+      if (!existing) {
+        await prisma.featureFlag.create({
+          data: {
+            featureKey: flag.featureKey,
+            roleGroup,
+            department: "GLOBAL",
+            location: "GLOBAL",
+            enabled: flag.defaultEnabled(roleGroup),
+            label: flag.label,
+            description: flag.description,
+          },
+        });
+      }
     }
   }
 }
@@ -98,29 +102,42 @@ export async function saveDepartmentFeatureFlag(
   featureKey: string,
   roleGroup: string,
   department: string | null,
+  location: string | null,
   enabled: boolean,
   label: string,
   description: string
 ) {
   const deptValue = department || "GLOBAL";
-  await prisma.featureFlag.upsert({
+  const locValue = location || "GLOBAL";
+  const existing = await prisma.featureFlag.findUnique({
     where: {
-      featureKey_roleGroup_department: {
+      featureKey_roleGroup_department_location: {
         featureKey,
         roleGroup,
-        department: deptValue
+        department: deptValue,
+        location: locValue
       }
-    },
-    update: { enabled },
-    create: {
-      featureKey,
-      roleGroup,
-      department: deptValue,
-      enabled,
-      label,
-      description
     }
   });
+
+  if (existing) {
+    await prisma.featureFlag.update({
+      where: { id: existing.id },
+      data: { enabled }
+    });
+  } else {
+    await prisma.featureFlag.create({
+      data: {
+        featureKey,
+        roleGroup,
+        department: deptValue,
+        location: locValue,
+        enabled,
+        label,
+        description
+      }
+    });
+  }
 
   revalidatePath("/profile");
   revalidatePath("/admin/features");
@@ -139,19 +156,37 @@ function normalizeDepartment(dept?: string | null) {
 export async function isFeatureEnabled(
   featureKey: string,
   roleGroup: string,
-  department?: string | null
+  department?: string | null,
+  location?: string | null
 ): Promise<boolean> {
   await seedDefaultFlagsIfEmpty();
   const normalizedDept = normalizeDepartment(department);
+  const normalizedLoc = location || "GLOBAL";
   
-  if (normalizedDept && normalizedDept !== "GLOBAL") {
-    // Coba cari kecocokan spesifik department dahulu
-    const deptFlag = await prisma.featureFlag.findUnique({
+  // 1. Coba cari spesifik department & location
+  if (normalizedDept && normalizedDept !== "GLOBAL" && normalizedLoc !== "GLOBAL") {
+    const locFlag = await prisma.featureFlag.findUnique({
       where: {
-        featureKey_roleGroup_department: {
+        featureKey_roleGroup_department_location: {
           featureKey,
           roleGroup,
-          department: normalizedDept
+          department: normalizedDept,
+          location: normalizedLoc
+        }
+      }
+    });
+    if (locFlag !== null) return locFlag.enabled;
+  }
+
+  // 2. Coba cari spesifik department & GLOBAL location
+  if (normalizedDept && normalizedDept !== "GLOBAL") {
+    const deptFlag = await prisma.featureFlag.findUnique({
+      where: {
+        featureKey_roleGroup_department_location: {
+          featureKey,
+          roleGroup,
+          department: normalizedDept,
+          location: "GLOBAL"
         }
       }
     });
@@ -160,13 +195,14 @@ export async function isFeatureEnabled(
     }
   }
 
-  // Fallback ke flag global (department "GLOBAL")
+  // 3. Fallback ke flag global (department "GLOBAL", location "GLOBAL")
   const globalFlag = await prisma.featureFlag.findUnique({
     where: {
-      featureKey_roleGroup_department: {
+      featureKey_roleGroup_department_location: {
         featureKey,
         roleGroup,
-        department: "GLOBAL"
+        department: "GLOBAL",
+        location: "GLOBAL"
       }
     }
   });
@@ -176,10 +212,12 @@ export async function isFeatureEnabled(
 // Ambil semua flags sekaligus sebagai map untuk performa (di-resolve berdasarkan department dan roleGroup user saat ini)
 export async function getFeatureFlagsMap(
   roleGroup: string,
-  department?: string | null
+  department?: string | null,
+  location?: string | null
 ): Promise<Record<string, boolean>> {
   await seedDefaultFlagsIfEmpty();
   const normalizedDept = normalizeDepartment(department);
+  const normalizedLoc = location || "GLOBAL";
   
   // Ambil semua flags untuk role group tertentu
   const flags = await prisma.featureFlag.findMany({
@@ -198,13 +236,22 @@ export async function getFeatureFlagsMap(
   // Resolve untuk setiap featureKey
   for (const featureKey in grouped) {
     const list = grouped[featureKey];
-    // Cari specific department dahulu
-    const deptSpecific = (normalizedDept && normalizedDept !== "GLOBAL") ? list.find(f => f.department === normalizedDept) : null;
-    if (deptSpecific) {
-      map[featureKey] = deptSpecific.enabled;
+    // Cari specific location dahulu
+    const locSpecific = (normalizedDept && normalizedDept !== "GLOBAL" && normalizedLoc !== "GLOBAL") 
+        ? list.find(f => f.department === normalizedDept && f.location === normalizedLoc) 
+        : null;
+        
+    if (locSpecific) {
+      map[featureKey] = locSpecific.enabled;
     } else {
-      const global = list.find(f => f.department === "GLOBAL");
-      map[featureKey] = global ? global.enabled : false;
+      // Cari specific department dahulu
+      const deptSpecific = (normalizedDept && normalizedDept !== "GLOBAL") ? list.find(f => f.department === normalizedDept && f.location === "GLOBAL") : null;
+      if (deptSpecific) {
+        map[featureKey] = deptSpecific.enabled;
+      } else {
+        const global = list.find(f => f.department === "GLOBAL" && f.location === "GLOBAL");
+        map[featureKey] = global ? global.enabled : false;
+      }
     }
   }
 

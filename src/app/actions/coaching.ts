@@ -7,6 +7,7 @@ import { writeFile } from 'fs/promises';
 import { join } from 'path';
 import { v4 as uuidv4 } from 'uuid';
 import { sendScheduleAgreedEmail } from '@/lib/mailer';
+import { getUserAccess } from '@/lib/access';
 
 export async function addCoachingLog(data: {
   coacheeId: string;
@@ -152,10 +153,10 @@ export async function addCoachingResponse(id: string, response: string, coacheeI
   try {
     const user = await prisma.user.findUnique({
       where: { id: session.user.id },
-      select: { position: true, role: true }
+      select: { positionDetail: true, role: true }
     });
 
-    if (user?.position !== 'Deputi Direksi Wilayah' && user?.position !== 'Asisten Deputi' && user?.position !== 'Kepala Kabupaten' && user?.role !== 'ADMIN') {
+    if (user?.positionDetail !== 'Deputi Direksi Wilayah' && user?.positionDetail !== 'Asisten Deputi' && user?.positionDetail !== 'Kepala Kabupaten' && user?.positionDetail !== 'Kepala Cabang' && user?.role !== 'ADMIN') {
       throw new Error('Unauthorized: Only Deputi, Asisten Deputi, or Kepala Kabupaten can add responses');
     }
 

@@ -15,7 +15,7 @@ export async function submitCoachingResponse(logId: string, responseText: string
     where: { id: session.user.id },
   });
 
-  if (user?.position !== 'Deputi Direksi Wilayah' && user?.role !== 'ADMIN') {
+  if (user?.positionDetail !== 'Deputi Direksi Wilayah' && user?.role !== 'ADMIN') {
     throw new Error("Forbidden: Only Deputi Direksi Wilayah can evaluate coaching logs");
   }
 

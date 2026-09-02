@@ -6,7 +6,7 @@ async function main() {
     const teamMembers = await prisma.user.findMany({
       where: {
         id: { not: 'test-id' },
-        position: { not: 'Deputi Direksi Wilayah' }
+        positionDetail: { not: 'Deputi Direksi Wilayah' }
       },
       include: {
         assessments: {

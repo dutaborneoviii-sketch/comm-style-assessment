@@ -18,12 +18,10 @@ export default async function SettingsPage() {
 
   // Check if they are allowed to see settings
   if (!isAdmin) {
-    let userRoleGroup = "Staf";
-    if (user?.position === "Asisten Deputi") userRoleGroup = "Asisten Deputi";
-    if (user?.position === "Deputi Direksi Wilayah") userRoleGroup = "Deputi Direksi Wilayah";
+    let userRoleGroup = user?.pangkat || user?.positionDetail || "Staf";
 
     const { isFeatureEnabled } = await import("@/app/actions/features");
-    const isEnabled = await isFeatureEnabled("jangka_asesmen_ulang", userRoleGroup, user?.department);
+    const isEnabled = await isFeatureEnabled("jangka_asesmen_ulang", userRoleGroup, user?.department, user?.employeeLocation);
     if (!isEnabled) {
       redirect("/profile");
     }
@@ -38,8 +36,9 @@ export default async function SettingsPage() {
     const u = await prisma.user.findUnique({ where: { id: session.user.id } });
     if (!u) throw new Error("User not found");
     const isAdmin = u.role === "ADMIN";
-    const isAsdepSDM = u.position === 'Asisten Deputi' && u.department === 'Bidang SDM, Umum dan Komunikasi (SDMUK)';
-    if (!isAdmin && !isAsdepSDM) throw new Error("Forbidden");
+    const isAsistenDeputi = u?.pangkat === 'Manager' || u?.pangkat === 'Asisten Deputi' || u?.positionDetail === 'Asisten Deputi' || u?.positionDetail === 'Kepala Kabupaten';
+    const isSDMAsistenDeputi = (isAsistenDeputi && u?.department?.includes('SDMUK')) || u?.positionDetail?.includes('Asisten Deputi Bidang Sumber Daya Manusia');
+    if (!isAdmin && !isSDMAsistenDeputi) throw new Error("Forbidden");
 
     const cooldown = formData.get("cooldown") as string;
     await updateCooldownSetting(cooldown);

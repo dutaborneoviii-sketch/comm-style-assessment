@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { getUserAccess } from "@/lib/access";
 import { 
   LayoutDashboard, 
   Settings, 
@@ -35,12 +36,17 @@ export default function AdminSidebar({ user, viewMode, asistenMode, featuresMap,
     setExpandedGroups(prev => ({ ...prev, [title]: !prev[title] }));
   };
 
-  const isAdminView = user?.role === 'ADMIN' && viewMode === 'admin';
-  const isDeputi = user?.position === 'Deputi Direksi Wilayah' || user?.position === 'Kepala Cabang';
-  const isAsistenDeputi = user?.position === 'Asisten Deputi' || user?.position === 'Kepala Kabupaten' || user?.position === 'Kepala Kantor Kabupaten' || user?.position === 'Asisten Manager';
-  const isAsistenCoachMode = isAsistenDeputi && asistenMode !== 'coachee';
-  const isAsistenCoacheeMode = isAsistenDeputi && asistenMode === 'coachee';
-  const isAsdepSDM = isAsistenDeputi && (user?.department === 'Bidang SDM, Umum dan Komunikasi (SDMUK)' || user?.department?.includes('SDM, Umum dan Komunikasi'));
+  const access = getUserAccess(user as any);
+
+  const isAdminView = access.isAdmin && viewMode === 'admin';
+  const isCoach = access.isCoach;
+  const isAsistenCoachMode = isCoach && asistenMode !== 'coachee';
+  
+  // Specific checks for UI elements based on roles
+  const isDeputi = user?.pangkat === 'Deputi Direksi Wilayah' || user?.pangkat === 'Kepala Cabang' || user?.pangkat === 'Senior Manager' || user?.positionDetail === 'Kepala Cabang';
+  const isAsistenDeputi = user?.pangkat === 'Manager' || user?.pangkat === 'Asisten Deputi' || user?.positionDetail === 'Asisten Deputi' || user?.pangkat === 'Kepala Kabupaten' || user?.positionDetail === 'Kepala Kabupaten' || user?.pangkat === 'Kepala Kantor Kabupaten';
+  
+  const isAsdepSDM = (isAsistenDeputi && (user?.department?.includes('SDMUK') || user?.department?.includes('SDM, Umum dan Komunikasi'))) || user?.positionDetail?.includes('Asisten Deputi Bidang Sumber Daya Manusia');
   
   const showMenuAplikasi = isAdminView || (isAsistenCoachMode && isAsdepSDM && featuresMap?.manajemen_menu_aplikasi);
   const showBankSoal = isAdminView || (isAsistenCoachMode && isAsdepSDM && featuresMap?.manajemen_bank_soal);
@@ -50,6 +56,9 @@ export default function AdminSidebar({ user, viewMode, asistenMode, featuresMap,
 
   // Staf-like view: regular user OR Asisten Deputi in coachee mode
   const isStafView = (!isAdminView && !isAsistenCoachMode && !isDeputi);
+
+  const isCabangOrKabupaten = user?.workUnit?.startsWith('Kantor Cabang') || user?.workUnit === 'Kantor Kabupaten';
+  const teamLabel = isCabangOrKabupaten ? "Anggota Bagian" : "Anggota Bidang";
 
   const navGroups = [
     {
@@ -67,7 +76,7 @@ export default function AdminSidebar({ user, viewMode, asistenMode, featuresMap,
       headerClass: "bg-[#96c1e9] text-white dark:bg-[#4375a3]",
       iconClass: "text-white",
       items: [
-        { href: "/team", label: "Anggota Bidang", icon: Users, show: isAdminView || isAsistenCoachMode || isDeputi },
+        { href: "/team", label: teamLabel, icon: Users, show: isAdminView || isAsistenCoachMode || isDeputi },
         { href: "/guide", label: "Panduan Gaya Komunikasi", icon: BookOpen, show: showPanduan },
         { href: "/admin/dictionary", label: "Kamus Panduan", icon: FileSpreadsheet, show: showKamusPanduan },
         { href: "/admin/questions", label: "Bank Soal", icon: Database, show: showBankSoal },

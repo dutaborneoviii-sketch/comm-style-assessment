@@ -6,6 +6,7 @@ import { Button, buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { getUserAccess } from "@/lib/access";
 import { cn } from "@/lib/utils";
 import { User, Activity, Sparkles, Database, Users, BookOpen, Mail, History, Network, ToggleLeft, Clock, ClipboardCheck } from "lucide-react";
 import { StyleDistributionChart, ChartData } from "@/components/dashboard/style-distribution-chart";
@@ -52,17 +53,19 @@ export default async function ProfilePage() {
   const viewMode = cookies().get('view-mode')?.value || 'admin';
   const asistenMode = cookies().get('asisten-mode')?.value || 'coach';
   
-  const isViewModeUser = user.role === 'ADMIN' && viewMode === 'user';
-  const isAsistenModeCoachee = (user.position === 'Asisten Deputi' || user.position === 'Kepala Kabupaten') && asistenMode === 'coachee';
+  const access = getUserAccess(user as any);
+  
+  const isViewModeUser = access.isAdmin && viewMode === 'user';
+  const isAsistenModeCoachee = (access.isCoach && access.isCoachee) && asistenMode === 'coachee';
   
   if (isViewModeUser) {
     user.role = 'USER';
-    user.position = 'Staf Pelaksana';
+    user.pangkat = 'Pelaksana'; // fallback for view mode
     if (!user.department) {
       user.department = 'TI Wilayah';
     }
   } else if (isAsistenModeCoachee) {
-    user.position = 'Staf Pelaksana';
+    // Treat them as a regular coachee when in coachee mode
   }
 
   if (user.role === 'ADMIN' && viewMode === 'admin') {
@@ -70,8 +73,8 @@ export default async function ProfilePage() {
   }
 
   const latestAssessment = user.assessments[0];
-  const isAsdepSDM = user.position === 'Asisten Deputi' && user.department === 'Bidang SDM, Umum dan Komunikasi (SDMUK)';
-
+  const isAsistenDeputi = user?.pangkat === 'Manager' || user?.pangkat === 'Asisten Deputi' || user?.positionDetail === 'Asisten Deputi' || user?.pangkat === 'Kepala Kabupaten' || user?.positionDetail === 'Kepala Kabupaten' || user?.pangkat === 'Kepala Kantor Kabupaten';
+  const isAsdepSDM = (isAsistenDeputi && (user?.department?.includes('SDMUK') || user?.department?.includes('SDM, Umum dan Komunikasi'))) || user?.positionDetail?.includes('Asisten Deputi Bidang Sumber Daya Manusia');
   const getStyleHex = (styleName: string) => {
     if (!styleName) return "#6366f1";
     const s = styleName.toLowerCase();
@@ -90,40 +93,64 @@ export default async function ProfilePage() {
   let quadrantMembers: any[] = [];
   let chartTitle = user.department || "Keseluruhan";
 
-  const isDeputi = user.position === 'Deputi Direksi Wilayah' || user.position === 'Kepala Cabang';
-  const isKepalaCabupatenOrBagian = user.position === 'Kepala Kabupaten' || user.position === 'Kepala Kantor Kabupaten' || user.position === 'Asisten Manager' || user.position === 'Asisten Deputi';
-  const isManager = isDeputi || isKepalaCabupatenOrBagian || user.role === 'ADMIN';
+  const isTopLevel = user.pangkat === 'Senior Manager' || user.pangkat === 'Deputi Direksi Wilayah' || user.positionDetail === 'Deputi Direksi Wilayah' || user.positionDetail === 'Kepala Cabang';
+  const isMidLevel = user.pangkat === 'Manager' || user.positionDetail === 'Asisten Deputi' || user.positionDetail === 'Kepala Kabupaten' || user.positionDetail === 'Kepala Kantor Kabupaten';
+  const isLowLevel = user.pangkat === 'Asisten Manager' || user.positionDetail === 'Asisten Manager';
+  const isManager = access.isCoach && !isViewModeUser && !isAsistenModeCoachee;
 
   if (isManager) {
     let userFilter: any = { status: 'APPROVED' };
+    let targetPangkat: string[] = [];
     
-    if (isKepalaCabupatenOrBagian) {
+    if (isTopLevel) {
+      if (user.positionDetail === 'Kepala Cabang' || (user.workUnit?.startsWith('Kantor Cabang') && user.pangkat === 'Manager')) {
+        targetPangkat = ['Asisten Manager'];
+        userFilter = {
+          workUnit: user.workUnit || undefined,
+          OR: [
+            { pangkat: { in: targetPangkat } },
+            { positionDetail: { in: targetPangkat } }
+          ],
+          status: 'APPROVED'
+        };
+        chartTitle = "Seluruh Anggota di " + (user.workUnit || "Cabang");
+      } else if (user.pangkat === 'Senior Manager') {
+        targetPangkat = ['Manager'];
+        userFilter = {
+          workUnit: user.workUnit || undefined,
+          OR: [
+            { pangkat: { in: targetPangkat } },
+            { positionDetail: { in: targetPangkat } }
+          ],
+          status: 'APPROVED'
+        };
+        chartTitle = "Seluruh Anggota di " + (user.workUnit || "Wilayah");
+      } else {
+        targetPangkat = ['Manager', 'Asisten Manager', 'Pelaksana', 'PTT/PATT', 'Asisten Deputi', 'Kepala Kabupaten', 'Kepala Kantor Kabupaten', 'Staf Pelaksana'];
+        userFilter = {
+          OR: [
+            { pangkat: { in: targetPangkat } },
+            { positionDetail: { in: targetPangkat } }
+          ],
+          status: 'APPROVED'
+        };
+        chartTitle = "Seluruh Anggota di Wilayah";
+      }
+    } else if (isMidLevel || isLowLevel) {
+      targetPangkat = isMidLevel ? ['Asisten Manager', 'Pelaksana', 'PTT/PATT', 'Staf Pelaksana'] : ['Pelaksana', 'PTT/PATT', 'Staf Pelaksana'];
+      const isKepalaUnit = user.positionDetail === 'Kepala Kabupaten' || user.positionDetail === 'Kepala Kantor Kabupaten';
+      
       userFilter = {
-        ...(user.position === 'Kepala Kabupaten' || user.position === 'Kepala Kantor Kabupaten' 
-          ? {} 
-          : { department: user.department || undefined }
-        ),
-        employeeLocation: user.employeeLocation || undefined,
+        ...(isKepalaUnit ? {} : { department: user.department || undefined }),
+        ...(isKepalaUnit ? { employeeLocation: user.employeeLocation || undefined } : {}),
         workUnit: user.workUnit || undefined,
-        position: {
-          in: user.position === 'Asisten Deputi' ? ['Staf Pelaksana', 'PTT/PATT', 'Asisten Manager'] : ['Staf Pelaksana', 'PTT/PATT']
-        },
-        status: 'APPROVED'
-      };
-      chartTitle = "Staf Pelaksana di " + (user.department || "").replace(/\s*\([^)]*\)$/, '') + " - " + (user.employeeLocation || user.workUnit || "Unit Kerja");
-    } else if (isDeputi) {
-      userFilter = {
-        OR: user.position === 'Kepala Cabang' ? [
-          { position: 'Asisten Manager' },
-          { position: 'Kepala Kabupaten' },
-          { position: 'Kepala Kantor Kabupaten' }
-        ] : [
-          { position: 'Asisten Deputi' }
+        OR: [
+          { pangkat: { in: targetPangkat } },
+          { positionDetail: { in: targetPangkat } }
         ],
-        ...(user.position === 'Kepala Cabang' ? { workUnit: user.workUnit || undefined } : {}),
         status: 'APPROVED'
       };
-      chartTitle = user.position === 'Kepala Cabang' ? "Pimpinan Bawahan di " + (user.workUnit || "Cabang") : "Pimpinan Bawahan di Wilayah";
+      chartTitle = (user.department || "").replace(/\s*\([^)]*\)$/, '') + " - " + (user.employeeLocation || user.workUnit || "Unit Kerja");
     } else if (user.role === 'ADMIN') {
       chartTitle = "Seluruh Wilayah";
     }
@@ -200,7 +227,7 @@ export default async function ProfilePage() {
       return {
         id: member.id,
         name: member.name || "Unknown",
-        position: member.position,
+        positionDetail: member.positionDetail,
         department: member.department,
         primaryStyle: assessment ? normalizeStyle(assessment.primaryStyle) : null,
         secondaryStyle: assessment && assessment.secondaryStyle ? normalizeStyle(assessment.secondaryStyle) : null,
@@ -210,11 +237,11 @@ export default async function ProfilePage() {
 
     // Calculate Dashboard Stats
     let statsUsers = departmentUsers;
-    if (user.role === 'ADMIN' || user.position === 'Deputi Direksi Wilayah') {
-      statsUsers = departmentUsers.filter(u => u.position === 'Asisten Deputi');
-    } else if (user.position === 'Asisten Deputi') {
+    if (user.role === 'ADMIN' || user.positionDetail === 'Deputi Direksi Wilayah') {
+      statsUsers = departmentUsers.filter(u => u.positionDetail?.includes('Asisten Deputi') || u.pangkat === 'Manager');
+    } else if (user.positionDetail?.includes('Asisten Deputi')) {
       statsUsers = departmentUsers;
-    } else if (user.position === 'Kepala Kabupaten') {
+    } else if (user.positionDetail === 'Kepala Kabupaten') {
       statsUsers = departmentUsers;
     }
     
@@ -313,23 +340,18 @@ export default async function ProfilePage() {
 
 
   // Determine role group for this user
-  let userRoleGroup = "Staf";
-  if (user.position === 'Deputi Direksi Wilayah') userRoleGroup = "Deputi Direksi Wilayah";
-  if (user.position === 'Asisten Deputi' || user.position === 'Kepala Kabupaten') userRoleGroup = "Asisten Deputi";
+  let userRoleGroup = user.pangkat || user.positionDetail || "Staf";
 
   // Feature flags
   const featureFlags = await getFeatureFlagsMap(userRoleGroup, user.department);
 
-  const isNormalUserView = user.role !== 'ADMIN' 
-    && user.position !== 'Deputi Direksi Wilayah' 
-    && user.position !== 'Asisten Deputi'
-    && user.position !== 'Kepala Kabupaten'
+  const isNormalUserView = !isManager
     && !isAsistenModeCoachee
     && (featureFlags['ulangi_asesmen'] ?? true);
 
-  const showBankSoal = user.role === 'ADMIN' || ((user.position === 'Asisten Deputi' || user.position === 'Kepala Kabupaten') && (featureFlags['manajemen_bank_soal'] ?? false));
-  const showCooldownSettings = user.role === 'ADMIN' || ((user.position === 'Asisten Deputi' || user.position === 'Kepala Kabupaten') && (featureFlags['jangka_asesmen_ulang'] ?? false));
-  const showPanduan = ((user.position === 'Asisten Deputi' || user.position === 'Kepala Kabupaten') && featureFlags['panduan_komunikasi']) || user.position === 'Deputi Direksi Wilayah';
+  const showBankSoal = user.role === 'ADMIN' || (isManager && !isTopLevel && (featureFlags['manajemen_bank_soal'] ?? false));
+  const showCooldownSettings = user.role === 'ADMIN' || (isManager && !isTopLevel && (featureFlags['jangka_asesmen_ulang'] ?? false));
+  const showPanduan = (isManager && !isTopLevel && featureFlags['panduan_komunikasi']) || isTopLevel;
 
   // Cooldown check for reassessment
   const cooldownMonths = await getCooldownSetting();
@@ -348,38 +370,38 @@ export default async function ProfilePage() {
     }
   }
 
-  const isStafOrAsistenManager = user.role !== 'ADMIN' && user.position !== 'Asisten Deputi' && user.position !== 'Deputi Direksi Wilayah' && user.position !== 'Kepala Kabupaten';
+  const showCoacheeDashboard = access.isCoachee && (!access.isCoach || isAsistenModeCoachee || isViewModeUser);
   let myCoachingLogs: any[] = [];
-  if (isStafOrAsistenManager) {
+  if (showCoacheeDashboard) {
     myCoachingLogs = await prisma.coachingLog.findMany({
       where: { coacheeId: user.id },
       include: {
-        coach: { select: { name: true, npp: true, department: true, position: true } },
+        coach: { select: { name: true, npp: true, department: true, positionDetail: true } },
         actionItems: true
       },
       orderBy: { date: 'desc' }
     });
   }
 
-  const isCoach = ['Deputi Direksi Wilayah', 'Asisten Deputi', 'Kepala Kabupaten'].includes(user.position || '');
+  const { isCoach, isCoachee } = getUserAccess(user);
+  const showCoachDashboard = isCoach && !isAsistenModeCoachee && !isViewModeUser;
   let coachActiveLogs: any[] = [];
-  if (isCoach) {
+  if (showCoachDashboard) {
     coachActiveLogs = await prisma.coachingLog.findMany({
       where: { 
         coachId: user.id,
         isClosed: false
       },
       include: {
-        coachee: { select: { name: true, npp: true, department: true, position: true } },
+        coachee: { select: { name: true, npp: true, department: true } },
         actionItems: true
       },
       orderBy: { date: 'asc' }
     });
   }
 
-  const hasLeftColumnContent = (showPanduan && user.role !== 'ADMIN' && user.position !== 'Asisten Deputi' && user.position !== 'Deputi Direksi Wilayah' && user.position !== 'Kepala Kabupaten') || 
-    (user.role !== 'ADMIN' && user.position !== 'Asisten Deputi' && user.position !== 'Deputi Direksi Wilayah' && user.position !== 'Kepala Kabupaten' && showBankSoal) || 
-    (user.role !== 'ADMIN' && user.position !== 'Asisten Deputi' && user.position !== 'Deputi Direksi Wilayah' && user.position !== 'Kepala Kabupaten' && showCooldownSettings);
+  const hasLeftColumnContent = (user.role !== 'ADMIN' && !isTopLevel && showBankSoal) || 
+    (user.role !== 'ADMIN' && !isTopLevel && showCooldownSettings);
 
   return (
     <div className={cn("w-full max-w-[1920px] mx-auto relative pt-2 -mt-10 pb-8 md:pb-12 px-4 sm:px-6 lg:px-8 xl:px-12")}>
@@ -394,24 +416,11 @@ export default async function ProfilePage() {
         <div className="w-full lg:w-1/3 xl:w-1/4 flex-shrink-0 flex flex-col gap-4 md:gap-5 lg:sticky lg:top-24 z-10">
           
 
-          {showPanduan && user.role !== 'ADMIN' && user.position !== 'Deputi Direksi Wilayah' && (
-            <div className="flex items-center gap-3 px-4 py-3 rounded-xl border border-purple-500/30 dark:border-purple-500/20 bg-white dark:bg-zinc-950 shadow-sm hover:shadow-md transition-all group">
-              <div className="inline-flex items-center justify-center p-2 rounded-lg bg-purple-500/10 dark:bg-purple-500/20 text-purple-600 dark:text-purple-400 shrink-0">
-                <BookOpen className="w-4 h-4" />
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-bold text-foreground leading-tight">Panduan Gaya Komunikasi</p>
-                <p className="text-xs text-muted-foreground truncate">Pelajari berbagai gaya komunikasi</p>
-              </div>
-              <Link href="/guide" className={cn(buttonVariants({ variant: "default", size: "sm" }), "shrink-0 bg-purple-600 hover:bg-purple-700 text-white font-semibold rounded-lg text-xs px-3 h-8")}>
-                Buka
-              </Link>
-            </div>
-          )}
+
 
 
           {/* Bank Soal card for non-admin role groups with flag enabled */}
-          {user.role !== 'ADMIN' && user.position !== 'Asisten Deputi' && user.position !== 'Kepala Kabupaten' && showBankSoal && (
+          {user.role !== 'ADMIN' && !isTopLevel && showBankSoal && (
             <div className="flex items-center gap-3 px-4 py-3 rounded-xl border border-emerald-500/30 dark:border-emerald-500/20 bg-white dark:bg-zinc-950 shadow-sm hover:shadow-md transition-all group">
               <div className="inline-flex items-center justify-center p-2 rounded-lg bg-emerald-500/10 dark:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 shrink-0">
                 <Database className="w-4 h-4" />
@@ -426,7 +435,7 @@ export default async function ProfilePage() {
             </div>
           )}
           {/* Jangka Asesmen Ulang card for non-admin role groups with flag enabled */}
-          {user.role !== 'ADMIN' && user.position !== 'Asisten Deputi' && user.position !== 'Kepala Kabupaten' && showCooldownSettings && (
+          {user.role !== 'ADMIN' && !isTopLevel && showCooldownSettings && (
             <div className="flex items-center gap-3 px-4 py-3 rounded-xl border border-teal-500/30 dark:border-teal-500/20 bg-white dark:bg-zinc-950 shadow-sm hover:shadow-md transition-all group">
               <div className="inline-flex items-center justify-center p-2 rounded-lg bg-teal-500/10 dark:bg-teal-500/20 text-teal-600 dark:text-teal-400 shrink-0">
                 <Clock className="w-4 h-4" />
@@ -448,8 +457,7 @@ export default async function ProfilePage() {
         <div className="w-full flex-1 flex flex-col gap-4 md:gap-6 min-w-0">
           
           {/* Rekapitulasi Coaching (Admin, Asisten Deputi, Deputi) */}
-          {/* Rekapitulasi Coaching (Admin, Asisten Deputi, Deputi, Kepala Kabupaten) */}
-          {(['ADMIN'].includes(user.role) || ['Deputi Direksi Wilayah', 'Asisten Deputi', 'Kepala Kabupaten'].includes(user.position || '')) && (
+          {isManager && (
             <>
               {/* Standalone Dashboard Stats Cards */}
               <div className="w-full grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6 relative z-50">
@@ -700,7 +708,7 @@ export default async function ProfilePage() {
                     </CardTitle>
                   </div>
                   <CardDescription className="text-base mt-2 text-muted-foreground leading-relaxed">
-                    Aktifkan atau nonaktifkan menu dan fitur untuk masing-masing level jabatan secara real-time.
+                    Aktifkan atau nonaktifkan menu dan fitur untuk masing-masing level pangkat secara real-time.
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="pb-6 sm:pb-8">
@@ -739,7 +747,7 @@ export default async function ProfilePage() {
           )}
 
           {/* Sesi Coaching Aktif (Untuk Coach) */}
-          {isCoach && (
+          {showCoachDashboard && (
             <div className="w-full space-y-4">
               <div className="flex items-center gap-4 w-full mb-4">
                 <h2 className="text-2xl font-bold flex items-center gap-3 text-slate-800">
@@ -762,7 +770,7 @@ export default async function ProfilePage() {
 
 
           {/* Staf Full Width Wrap */}
-          {isStafOrAsistenManager && (
+          {showCoacheeDashboard && (
             <div className="w-full bg-white dark:bg-zinc-950 p-6 md:p-8 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 flex flex-col gap-6 md:gap-8 min-h-[calc(100vh-16rem)]">
                
               {latestAssessment && (

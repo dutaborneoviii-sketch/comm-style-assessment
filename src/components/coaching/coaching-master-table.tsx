@@ -36,11 +36,10 @@ export function CoachingMasterTable({ logs, isDeputi }: { logs: any[], isDeputi:
 
     worksheet.columns = [
       { header: "Tanggal", key: "tanggal", width: 15 },
-      { header: "Asdep Bidang", key: "coach", width: 25 },
+      { header: "Coach", key: "coach", width: 25 },
       { header: "Anggota Tim", key: "coachee", width: 30 },
       { header: "Topik & Catatan", key: "topik", width: 35 },
       { header: "Action Items", key: "actionItems", width: 45 },
-      { header: "Tanggapan Coach", key: "response", width: 45 },
     ];
 
     const headerRow = worksheet.getRow(1);
@@ -73,7 +72,6 @@ export function CoachingMasterTable({ logs, isDeputi }: { logs: any[], isDeputi:
         coachee: `${log.coachee?.name || "-"}\n(${log.coachee?.department || "-"})\n${log.coachee?.assessments?.[0]?.primaryStyle ? `Gaya: ${log.coachee?.assessments[0].primaryStyle}` : ''}`.trim(),
         topik: `${log.title || "-"}\n\n${log.notes || "-"}`,
         actionItems: log.actionItems && log.actionItems.length > 0 ? log.actionItems.map((a: any) => `• ${a.text}${a.evidenceUrl ? '\n  [Ada Lampiran Bukti]' : ''}`).join("\n") : "-",
-        response: log.response ? log.response.split('@@@')[0] : "-",
       });
 
       row.eachCell((cell) => {
@@ -100,14 +98,13 @@ export function CoachingMasterTable({ logs, isDeputi }: { logs: any[], isDeputi:
     doc.setFontSize(10);
     doc.text(`Tanggal Cetak: ${new Date().toLocaleDateString('id-ID')}`, 14, 22);
 
-    const tableColumn = ["Tanggal", "Asdep Bidang", "Anggota Tim", "Topik", "Action Items", "Tanggapan Coach"];
+    const tableColumn = ["Tanggal", "Coach", "Anggota Tim", "Topik", "Action Items"];
     const tableRows = filteredLogs.map((log: any) => [
       new Date(log.date).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' }),
       log.coach?.name || '-',
       `${log.coachee?.name || '-'}\n(${log.coachee?.department || '-'})\n${log.coachee?.assessments?.[0]?.primaryStyle ? `Gaya: ${log.coachee?.assessments[0].primaryStyle}` : ''}`.trim(),
-      log.title || '-',
+      log.title ? `${log.title}\n\n${log.notes || ''}`.trim() : (log.notes || '-'),
       log.actionItems ? log.actionItems.map((a: any) => `• ${a.text}${a.evidenceUrl ? '\n  [Ada Lampiran Bukti]' : ''}`).join('\n') : '-',
-      log.response ? log.response.split('@@@')[0] : '-',
     ]);
 
     autoTable(doc, {
@@ -118,13 +115,11 @@ export function CoachingMasterTable({ logs, isDeputi }: { logs: any[], isDeputi:
       styles: { fontSize: 8, cellPadding: 2, overflow: 'linebreak' },
       headStyles: { fillColor: [10, 49, 97], textColor: [255, 255, 255], halign: 'center' },
       columnStyles: {
-        0: { cellWidth: 20 },
-        1: { cellWidth: 35 },
-        2: { cellWidth: 40 },
-        3: { cellWidth: 45 },
-        4: { cellWidth: 65 },
-        5: { cellWidth: 65 },
-        6: { cellWidth: 60 }
+        0: { cellWidth: 25 },
+        1: { cellWidth: 40 },
+        2: { cellWidth: 45 },
+        3: { cellWidth: 80 },
+        4: { cellWidth: 80 }
       }
     });
 
@@ -181,11 +176,10 @@ export function CoachingMasterTable({ logs, isDeputi }: { logs: any[], isDeputi:
               <TableHeader className="bg-gradient-to-r from-slate-100 to-slate-50/50 dark:from-slate-800/80 dark:to-slate-900/50 shadow-sm border-b-2 border-[#57BC90]/20">
                 <TableRow className="hover:bg-transparent border-0">
                   <TableHead className="font-extrabold whitespace-nowrap px-6 py-5 text-[#015249] dark:text-blue-300 uppercase tracking-wider text-xs">Tanggal</TableHead>
-                  <TableHead className="font-extrabold whitespace-nowrap px-6 text-[#015249] dark:text-blue-300 uppercase tracking-wider text-xs">Asdep Bidang</TableHead>
+                  <TableHead className="font-extrabold whitespace-nowrap px-6 text-[#015249] dark:text-blue-300 uppercase tracking-wider text-xs">Coach</TableHead>
                   <TableHead className="font-extrabold whitespace-nowrap px-6 text-[#015249] dark:text-blue-300 uppercase tracking-wider text-xs">Anggota Tim</TableHead>
                   <TableHead className="font-extrabold px-6 min-w-[200px] text-[#015249] dark:text-blue-300 uppercase tracking-wider text-xs">Topik & Catatan</TableHead>
                   <TableHead className="font-extrabold px-6 min-w-[200px] text-[#015249] dark:text-blue-300 uppercase tracking-wider text-xs">Action Items</TableHead>
-                  <TableHead className="font-extrabold px-6 min-w-[200px] text-[#015249] dark:text-blue-300 uppercase tracking-wider text-xs">Tanggapan Coach</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -203,39 +197,39 @@ export function CoachingMasterTable({ logs, isDeputi }: { logs: any[], isDeputi:
                     </TableCell>
                     <TableCell className="px-6 py-5 align-top">
                       <div className="flex flex-col gap-1">
-                        <p className="font-bold text-foreground text-sm">{log.coach?.name || '-'}</p>
-                        <div className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-semibold text-slate-500 bg-slate-100 dark:bg-slate-800 w-fit">
-                          NPP: {log.coach?.npp || '-'}
-                        </div>
+                        <span className="font-bold text-slate-800 dark:text-slate-200">{log.coach?.name || '-'}</span>
+                        <span className="text-[10px] sm:text-xs font-semibold text-[#57BC90] dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/50 px-2 py-0.5 rounded-full border border-emerald-100 dark:border-emerald-800/50 w-fit">NPP: {log.coach?.npp || '-'}</span>
                       </div>
                     </TableCell>
                     <TableCell className="px-6 py-5 align-top">
                       <div className="flex flex-col gap-1.5">
-                        <p className="font-bold text-foreground text-sm">{log.coachee?.name || '-'}</p>
-                        <div className="flex flex-wrap gap-1.5">
-                          <span className="inline-flex items-center px-2 py-1 rounded-md text-[9px] font-extrabold uppercase tracking-widest bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400 border border-blue-200 dark:border-blue-800 w-fit">
-                            {log.coachee?.department || '-'}
+                        <span className="font-bold text-slate-800 dark:text-slate-200">{log.coachee?.name || '-'}</span>
+                        <span className="text-[10px] text-blue-600 dark:text-blue-400 font-bold bg-blue-50 dark:bg-blue-900/30 px-2 py-0.5 rounded-full border border-blue-100 dark:border-blue-800/50 w-fit uppercase tracking-wider">{log.coachee?.department || '-'}</span>
+                        {log.coachee?.assessments?.[0]?.primaryStyle && (
+                          <span className="text-[10px] text-purple-600 dark:text-purple-400 font-bold bg-purple-50 dark:bg-purple-900/30 px-2 py-0.5 rounded-full border border-purple-100 dark:border-purple-800/50 w-fit mt-1 uppercase tracking-wider">
+                            Gaya: {log.coachee?.assessments[0].primaryStyle} {log.coachee?.assessments[0].isCombination && log.coachee?.assessments[0].secondaryStyle ? `(${log.coachee.assessments[0].primaryStyle} / ${log.coachee.assessments[0].secondaryStyle})` : ''}
                           </span>
-                          {log.coachee?.assessments && log.coachee.assessments.length > 0 && (
-                            <span className="inline-flex items-center px-2 py-1 rounded-md text-[9px] font-extrabold uppercase tracking-widest bg-purple-50 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400 border border-purple-200 dark:border-purple-800 w-fit">
-                              Gaya: {log.coachee.assessments[0].primaryStyle}
-                            </span>
-                          )}
+                        )}
+                      </div>
+                    </TableCell>
+                    <TableCell className="px-6 py-5 align-top">
+                      <div className="flex flex-col gap-3 max-w-[300px]">
+                        <span className="font-bold text-[#015249] dark:text-emerald-400 text-sm leading-tight">{log.title || '-'}</span>
+                        <div className="text-sm text-slate-600 dark:text-slate-300 whitespace-pre-wrap leading-relaxed">
+                          {log.notes || '-'}
                         </div>
                       </div>
                     </TableCell>
                     <TableCell className="px-6 py-5 align-top max-w-[300px]">
-                      <p className="font-black text-[#015249] dark:text-blue-400 mb-2 text-sm">{log.title}</p>
-                      <p className="text-sm text-slate-600 dark:text-slate-300 whitespace-pre-wrap leading-relaxed">{log.notes}</p>
-                    </TableCell>
-                    <TableCell className="px-6 py-5 align-top max-w-[250px]">
                       {log.actionItems && log.actionItems.length > 0 ? (
-                        <div className="relative overflow-hidden bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-950/30 dark:to-teal-950/30 p-3 rounded-xl border border-emerald-100 dark:border-emerald-800/30 shadow-inner group-hover:shadow-emerald-500/10 transition-shadow">
-                          <div className="absolute top-0 right-0 w-16 h-16 bg-emerald-400/10 rounded-full blur-xl -translate-y-8 translate-x-8"></div>
-                          <div className="text-sm font-medium text-emerald-800 dark:text-emerald-300 relative z-10 leading-relaxed space-y-1">
+                        <div className="bg-emerald-50/50 dark:bg-emerald-950/20 p-3 rounded-xl border border-emerald-100/50 dark:border-emerald-900/30">
+                          <div className="flex flex-col gap-3">
                             {log.actionItems.map((item: any, i: number) => (
-                              <div key={i} className="mb-2 last:mb-0">
-                                <p className="whitespace-pre-wrap break-words">• {item.text}</p>
+                              <div key={i} className="flex flex-col gap-1.5 pb-3 border-b border-emerald-100 dark:border-emerald-900/30 last:border-0 last:pb-0">
+                                <div className="flex items-start gap-2 text-sm text-slate-700 dark:text-slate-300">
+                                  <div className="w-1.5 h-1.5 rounded-full bg-[#57BC90] mt-1.5 shrink-0" />
+                                  <span className="font-medium">{item.text}</span>
+                                </div>
                                 {item.evidenceUrl && (
                                   <div className="ml-3 mt-1 inline-flex items-center gap-1 bg-white/60 dark:bg-black/20 px-2 py-0.5 rounded-md border border-emerald-200/50 dark:border-emerald-800/50">
                                     <EvidenceDialog url={item.evidenceUrl} name={item.evidenceName || 'Lampiran'} />
@@ -249,14 +243,6 @@ export function CoachingMasterTable({ logs, isDeputi }: { logs: any[], isDeputi:
                         <span className="text-xs italic text-slate-400 bg-slate-50 dark:bg-slate-900/50 px-3 py-1 rounded-full border border-slate-100 dark:border-slate-800">-</span>
                       )}
                     </TableCell>
-                    <TableCell className="px-6 py-5 align-top max-w-[250px]">
-                      {log.response ? (
-                        <p className="text-sm text-slate-600 dark:text-slate-300 whitespace-pre-wrap leading-relaxed">{log.response.split('@@@')[0]}</p>
-                      ) : (
-                        <span className="text-xs italic text-slate-400 bg-slate-50 dark:bg-slate-900/50 px-3 py-1 rounded-full border border-slate-100 dark:border-slate-800">-</span>
-                      )}
-                    </TableCell>
-
                   </TableRow>
                 ))}
               </TableBody>

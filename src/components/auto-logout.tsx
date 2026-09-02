@@ -33,7 +33,7 @@ export function AutoLogout() {
     const interval = setInterval(() => {
       if (Date.now() - lastActivity > TIMEOUT_MS) {
         // User has been inactive for 1 hour
-        signOut({ callbackUrl: '/login' });
+        signOut({ callbackUrl: '/' });
       }
     }, 60000); // Check every 60 seconds
 

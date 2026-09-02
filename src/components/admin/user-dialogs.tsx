@@ -153,21 +153,19 @@ export function CreateUserDialog() {
             </div>
 
             <div className="grid gap-2">
-              <Label htmlFor="position">Jabatan</Label>
+              <Label htmlFor="pangkat">Pangkat</Label>
               <select 
-                id="position" 
-                name="position" 
+                id="pangkat" 
+                name="pangkat" 
                 className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring text-black dark:text-black"
                 required
                 defaultValue=""
               >
-                <option value="" disabled>Pilih Jabatan...</option>
-                <option value="Deputi Direksi Wilayah">Deputi Direksi Wilayah</option>
-                <option value="Asisten Deputi">Asisten Deputi</option>
-                <option value="Kepala Cabang">Kepala Cabang</option>
+                <option value="" disabled>Pilih Pangkat...</option>
+                <option value="Senior Manager">Senior Manager</option>
+                <option value="Manager">Manager</option>
                 <option value="Asisten Manager">Asisten Manager</option>
-                <option value="Kepala Kabupaten">Kepala Kabupaten</option>
-                <option value="Staf Pelaksana">Staf Pelaksana</option>
+                <option value="Pelaksana">Pelaksana</option>
                 <option value="PTT/PATT">PTT/PATT</option>
               </select>
             </div>
@@ -399,21 +397,19 @@ export function EditUserDialog({ user, children }: { user: any, children: React.
             </div>
 
             <div className="grid gap-2">
-              <Label htmlFor="edit-position">Jabatan</Label>
+              <Label htmlFor="edit-pangkat">Pangkat</Label>
               <select 
-                id="edit-position" 
-                name="position" 
+                id="edit-pangkat" 
+                name="pangkat" 
                 className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring text-black dark:text-black"
-                defaultValue={user.position || ""}
+                defaultValue={user.pangkat || ""}
                 required
               >
-                <option value="" disabled>Pilih Jabatan...</option>
-                <option value="Deputi Direksi Wilayah">Deputi Direksi Wilayah</option>
-                <option value="Asisten Deputi">Asisten Deputi</option>
-                <option value="Kepala Cabang">Kepala Cabang</option>
+                <option value="" disabled>Pilih Pangkat...</option>
+                <option value="Senior Manager">Senior Manager</option>
+                <option value="Manager">Manager</option>
                 <option value="Asisten Manager">Asisten Manager</option>
-                <option value="Kepala Kabupaten">Kepala Kabupaten</option>
-                <option value="Staf Pelaksana">Staf Pelaksana</option>
+                <option value="Pelaksana">Pelaksana</option>
                 <option value="PTT/PATT">PTT/PATT</option>
               </select>
             </div>

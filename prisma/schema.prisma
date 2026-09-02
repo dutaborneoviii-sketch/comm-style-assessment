@@ -3,15 +3,13 @@ generator client {
 }
 
 datasource db {
-  provider  = "postgresql"
+  provider  = "sqlite"
   url       = env("DATABASE_URL")
-  directUrl = env("DIRECT_URL")
 }
 
 model Department {
   name         String        @id
   users        User[]
-  featureFlags FeatureFlag[]
 }
 
 model User {
@@ -26,7 +24,7 @@ model User {
   employeeLocation String?
   department    String?
   departmentRel Department?     @relation(fields: [department], references: [name], onDelete: SetNull)
-  position      String?
+  pangkat       String?
   positionDetail String?
   accounts      Account[]
   sessions      Session[]
@@ -153,18 +151,18 @@ model Option {
 
 model FeatureFlag {
   id          String   @id @default(cuid())
-  featureKey  String   // e.g. "panduan_komunikasi"
-  roleGroup   String   // e.g. "Staf", "Asisten Deputi", "Deputi Direksi Wilayah"
-  department  String   @default("GLOBAL") // e.g. "TI Wilayah", "GLOBAL"
-  departmentRel Department? @relation(fields: [department], references: [name], onDelete: Cascade)
+  featureKey  String
+  roleGroup   String
+  department  String   @default("GLOBAL")
+  location    String   @default("GLOBAL")
   enabled     Boolean  @default(false)
-  label       String   // Display name, e.g. "Panduan Gaya Komunikasi"
-  description String   @default("")
+  label       String
+  description String?
 
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  @@unique([featureKey, roleGroup, department])
+  @@unique([featureKey, roleGroup, department, location])
 }
 
 model SystemSetting {

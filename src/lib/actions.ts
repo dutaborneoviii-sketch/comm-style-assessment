@@ -85,7 +85,7 @@ export async function updateQuestion(
   
   const user = await prisma.user.findUnique({ where: { id: session.user.id } });
   const isAdmin = user?.role === "ADMIN";
-  const isAllowedAsdep = user?.position === "Asisten Deputi" && user?.department === "Bidang SDM, Umum dan Komunikasi (SDMUK)";
+  const isAllowedAsdep = user?.positionDetail === "Asisten Deputi" && user?.department === "Bidang SDM, Umum dan Komunikasi (SDMUK)";
   if (!isAdmin && !isAllowedAsdep) throw new Error("Forbidden");
 
   // Update question text
@@ -114,7 +114,7 @@ export async function uploadQuestionsExcel(formData: FormData) {
   
   const user = await prisma.user.findUnique({ where: { id: session.user.id } });
   const isAdmin = user?.role === "ADMIN";
-  const isAllowedAsdep = user?.position === "Asisten Deputi" && user?.department === "Bidang SDM, Umum dan Komunikasi (SDMUK)";
+  const isAllowedAsdep = user?.positionDetail === "Asisten Deputi" && user?.department === "Bidang SDM, Umum dan Komunikasi (SDMUK)";
   if (!isAdmin && !isAllowedAsdep) throw new Error("Forbidden");
 
   const file = formData.get('file') as File | null;

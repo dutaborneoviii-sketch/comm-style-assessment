@@ -12,7 +12,7 @@ async function main() {
       email: 'testdeputi@example.com',
       name: 'Test Deputi',
       npp: '999999',
-      position: 'Deputi Direksi Wilayah',
+      pangkat: 'Deputi Direksi Wilayah',
       department: 'Wilayah VIII',
       password: 'test',
       role: 'USER',

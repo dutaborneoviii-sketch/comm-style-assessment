@@ -14,18 +14,47 @@ export default async function CoachingReportPage() {
 
   const currentUser = await prisma.user.findUnique({ where: { id: session.user.id } });
   
-  const isAsdepSDM = currentUser?.position === 'Asisten Deputi' && currentUser?.department === 'Bidang SDM, Umum dan Komunikasi (SDMUK)';
-  if (!currentUser || (currentUser.role !== "ADMIN" && !isAsdepSDM)) redirect("/profile");
+  if (!currentUser) redirect("/");
+
+  const isAdmin = currentUser.role === "ADMIN";
+  const userRoleGroup = currentUser.pangkat || currentUser.positionDetail || "Staf";
+  
+  const { isFeatureEnabled } = await import("@/app/actions/features");
+  const isEnabled = await isFeatureEnabled("rekapitulasi_coaching", userRoleGroup, currentUser.department, currentUser.employeeLocation);
+
+  const isAsistenDeputi = currentUser.pangkat === 'Manager' || currentUser.pangkat === 'Asisten Deputi' || currentUser.positionDetail === 'Asisten Deputi' || currentUser.positionDetail === 'Kepala Kabupaten';
+  const isAsdepSDM = (isAsistenDeputi && currentUser.department?.includes('SDMUK')) || currentUser.positionDetail?.includes('Asisten Deputi Bidang Sumber Daya Manusia');
+  
+  if (!isAdmin && !isEnabled && !isAsdepSDM) redirect("/profile");
 
   let reports = await getCoachingReport();
 
-  const allowedPositions = ['Deputi Direksi Wilayah', 'Asisten Deputi', 'Kepala Cabang', 'Kepala Kabupaten', 'Asisten Manager'];
+  const allowedPositions = [
+    'Senior Manager', 'Manager', 'Asisten Manager', 
+    'Deputi Direksi Wilayah', 'Asisten Deputi', 'Kepala Cabang', 'Kepala Kabupaten', 'Kepala Kantor Kabupaten'
+  ];
+  
   reports = reports.filter(r => {
-    if (!allowedPositions.includes(r.position!)) return false;
+    const isAllowedRole = allowedPositions.includes(r.pangkat!) || allowedPositions.includes(r.positionDetail!);
+    if (!isAllowedRole) return false;
+    
     // Exclude Asisten Manager from Kedeputian Wilayah VIII
-    if (r.position === 'Asisten Manager' && r.workUnit === 'Kedeputian Wilayah VIII') return false;
+    if ((r.pangkat === 'Asisten Manager' || r.positionDetail === 'Asisten Manager') && r.workUnit === 'Kedeputian Wilayah VIII') return false;
+    
     return true;
   });
+
+  // Filter specific to Manager SDMUK Kedeputian Wilayah VIII
+  if (!isAdmin && isAsdepSDM) {
+    reports = reports.filter(r => 
+      r.workUnit === 'Kedeputian Wilayah VIII' || 
+      (r.workUnit && r.workUnit.startsWith('Kantor Cabang')) || 
+      (r.workUnit && r.workUnit.startsWith('Kantor Kabupaten'))
+    );
+  } else if (!isAdmin) {
+    // If other non-admins get access via feature flags, restrict them to their own workUnit
+    reports = reports.filter(r => r.workUnit === currentUser.workUnit);
+  }
 
   return (
     <div className="space-y-8">

@@ -33,7 +33,7 @@ export async function POST(request: Request) {
         email,
         workUnit,
         department,
-        position,
+        pangkat: position,
         password: hashedPassword,
         status: 'PENDING',
         role: 'USER'

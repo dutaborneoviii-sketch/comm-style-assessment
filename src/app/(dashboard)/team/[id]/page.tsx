@@ -1,14 +1,14 @@
 export const dynamic = 'force-dynamic';
 
 import { auth } from "@/auth";
-import { redirect } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
+import { getUserAccess } from "@/lib/access";
 import { prisma } from "@/lib/prisma";
 import { cookies } from "next/headers";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, User as UserIcon, MessageCircle, Calendar, Plus, Info, Target, MessageSquareQuote, Lightbulb, Sparkles, Activity, Clock } from "lucide-react";
 import Link from "next/link";
-import { notFound } from "next/navigation";
 import { cn } from "@/lib/utils";
 
 import { 
@@ -124,7 +124,7 @@ function getGuideData(primary: string | undefined, secondary: string | undefined
 export default async function CoachingStrategyPage({ params }: { params: { id: string } }) {
   const session = await auth();
   if (!session?.user?.id) {
-    redirect("/login");
+    redirect("/");
   }
 
   // Fetch subordinate details
@@ -182,32 +182,34 @@ export default async function CoachingStrategyPage({ params }: { params: { id: s
   // Fetch current user role to determine log visibility
   const currentUser = await prisma.user.findUnique({
     where: { id: session.user.id },
-    select: { role: true, position: true }
+    select: { id: true, role: true, positionDetail: true, department: true, pangkat: true, workUnit: true }
   });
 
   const viewMode = cookies().get('view-mode')?.value || 'admin';
   const asistenMode = cookies().get('asisten-mode')?.value || 'coach';
   
   const isViewModeUser = currentUser?.role === 'ADMIN' && viewMode === 'user';
-  const isAsistenModeCoachee = (currentUser?.position === 'Asisten Deputi' || currentUser?.position === 'Kepala Kabupaten') && asistenMode === 'coachee';
+  const isAsistenModeCoachee = (currentUser?.positionDetail === 'Asisten Deputi' || currentUser?.positionDetail === 'Kepala Kabupaten') && asistenMode === 'coachee';
   
   if (currentUser) {
     if (isViewModeUser) {
       currentUser.role = 'USER';
-      currentUser.position = 'Staf Pelaksana';
+      currentUser.positionDetail = 'Staf Pelaksana';
     } else if (isAsistenModeCoachee) {
-      currentUser.position = 'Staf Pelaksana';
+      currentUser.positionDetail = 'Staf Pelaksana';
     }
   }
 
+  const access = getUserAccess(currentUser as any);
+  
   // Security check: Only Manager/Admin can view team details
-  const isManager = currentUser?.role === 'ADMIN' || currentUser?.position === 'Asisten Deputi' || currentUser?.position === 'Deputi Direksi Wilayah' || currentUser?.position === 'Kepala Kabupaten';
+  const isManager = access.isAdmin || access.isCoach;
   if (!isManager) {
     redirect("/profile");
   }
 
-  const isAdmin = currentUser?.role === 'ADMIN';
-  const isDeputiOrAdmin = currentUser?.role === 'ADMIN' || currentUser?.position === 'Deputi Direksi Wilayah';
+  const isAdmin = access.isAdmin;
+  const isDeputiOrAdmin = access.isAdmin || currentUser?.pangkat === 'Deputi Direksi Wilayah';
 
   const coachingLogs = await prisma.coachingLog.findMany({
     where: {
@@ -216,7 +218,7 @@ export default async function CoachingStrategyPage({ params }: { params: { id: s
       ...(!isDeputiOrAdmin ? { coachId: session.user.id } : {})
     },
     include: {
-      coach: { select: { name: true, npp: true, department: true, position: true } },
+      coach: { select: { id: true, name: true, npp: true, role: true, positionDetail: true, department: true, pangkat: true } },
       actionItems: true
     },
     orderBy: [
@@ -374,7 +376,7 @@ export default async function CoachingStrategyPage({ params }: { params: { id: s
                   coacheeName={subordinate.name}
                   coacheeStyle={displayStyle}
                   isReadOnly={isAdmin} 
-                  isDeputi={currentUser?.position === 'Deputi Direksi Wilayah'}
+                  isDeputi={currentUser?.positionDetail === 'Deputi Direksi Wilayah'}
                   hasAssessment={hasAssessment}
                 />
               </div>

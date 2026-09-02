@@ -15,15 +15,15 @@ export default async function DictionaryAdminPage() {
 
   const user = await prisma.user.findUnique({
     where: { id: session.user.id },
-    select: { role: true, position: true, department: true }
+    select: { role: true, positionDetail: true, department: true }
   });
 
   const isAdmin = user?.role === "ADMIN";
 
   if (!isAdmin) {
     let userRoleGroup = "Staf";
-    if (user?.position === "Asisten Deputi") userRoleGroup = "Asisten Deputi";
-    if (user?.position === "Deputi Direksi Wilayah") userRoleGroup = "Deputi Direksi Wilayah";
+    if (user?.positionDetail === "Asisten Deputi") userRoleGroup = "Asisten Deputi";
+    if (user?.positionDetail === "Deputi Direksi Wilayah") userRoleGroup = "Deputi Direksi Wilayah";
 
     const { isFeatureEnabled } = await import("@/app/actions/features");
     const isEnabled = await isFeatureEnabled("manajemen_kamus_panduan", userRoleGroup, user?.department);

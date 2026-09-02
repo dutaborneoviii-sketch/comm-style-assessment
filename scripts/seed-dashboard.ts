@@ -20,7 +20,7 @@ async function main() {
 
   // Find the current Deputi user's department to seed relevant users
   const deputi = await prisma.user.findFirst({
-    where: { position: 'Deputi Direksi Wilayah' }
+    where: { pangkat: 'Deputi Direksi Wilayah' }
   });
 
   if (!deputi || !deputi.department) {
@@ -40,7 +40,7 @@ async function main() {
         npp: `DUMMY-${i}`,
         email: `dummy${i}@example.com`,
         department: targetDepartment,
-        position: 'Staf',
+        pangkat: 'Staf',
         role: 'USER',
         status: 'ACTIVE',
       }

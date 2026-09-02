@@ -19,11 +19,11 @@ export default async function GuidePage() {
 
   const user = await prisma.user.findUnique({
     where: { id: session.user.id },
-    select: { role: true, position: true, department: true }
+    select: { role: true, positionDetail: true, department: true }
   });
 
   const isAdmin = user?.role === "ADMIN";
-  const isSDMAsistenDeputi = (user?.position === 'Asisten Deputi' && user?.department?.includes('SDMUK')) || user?.position?.includes('Asisten Deputi Bidang Sumber Daya Manusia');
+  const isSDMAsistenDeputi = (user?.positionDetail === 'Asisten Deputi' && user?.department?.includes('SDMUK')) || user?.positionDetail?.includes('Asisten Deputi Bidang Sumber Daya Manusia');
   const showManagementButton = isAdmin || isSDMAsistenDeputi;
 
   return (

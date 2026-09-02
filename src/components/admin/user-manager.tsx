@@ -51,16 +51,29 @@ export function UserManager({ initialUsers, currentUserId }: { initialUsers: any
     setConfirm(defaultConfirm);
   }
 
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
+
   // Search filter
   const filteredUsers = initialUsers.filter((user) => 
     user.name?.toLowerCase().includes(search.toLowerCase()) || 
     user.email?.toLowerCase().includes(search.toLowerCase()) ||
     user.department?.toLowerCase().includes(search.toLowerCase()) ||
+    user.workUnit?.toLowerCase().includes(search.toLowerCase()) ||
     user.npp?.toLowerCase().includes(search.toLowerCase())
   );
 
   const registeredUsers = filteredUsers.filter(u => u.status === 'APPROVED' || u.status === 'INACTIVE' || u.status === 'ACTIVE');
   const pendingUsers = filteredUsers.filter(u => u.status === 'PENDING');
+
+  const totalPages = Math.max(1, Math.ceil(registeredUsers.length / itemsPerPage));
+  const currentUsers = registeredUsers.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+
+  // Reset page when searching
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearch(e.target.value);
+    setCurrentPage(1);
+  };
 
   async function handleDelete(id: string, name: string) {
     showConfirm({
@@ -250,9 +263,9 @@ export function UserManager({ initialUsers, currentUserId }: { initialUsers: any
         <div className="relative w-full sm:max-w-xs">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
           <Input 
-            placeholder="Cari nama, NPP, atau bidang..." 
+            placeholder="Cari nama, NPP, bidang, atau satuan kerja..." 
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            onChange={handleSearchChange}
             className="pl-9 bg-white dark:bg-zinc-950 border-slate-200 dark:border-slate-800"
           />
         </div>
@@ -288,7 +301,7 @@ export function UserManager({ initialUsers, currentUserId }: { initialUsers: any
                     <th className="px-3 py-3 font-semibold">Satuan Kerja</th>
                     <th className="px-3 py-3 font-semibold">Lokasi Pegawai</th>
                     <th className="px-3 py-3 font-semibold">Bidang</th>
-                    <th className="px-3 py-3 font-semibold">Jabatan</th>
+                    <th className="px-3 py-3 font-semibold">Pangkat</th>
                     <th className="px-3 py-3 font-semibold">Detail Jabatan</th>
                     <th className="px-3 py-3 font-semibold">Peran</th>
                     <th className="px-3 py-3 font-semibold">Status</th>
@@ -296,14 +309,14 @@ export function UserManager({ initialUsers, currentUserId }: { initialUsers: any
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100 dark:divide-slate-800/50">
-                  {registeredUsers.length === 0 ? (
+                  {currentUsers.length === 0 ? (
                     <tr>
-                      <td colSpan={7} className="px-6 py-8 text-center text-muted-foreground">
-                        Tidak ada pengguna yang ditemukan.
+                      <td colSpan={10} className="px-6 py-8 text-center text-muted-foreground">
+                        Tidak ada pengguna yang ditemukan di halaman ini.
                       </td>
                     </tr>
                   ) : (
-                    registeredUsers.map((user) => (
+                    currentUsers.map((user) => (
                       <tr key={user.id} className={`transition-colors ${user.status === 'INACTIVE' ? 'bg-slate-50/50 dark:bg-slate-900/20 opacity-70 grayscale-[30%]' : 'hover:bg-slate-50/50 dark:hover:bg-slate-900/20'}`}>
                         <td className="px-3 py-3 font-medium text-slate-900 dark:text-white">
                           {user.npp || "-"}
@@ -331,13 +344,13 @@ export function UserManager({ initialUsers, currentUserId }: { initialUsers: any
                           {user.department || "-"}
                         </td>
                         <td className="px-3 py-3">
-                          {user.position ? (
+                          {user.pangkat ? (
                             <span className={`inline-flex items-center px-2 py-1 rounded-md text-xs font-medium ${
-                              user.position === 'Atasan' 
+                              user.pangkat === 'Atasan' 
                                 ? 'bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-400' 
                                 : 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300'
                             }`}>
-                              {user.position}
+                              {user.pangkat}
                             </span>
                           ) : (
                             <span className="text-slate-400 dark:text-slate-500">-</span>
@@ -424,6 +437,36 @@ export function UserManager({ initialUsers, currentUserId }: { initialUsers: any
                 </tbody>
               </table>
             </div>
+            
+            {/* Pagination Controls */}
+            {totalPages > 1 && (
+              <div className="flex items-center justify-between px-4 py-3 border-t border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/30">
+                <span className="text-sm text-slate-500 dark:text-slate-400">
+                  Menampilkan {((currentPage - 1) * itemsPerPage) + 1} - {Math.min(currentPage * itemsPerPage, registeredUsers.length)} dari {registeredUsers.length} pengguna
+                </span>
+                <div className="flex items-center gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                    disabled={currentPage === 1}
+                  >
+                    Sebelumnya
+                  </Button>
+                  <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
+                    Hal {currentPage} dari {totalPages}
+                  </span>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                    disabled={currentPage === totalPages}
+                  >
+                    Selanjutnya
+                  </Button>
+                </div>
+              </div>
+            )}
           </Card>
         </TabsContent>
         
@@ -438,7 +481,7 @@ export function UserManager({ initialUsers, currentUserId }: { initialUsers: any
                     <th className="px-3 py-3 font-semibold">Satuan Kerja</th>
                     <th className="px-3 py-3 font-semibold">Lokasi Pegawai</th>
                     <th className="px-3 py-3 font-semibold">Bidang</th>
-                    <th className="px-3 py-3 font-semibold">Jabatan</th>
+                    <th className="px-3 py-3 font-semibold">Pangkat</th>
                     <th className="px-3 py-3 font-semibold">Detail Jabatan</th>
                     <th className="px-3 py-3 font-semibold">Tgl Daftar</th>
                     <th className="px-3 py-3 font-semibold text-right">Aksi</th>
@@ -473,7 +516,7 @@ export function UserManager({ initialUsers, currentUserId }: { initialUsers: any
                           {user.department || "-"}
                         </td>
                         <td className="px-3 py-3 text-slate-600 dark:text-slate-300">
-                          {user.position || "-"}
+                          {user.pangkat || "-"}
                         </td>
                         <td className="px-3 py-3 text-slate-600 dark:text-slate-300 max-w-[150px] truncate" title={user.positionDetail || ""}>
                           {user.positionDetail || "-"}
@@ -623,13 +666,11 @@ function MigrationDialog() {
       "TI Wilayah"
     ];
     
-    const jabatanList = [
-      "Deputi Direksi Wilayah",
-      "Asisten Deputi",
-      "Kepala Cabang",
+    const pangkatList = [
+      "Senior Manager",
+      "Manager",
       "Asisten Manager",
-      "Kepala Kabupaten",
-      "Staf Pelaksana",
+      "Pelaksana",
       "PTT/PATT"
     ];
     
@@ -690,13 +731,13 @@ function MigrationDialog() {
     satuanKerjaList.forEach((v, i) => { optionsSheet.getCell(`A${i+1}`).value = v; });
     lokasiPegawaiList.forEach((v, i) => { optionsSheet.getCell(`B${i+1}`).value = v; });
     bidangList.forEach((v, i) => { optionsSheet.getCell(`C${i+1}`).value = v; });
-    jabatanList.forEach((v, i) => { optionsSheet.getCell(`D${i+1}`).value = v; });
+    pangkatList.forEach((v, i) => { optionsSheet.getCell(`D${i+1}`).value = v; });
     detailJabatanList.forEach((v, i) => { optionsSheet.getCell(`E${i+1}`).value = v; });
     roleList.forEach((v, i) => { optionsSheet.getCell(`F${i+1}`).value = v; });
 
     // Create Main Template Sheet
     const sheet = workbook.addWorksheet("Template");
-    const headers = ["NPP", "Nama User", "Email (Opsional)", "Satuan Kerja", "Lokasi Pegawai", "Bidang", "Jabatan", "Detail Jabatan", "Hak Akses (Role)"];
+    const headers = ["NPP", "Nama User", "Email (Opsional)", "Satuan Kerja", "Lokasi Pegawai", "Bidang", "Pangkat", "Detail Jabatan", "Hak Akses (Role)"];
     sheet.addRow(headers);
 
     // Style Headers
@@ -731,7 +772,7 @@ function MigrationDialog() {
       sheet.getCell(`G${i}`).dataValidation = {
         type: 'list',
         allowBlank: true,
-        formulae: [`Options!$D$1:$D$${jabatanList.length}`]
+        formulae: [`Options!$D$1:$D$${pangkatList.length}`]
       };
       sheet.getCell(`H${i}`).dataValidation = {
         type: 'list',
@@ -770,7 +811,7 @@ function MigrationDialog() {
       { header: 'Nama User', key: 'name', width: 25 },
       { header: 'Satuan Kerja', key: 'workUnit', width: 25 },
       { header: 'Bidang', key: 'department', width: 25 },
-      { header: 'Jabatan', key: 'position', width: 20 },
+      { header: 'Pangkat', key: 'pangkat', width: 20 },
       { header: 'Status', key: 'status', width: 15 },
       { header: 'Password Baru', key: 'passwordGenerated', width: 20 },
       { header: 'Keterangan Error', key: 'message', width: 30 },
@@ -787,7 +828,7 @@ function MigrationDialog() {
         name: r.name,
         workUnit: r.workUnit,
         department: r.department,
-        position: r.position,
+        pangkat: r.pangkat,
         status: r.status === "SUCCESS" ? "Berhasil" : "Gagal",
         passwordGenerated: r.passwordGenerated,
         message: r.message || "-"
@@ -912,7 +953,7 @@ function MigrationDialog() {
                             {r.department}
                           </span>
                         </td>
-                        <td className="p-2.5 truncate max-w-[100px]">{r.position}</td>
+                        <td className="p-2.5 truncate max-w-[100px]">{r.pangkat}</td>
                         <td className="p-2.5 truncate max-w-[100px]">{r.positionDetail || "-"}</td>
                         <td className="p-2.5">
                           <div className="flex flex-col gap-1">

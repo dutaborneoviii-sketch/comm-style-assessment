@@ -1017,8 +1017,15 @@ export default function CoachingTracker({
 
                       {/* Form Tanggapan Dihapus Sesuai Permintaan */}
                       
-                      <div className="flex flex-col items-end gap-2 border-t border-slate-100 dark:border-slate-800/50 pt-3">
-                        <div className="flex items-center gap-2">
+                      <div className="flex flex-col gap-2 border-t border-slate-100 dark:border-slate-800/50 pt-3">
+                        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 w-full">
+                          <div className="flex items-start sm:items-center gap-2.5 bg-amber-50 dark:bg-amber-950/30 text-amber-700 dark:text-amber-400 px-3.5 py-2.5 rounded-lg border border-amber-200/60 dark:border-amber-900/50 w-full sm:w-auto flex-1">
+                            <Info className="w-4 h-4 shrink-0 mt-0.5 sm:mt-0" />
+                            <span className="text-[11px] sm:text-xs font-medium leading-relaxed">
+                              <strong className="font-bold">Info:</strong> Jika tidak ada rencana <strong className="font-bold">tanggal</strong> pelaksanaan sesi coaching selanjutnya, silakan dilanjutkan <strong>Tutup Sesi Coaching</strong>
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-2 shrink-0">
                           {!isReadOnly && !isCoachee && !log.nextSessionDate && (
                             <Button
                               variant="outline"
@@ -1051,6 +1058,7 @@ export default function CoachingTracker({
                             {isClosing === log.id && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                             Tutup Sesi Coaching
                           </Button>
+                          </div>
                         </div>
                         {!canCloseSession && (
                           <p className="text-[11px] text-slate-400 dark:text-slate-500 italic mt-2 text-right">

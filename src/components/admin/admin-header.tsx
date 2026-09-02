@@ -5,6 +5,7 @@ import { ViewModeToggle } from "./view-mode-toggle";
 import { AsistenModeToggle } from "./asisten-mode-toggle";
 import { NotificationMenu, NotificationType } from "../notification-menu";
 import { ProfileDropdown } from "./profile-dropdown";
+import { getUserAccess } from "@/lib/access";
 
 interface AdminHeaderProps {
   user: any;
@@ -14,6 +15,7 @@ interface AdminHeaderProps {
 }
 
 export default function AdminHeader({ user, viewMode, asistenMode, notifications }: AdminHeaderProps) {
+  const access = getUserAccess(user);
   return (
     <div className="w-full bg-gradient-to-r from-[#015249] via-[#57BC90] to-[#77C9D4] shrink-0 px-8 pt-8 pb-24 flex flex-col relative overflow-hidden -mb-16 z-0">
       {/* Abstract Background blobs */}
@@ -36,7 +38,7 @@ export default function AdminHeader({ user, viewMode, asistenMode, notifications
             </div>
           )}
           
-          {(user?.position === 'Asisten Deputi' || user?.position === 'Kepala Kabupaten' || user?.position === 'Kepala Kantor Kabupaten' || user?.position === 'Asisten Manager') && (user?.role !== 'ADMIN' || viewMode !== 'user') && (
+          {access.isCoach && access.isCoachee && (!access.isAdmin || viewMode !== 'user') && (
             <div className="bg-white/10 p-1.5 rounded-full flex items-center gap-2 border border-white/20">
                <AsistenModeToggle currentMode={(asistenMode === 'coachee' ? 'coachee' : 'coach')} />
             </div>

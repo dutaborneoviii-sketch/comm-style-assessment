@@ -4,13 +4,14 @@ import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import bcrypt from "bcryptjs";
 import { revalidatePath } from "next/cache";
+import { getUserAccess } from "@/lib/access";
 
 export async function getUsers() {
   const session = await auth();
   if (!session?.user?.id) throw new Error("Unauthorized");
   
   const currentUser = await prisma.user.findUnique({ where: { id: session.user.id } });
-  if (currentUser?.role !== "ADMIN") throw new Error("Forbidden");
+  if (!getUserAccess(currentUser as any).isAdmin) throw new Error("Forbidden");
 
   return prisma.user.findMany({
     orderBy: { createdAt: "desc" },
@@ -22,7 +23,7 @@ export async function getUsers() {
       workUnit: true,
       employeeLocation: true,
       department: true,
-      position: true,
+      pangkat: true,
       positionDetail: true,
       role: true,
       status: true,
@@ -36,7 +37,7 @@ export async function approveUser(id: string) {
   if (!session?.user?.id) throw new Error("Unauthorized");
   
   const currentUser = await prisma.user.findUnique({ where: { id: session.user.id } });
-  if (currentUser?.role !== "ADMIN") throw new Error("Forbidden");
+  if (!getUserAccess(currentUser as any).isAdmin) throw new Error("Forbidden");
 
   try {
     await prisma.user.update({
@@ -57,7 +58,7 @@ export async function toggleUserStatus(id: string, currentStatus: string) {
   if (!session?.user?.id) throw new Error("Unauthorized");
   
   const currentUser = await prisma.user.findUnique({ where: { id: session.user.id } });
-  if (currentUser?.role !== "ADMIN") throw new Error("Forbidden");
+  if (!getUserAccess(currentUser as any).isAdmin) throw new Error("Forbidden");
 
   // Prevent admin from deactivating themselves
   if (id === session.user.id) {
@@ -85,7 +86,7 @@ export async function createUser(data: any) {
   if (!session?.user?.id) throw new Error("Unauthorized");
   
   const currentUser = await prisma.user.findUnique({ where: { id: session.user.id } });
-  if (currentUser?.role !== "ADMIN") throw new Error("Forbidden");
+  if (!getUserAccess(currentUser as any).isAdmin) throw new Error("Forbidden");
 
   // Basic validation
   if (!data.npp) throw new Error("NPP is required");
@@ -101,6 +102,14 @@ export async function createUser(data: any) {
   const hashedPassword = await bcrypt.hash(passwordToHash, 10);
 
   try {
+    if (data.department) {
+      await prisma.department.upsert({
+        where: { name: data.department },
+        update: {},
+        create: { name: data.department }
+      });
+    }
+
     const newUser = await prisma.user.create({
       data: {
         npp: data.npp,
@@ -110,7 +119,7 @@ export async function createUser(data: any) {
         workUnit: data.workUnit || null,
         employeeLocation: data.employeeLocation || null,
         department: data.department || null,
-        position: data.position || null,
+        pangkat: data.pangkat || null,
         positionDetail: data.positionDetail || null,
         role: data.role || "USER",
       }
@@ -120,7 +129,7 @@ export async function createUser(data: any) {
     return { success: true, user: newUser };
   } catch (error: any) {
     console.error("Error creating user:", error);
-    return { error: "Gagal membuat pengguna." };
+    return { error: `Gagal membuat pengguna: ${error.message || error}` };
   }
 }
 
@@ -129,9 +138,17 @@ export async function updateUser(id: string, data: any) {
   if (!session?.user?.id) throw new Error("Unauthorized");
   
   const currentUser = await prisma.user.findUnique({ where: { id: session.user.id } });
-  if (currentUser?.role !== "ADMIN") throw new Error("Forbidden");
+  if (!getUserAccess(currentUser as any).isAdmin) throw new Error("Forbidden");
 
   try {
+    if (data.department) {
+      await prisma.department.upsert({
+        where: { name: data.department },
+        update: {},
+        create: { name: data.department }
+      });
+    }
+
     const updateData: any = {
       npp: data.npp,
       name: data.name,
@@ -139,7 +156,7 @@ export async function updateUser(id: string, data: any) {
       workUnit: data.workUnit,
       employeeLocation: data.employeeLocation,
       department: data.department,
-      position: data.position,
+      pangkat: data.pangkat,
       positionDetail: data.positionDetail,
       role: data.role,
     };
@@ -166,7 +183,7 @@ export async function deleteUser(id: string) {
   if (!session?.user?.id) return { error: "Sesi tidak valid. Silakan login ulang." };
   
   const currentUser = await prisma.user.findUnique({ where: { id: session.user.id } });
-  if (currentUser?.role !== "ADMIN") return { error: "Akses ditolak. Hanya admin yang dapat menghapus pengguna." };
+  if (!getUserAccess(currentUser as any).isAdmin) return { error: "Akses ditolak. Hanya admin yang dapat menghapus pengguna." };
 
   // Prevent admin from deleting themselves
   if (id === session.user.id) {
@@ -292,7 +309,7 @@ export async function resetUserPassword(id: string) {
   if (!session?.user?.id) return { error: "Sesi tidak valid. Silakan login ulang." };
   
   const currentUser = await prisma.user.findUnique({ where: { id: session.user.id } });
-  if (currentUser?.role !== "ADMIN") return { error: "Akses ditolak. Hanya admin yang dapat mereset password." };
+  if (!getUserAccess(currentUser as any).isAdmin) return { error: "Akses ditolak. Hanya admin yang dapat mereset password." };
 
   const targetUser = await prisma.user.findUnique({ where: { id } });
   if (!targetUser) return { error: "Pengguna tidak ditemukan." };
@@ -325,7 +342,7 @@ export async function resetUserAssessment(id: string) {
   if (!session?.user?.id) return { error: "Sesi tidak valid. Silakan login ulang." };
   
   const currentUser = await prisma.user.findUnique({ where: { id: session.user.id } });
-  if (currentUser?.role !== "ADMIN") return { error: "Akses ditolak. Hanya admin yang dapat mereset asesmen." };
+  if (!getUserAccess(currentUser as any).isAdmin) return { error: "Akses ditolak. Hanya admin yang dapat mereset asesmen." };
 
   try {
     const deleteResult = await prisma.assessment.deleteMany({
@@ -347,7 +364,7 @@ export async function migrateUsers(base64Data: string) {
   if (!session?.user?.id) return { error: "Sesi tidak valid. Silakan login ulang." };
   
   const currentUser = await prisma.user.findUnique({ where: { id: session.user.id } });
-  if (currentUser?.role !== "ADMIN") return { error: "Akses ditolak. Hanya admin yang dapat mengimpor pengguna." };
+  if (!getUserAccess(currentUser as any).isAdmin) return { error: "Akses ditolak. Hanya admin yang dapat mengimpor pengguna." };
 
   try {
     const buffer = Buffer.from(base64Data, "base64");
@@ -360,21 +377,14 @@ export async function migrateUsers(base64Data: string) {
       return { error: "File excel kosong atau tidak valid." };
     }
 
-    const results: { name: string; npp: string; email: string; workUnit: string; department: string; position: string; positionDetail?: string; role: string; passwordGenerated: string; status: "SUCCESS" | "FAILED"; message?: string }[] = [];
+    const results: { name: string; npp: string; email: string; workUnit: string; employeeLocation: string; department: string; pangkat: string; positionDetail?: string; role: string; passwordGenerated: string; status: "SUCCESS" | "FAILED"; message?: string }[] = [];
 
     const nppsToImport = rows.map((r: any) => String(r.npp || r.NPP || "").trim()).filter(Boolean);
     const existingUsers = await prisma.user.findMany({
       where: { npp: { in: nppsToImport } },
-      select: { npp: true, name: true, email: true, workUnit: true, employeeLocation: true, department: true, position: true, positionDetail: true, role: true }
+      select: { id: true, name: true, npp: true, email: true, role: true, department: true, pangkat: true, positionDetail: true, workUnit: true, employeeLocation: true }
     });
     const existingNppMap = new Map(existingUsers.map(u => [u.npp, u]));
-
-    const deptsToImport = [...new Set(rows.map((r: any) => String(r.department || r.bidang || r.Bidang || "").trim()).filter(Boolean))];
-    const validDepartments = await prisma.department.findMany({
-      where: { name: { in: deptsToImport } },
-      select: { name: true }
-    });
-    const validDeptSet = new Set(validDepartments.map(d => d.name));
 
     for (const row of rows) {
       const npp = String(row.npp || row.NPP || "").trim();
@@ -382,7 +392,7 @@ export async function migrateUsers(base64Data: string) {
       const email = String(row.email || row.Email || row["Email (Opsional)"] || "").trim();
       const workUnit = String(row.satuankerja || row.Satuankerja || row.workUnit || row["Satuan Kerja"] || "").trim();
       const department = String(row.department || row.bidang || row.Bidang || "").trim();
-      const position = String(row.position || row.jabatan || row.Jabatan || "").trim();
+      const pangkat = String(row.pangkat || row.Pangkat || row.jabatan || row.Jabatan || row.position || "").trim();
       const role = String(row.role || row.peran || row.Peran || row["Hak Akses (Role)"] || "USER").trim().toUpperCase();
       const employeeLocation = String(row.lokasipegawai || row["Lokasi Pegawai"] || row.lokasi_pegawai || row.employeeLocation || "").trim();
       const positionDetail = String(row.positionDetail || row.detailjabatan || row["Detail Jabatan"] || row.detail_jabatan || "").trim();
@@ -395,7 +405,7 @@ export async function migrateUsers(base64Data: string) {
           workUnit: workUnit || "-",
           employeeLocation: employeeLocation || "-",
           department: department || "-",
-          position: position || "-",
+          pangkat: pangkat || "-",
           positionDetail: positionDetail || "-",
           role: role || "USER",
           passwordGenerated: "-",
@@ -415,7 +425,7 @@ export async function migrateUsers(base64Data: string) {
           workUnit: workUnit || existingUser.workUnit || "-",
           employeeLocation: employeeLocation || existingUser.employeeLocation || "-",
           department: department || existingUser.department || "-",
-          position: position || existingUser.position || "-",
+          pangkat: pangkat || existingUser.pangkat || "-",
           positionDetail: positionDetail || existingUser.positionDetail || "-",
           role: role || existingUser.role || "USER",
           passwordGenerated: "-",
@@ -426,22 +436,15 @@ export async function migrateUsers(base64Data: string) {
       }
 
       if (department) {
-        if (!validDeptSet.has(department)) {
-          results.push({
-            name: name || "-",
-            npp,
-            email: email || "-",
-            workUnit: workUnit || "-",
-            employeeLocation: employeeLocation || "-",
-            department: department,
-            position: position || "-",
-            positionDetail: positionDetail || "-",
-            role: role || "USER",
-            passwordGenerated: "-",
-            status: "FAILED",
-            message: `Bidang '${department}' tidak valid`
+        // Auto-create department if it doesn't exist
+        try {
+          await prisma.department.upsert({
+            where: { name: department },
+            update: {},
+            create: { name: department },
           });
-          continue;
+        } catch (error) {
+          // Ignore
         }
       }
 
@@ -457,7 +460,7 @@ export async function migrateUsers(base64Data: string) {
             workUnit: workUnit || null,
             password: hashedPassword,
             department: department || null,
-            position: position || null,
+            pangkat: pangkat || null,
             positionDetail: positionDetail || null,
             employeeLocation: employeeLocation || null,
             role: (role === "ADMIN" || role === "USER") ? role : "USER",
@@ -472,7 +475,7 @@ export async function migrateUsers(base64Data: string) {
           workUnit: workUnit || "-",
           employeeLocation: employeeLocation || "-",
           department: department || "-",
-          position: position || "-",
+          pangkat: pangkat || "-",
           positionDetail: positionDetail || "-",
           role: role === "ADMIN" ? "ADMIN" : "USER",
           passwordGenerated: generatedPassword,
@@ -486,7 +489,7 @@ export async function migrateUsers(base64Data: string) {
           workUnit: workUnit || "-",
           employeeLocation: employeeLocation || "-",
           department: department || "-",
-          position: position || "-",
+          pangkat: pangkat || "-",
           positionDetail: positionDetail || "-",
           role: role || "USER",
           passwordGenerated: "-",

@@ -1,29 +1,30 @@
 "use server";
 
 import { prisma } from "@/lib/prisma";
+import { getUserAccess } from "@/lib/access";
 
 export async function getCoachingReport() {
-  const leaders = await prisma.user.findMany({
+  const allUsers = await prisma.user.findMany({
     where: {
-      position: {
-        in: ["Asisten Deputi", "Deputi Direksi Wilayah", "Kepala Cabang", "Kepala Kabupaten", "Kepala Kantor Kabupaten", "Asisten Manager"]
-      },
       status: "APPROVED"
     },
     select: {
       id: true,
       name: true,
+      npp: true,
+      email: true,
+      role: true,
       department: true,
-      position: true,
+      pangkat: true,
       positionDetail: true,
-      employeeLocation: true,
       workUnit: true,
+      employeeLocation: true,
       coachLogs: {
         select: {
           isClosed: true,
           coacheeId: true,
           coachee: {
-            select: { name: true, position: true }
+            select: { name: true, pangkat: true, positionDetail: true, employeeLocation: true }
           }
         }
       }
@@ -34,14 +35,16 @@ export async function getCoachingReport() {
     ]
   });
 
+  const leaders = allUsers.filter(u => getUserAccess(u as any).isCoach);
+
   const allStaff = await prisma.user.findMany({
     where: {
       status: "APPROVED",
-      position: {
+      positionDetail: {
         notIn: ["Deputi Direksi Wilayah", "Kepala Cabang"]
       }
     },
-    select: { id: true, name: true, department: true, position: true, employeeLocation: true, workUnit: true }
+    select: { id: true, name: true, department: true, positionDetail: true, employeeLocation: true, workUnit: true, pangkat: true }
   });
 
   const report = leaders.map(leader => {
@@ -67,72 +70,76 @@ export async function getCoachingReport() {
     
     let eligibleStaff: typeof allStaff = [];
     
-    const isDeputi = leader.position === 'Deputi Direksi Wilayah' || leader.position === 'Kepala Cabang';
-    const isKepalaCabupatenOrBagian = leader.position === 'Kepala Kabupaten' || leader.position === 'Kepala Kantor Kabupaten' || leader.position === 'Asisten Manager' || leader.position === 'Asisten Deputi';
-
-    if (isDeputi) {
-      eligibleStaff = allStaff.filter(s => {
-        let targets: string[] = [];
-        if (leader.position === 'Kepala Cabang') {
-          targets = ['Asisten Manager', 'Kepala Kabupaten', 'Kepala Kantor Kabupaten'];
-        } else {
-          targets = ['Asisten Deputi'];
-        }
-        const isTarget = targets.includes(s.position!);
-        const isSameUnit = leader.position === 'Kepala Cabang' ? s.workUnit === leader.workUnit : true;
-        return isTarget && isSameUnit;
-      });
-    } else if (isKepalaCabupatenOrBagian) {
-      eligibleStaff = allStaff.filter(s => {
-        let targets = ['Staf Pelaksana', 'PTT/PATT'];
-        if (leader.position === 'Asisten Deputi') targets.push('Asisten Manager');
-        const isTarget = leader.role === 'ADMIN' ? true : targets.includes(s.position!);
-        const isSameDept = (leader.position === 'Kepala Kabupaten' || leader.position === 'Kepala Kantor Kabupaten') ? true : (!leader.department || s.department === leader.department);
-        const isSameLocation = !leader.employeeLocation || s.employeeLocation === leader.employeeLocation;
-        const isSameUnit = !leader.workUnit || s.workUnit === leader.workUnit;
-        return isTarget && isSameDept && isSameLocation && isSameUnit;
-      });
+    const isTopLevel = leader.pangkat === 'Senior Manager' || leader.pangkat === 'Deputi Direksi Wilayah' || leader.positionDetail === 'Deputi Direksi Wilayah' || leader.positionDetail === 'Kepala Cabang';
+    
+    let targetPangkat: string[] = [];
+    if (isTopLevel) {
+      if (leader.positionDetail === 'Kepala Cabang' || (leader.workUnit?.startsWith('Kantor Cabang') && leader.pangkat === 'Manager')) {
+        targetPangkat = ['Asisten Manager'];
+      } else if (leader.pangkat === 'Senior Manager') {
+        targetPangkat = ['Manager'];
+      } else {
+        targetPangkat = ['Manager', 'Asisten Manager', 'Pelaksana', 'PTT/PATT', 'Asisten Deputi', 'Kepala Kabupaten', 'Kepala Kantor Kabupaten', 'Staf Pelaksana'];
+      }
+    } else if (leader.pangkat === 'Manager' || leader.positionDetail === 'Asisten Deputi' || leader.positionDetail === 'Kepala Kabupaten' || leader.positionDetail === 'Kepala Kantor Kabupaten') {
+      targetPangkat = ['Asisten Manager', 'Pelaksana', 'PTT/PATT', 'Staf Pelaksana'];
+    } else if (leader.pangkat === 'Asisten Manager' || leader.positionDetail === 'Asisten Manager') {
+      targetPangkat = ['Pelaksana', 'PTT/PATT', 'Staf Pelaksana'];
     }
+
+    eligibleStaff = allStaff.filter(s => {
+      if (s.id === leader.id) return false;
+      if (leader.role === 'ADMIN') return true;
+      
+      const isTarget = targetPangkat.includes(s.pangkat!) || targetPangkat.includes(s.positionDetail!);
+      if (!isTarget) return false;
+      
+      const isSameUnit = !leader.workUnit || s.workUnit === leader.workUnit;
+      const isSameDept = (isTopLevel || leader.positionDetail === 'Kepala Kabupaten' || leader.positionDetail === 'Kepala Kantor Kabupaten') ? true : (!leader.department || s.department === leader.department);
+      const isSameLoc = (leader.positionDetail === 'Kepala Kabupaten' || leader.positionDetail === 'Kepala Kantor Kabupaten') ? s.employeeLocation === leader.employeeLocation : true;
+      
+      return isSameUnit && isSameDept && isSameLoc;
+    });
     
     const belumMulaiStaff = eligibleStaff.filter(s => !uniqueCoacheeIds.has(s.id));
     const belumMulaiNames = belumMulaiStaff.map(s => s.name).filter(Boolean) as string[];
 
     // Generate detailed members list
-    const membersList: { name: string; status: string; position: string; selesai: number; proses: number; belumMulai: number }[] = [];
+    const membersList: { name: string; pangkat: string; status: string; positionDetail: string; employeeLocation: string; selesai: number; proses: number; belumMulai: number }[] = [];
     
     // Add staff with sessions
-    const counts: Record<string, { selesai: number; proses: number; position: string }> = {};
-    leader.coachLogs.forEach(log => {
+    const counts: Record<string, { selesai: number; proses: number; pangkat: string; positionDetail: string; employeeLocation: string }> = {};
+    (leader as any).coachLogs.forEach((log: any) => {
       const name = log.coachee?.name;
-      const position = log.coachee?.position || "-";
+      const pangkat = log.coachee?.pangkat || "-";
+      const positionDetail = log.coachee?.positionDetail || "-";
+      const employeeLocation = log.coachee?.employeeLocation || "-";
       if (name) {
-        if (!counts[name]) counts[name] = { selesai: 0, proses: 0, position };
+        if (!counts[name]) counts[name] = { selesai: 0, proses: 0, pangkat, positionDetail, employeeLocation };
         if (log.isClosed) counts[name].selesai++;
         else counts[name].proses++;
       }
     });
     
     Object.entries(counts).forEach(([name, data]) => {
-      membersList.push({ name, position: data.position, selesai: data.selesai, proses: data.proses, belumMulai: 0, status: `Mengikuti ${data.selesai + data.proses}x sesi Coaching` });
+      membersList.push({ name, pangkat: data.pangkat, positionDetail: data.positionDetail, employeeLocation: data.employeeLocation, selesai: data.selesai, proses: data.proses, belumMulai: 0, status: `Mengikuti ${data.selesai + data.proses}x sesi Coaching` });
     });
     
     // Add staff without sessions
     belumMulaiStaff.forEach(s => {
       if (s.name) {
-        membersList.push({ name: s.name, position: s.position || "-", selesai: 0, proses: 0, belumMulai: 1, status: 'Belum Mengikuti Sesi Coaching' });
+        membersList.push({ name: s.name, pangkat: s.pangkat || "-", positionDetail: s.positionDetail || "-", employeeLocation: s.employeeLocation || "-", selesai: 0, proses: 0, belumMulai: 1, status: 'Belum Mengikuti Sesi Coaching' });
       }
     });
 
     // Sort members alphabetically
     membersList.sort((a, b) => a.name.localeCompare(b.name));
 
-    // Also inject the leader as the first member if they want it like the mockup (Optional, I'll just add the leader to members list if it makes sense. Wait, no, it's better to just put the leader in the UI array). Actually I'll let UI handle prepending the leader.
-
     return {
       id: leader.id,
       name: leader.name,
       department: leader.department,
-      position: leader.position,
+      pangkat: leader.pangkat,
       positionDetail: leader.positionDetail,
       employeeLocation: leader.employeeLocation,
       workUnit: leader.workUnit,
@@ -152,8 +159,27 @@ export async function getCoachingReport() {
     };
   });
 
-  const deputi = report.filter(r => r.position === 'Deputi Direksi Wilayah');
-  const others = report.filter(r => r.position !== 'Deputi Direksi Wilayah');
+  const deputi = report.filter(r => r.pangkat === 'Deputi Direksi Wilayah');
+  const others = report.filter(r => r.pangkat !== 'Deputi Direksi Wilayah');
+
+  const getSortScore = (r: any) => {
+    if (r.pangkat === 'Senior Manager') return 1;
+    if (r.pangkat === 'Manager') {
+      if (r.positionDetail?.includes('Asisten Deputi')) return 2;
+      if (r.positionDetail?.includes('Kepala Cabang')) return 3;
+      return 4; // other managers just in case
+    }
+    if (r.pangkat === 'Asisten Manager') return 5;
+    return 99;
+  };
+
+  others.sort((a, b) => {
+    const orderA = getSortScore(a);
+    const orderB = getSortScore(b);
+    
+    if (orderA !== orderB) return orderA - orderB;
+    return (a.name || '').localeCompare(b.name || '');
+  });
 
   return [...deputi, ...others];
 }

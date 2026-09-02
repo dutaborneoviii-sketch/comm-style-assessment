@@ -29,8 +29,8 @@ export default async function QuestionnairePage() {
     if (user) {
       const viewMode = cookies().get('view-mode')?.value || 'admin';
       const isViewModeUser = user.role === 'ADMIN' && viewMode === 'user';
-      const position = isViewModeUser ? 'Staf Pelaksana' : user.position;
-      showCancel = position === 'Staf Pelaksana' || position === 'Asisten Manager';
+      const positionDetail = isViewModeUser ? 'Staf Pelaksana' : user.positionDetail;
+      showCancel = positionDetail === 'Staf Pelaksana' || positionDetail === 'Asisten Manager';
 
       const latestAssessment = user.assessments?.[0];
       const cooldownMonths = await getCooldownSetting();

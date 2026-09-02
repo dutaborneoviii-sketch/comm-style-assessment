@@ -4,6 +4,7 @@ import { cookies } from 'next/headers';
 import AdminLayoutWrapper from '@/components/admin/admin-layout-wrapper';
 import { getFeatureFlagsMap } from '@/app/actions/features';
 import { AutoLogout } from '@/components/auto-logout';
+import { getUserAccess } from '@/lib/access';
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   const session = await auth();
@@ -18,17 +19,17 @@ export default async function DashboardLayout({ children }: { children: React.Re
     dbUser = await prisma.user.findUnique({ where: { id: session.user.id } });
     const viewMode = cookies().get('view-mode')?.value || 'admin';
     
-    let userRoleGroup = "Staf";
-    if (dbUser?.position === "Asisten Deputi") userRoleGroup = "Asisten Deputi";
-    if (dbUser?.position === "Deputi Direksi Wilayah") userRoleGroup = "Deputi Direksi Wilayah";
+    let userRoleGroup = "Pelaksana";
+    if (dbUser?.pangkat) userRoleGroup = dbUser.pangkat;
     
     if (dbUser) {
-      featuresMap = await getFeatureFlagsMap(userRoleGroup, dbUser.department);
+      featuresMap = await getFeatureFlagsMap(userRoleGroup, dbUser.department, dbUser.employeeLocation);
     }
     
-    const isCoachView = (dbUser?.role === 'ADMIN' && viewMode === 'admin') || 
-                        dbUser?.position === 'Deputi Direksi Wilayah' || 
-                        ((dbUser?.position === 'Asisten Deputi' || dbUser?.position === 'Kepala Kabupaten') && (cookies().get('asisten-mode')?.value || 'coach') !== 'coachee');
+    const access = getUserAccess(dbUser || {});
+    
+    const isCoachView = (access.isAdmin && viewMode === 'admin') || 
+                        access.isCoach && (cookies().get('asisten-mode')?.value || 'coach') !== 'coachee';
     
     if (isCoachView) {
       // Get logs where action items have been created/updated recently, and logs with responses

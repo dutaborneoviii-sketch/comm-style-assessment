@@ -64,7 +64,7 @@ export default async function ResultPage({ params }: { params: { id: string } })
       <div className="max-w-6xl mx-auto space-y-4 px-4">
         
         {/* TOP CARDS */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className={`grid grid-cols-1 ${assessment.isCombination && assessment.secondaryStyle ? 'md:grid-cols-2' : ''} gap-4`}>
            {/* Primary Style Box */}
            <div className={`rounded-3xl p-4 flex items-center gap-4 ${primaryColor} shadow-md`}>
              <div className="w-20 h-20 shrink-0 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center text-4xl shadow-inner border border-white/30">
@@ -74,21 +74,12 @@ export default async function ResultPage({ params }: { params: { id: string } })
            </div>
 
            {/* Secondary Style Box (if combination) */}
-           {assessment.isCombination && assessment.secondaryStyle ? (
+           {assessment.isCombination && assessment.secondaryStyle && (
              <div className={`rounded-3xl p-4 flex items-center gap-4 ${secondaryColor} shadow-md`}>
                <div className="w-20 h-20 shrink-0 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center text-4xl shadow-inner border border-white/30">
                  {getStyleIcon(assessment.secondaryStyle)}
                </div>
                {formatStyleTitle(assessment.secondaryStyle)}
-             </div>
-           ) : (
-             <div className={`rounded-3xl p-4 flex items-center gap-4 bg-slate-100 dark:bg-slate-800/50 shadow-sm opacity-50`}>
-               <div className="w-20 h-20 shrink-0 rounded-2xl bg-white/50 dark:bg-slate-700 backdrop-blur-sm flex items-center justify-center text-4xl shadow-inner">
-                 ✨
-               </div>
-               <div className="flex flex-col justify-center gap-0">
-                  <span className="text-xl md:text-2xl font-black text-slate-400">Gaya Tunggal</span>
-               </div>
              </div>
            )}
         </div>

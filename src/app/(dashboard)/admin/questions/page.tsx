@@ -20,7 +20,7 @@ export default async function AdminQuestionsPage() {
   const isViewModeUser = user.role === 'ADMIN' && viewMode === 'user';
   if (isViewModeUser) {
     user.role = 'USER';
-    user.position = 'Staf Pelaksana';
+    user.positionDetail = 'Staf Pelaksana';
   }
 
   const isAdmin = user.role === "ADMIN";
@@ -29,8 +29,8 @@ export default async function AdminQuestionsPage() {
   // Double check feature flag for non-admin to ensure they have access to view this page
   if (!isAdmin) {
     let userRoleGroup = "Staf";
-    if (user?.position === "Asisten Deputi") userRoleGroup = "Asisten Deputi";
-    if (user?.position === "Deputi Direksi Wilayah") userRoleGroup = "Deputi Direksi Wilayah";
+    if (user?.positionDetail === "Asisten Deputi") userRoleGroup = "Asisten Deputi";
+    if (user?.positionDetail === "Deputi Direksi Wilayah") userRoleGroup = "Deputi Direksi Wilayah";
 
     const { isFeatureEnabled } = await import("@/app/actions/features");
     const isEnabled = await isFeatureEnabled("manajemen_bank_soal", userRoleGroup, user?.department);

@@ -41,9 +41,9 @@ export type CoachingReportType = {
   id: string;
   name: string | null;
   department: string | null;
-  position: string | null;
-  positionDetail?: string | null;
-  employeeLocation?: string | null;
+  pangkat: string | null;
+  positionDetail: string | null;
+  employeeLocation: string | null;
   totalSesi: number;
   selesai: number;
   proses: number;
@@ -52,11 +52,20 @@ export type CoachingReportType = {
   selesaiNames: string[];
   prosesNames: string[];
   belumMulaiNames: string[];
-  members: { name: string; status: string }[];
+  members: { name: string; status: string; pangkat?: string; positionDetail?: string }[];
 };
 
 export function CoachingReportTable({ reports }: { reports: CoachingReportType[] }) {
   const [expandedRows, setExpandedRows] = useState<Record<string, boolean>>({});
+  const [locationFilter, setLocationFilter] = useState<string>("all");
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
+  const locations = Array.from(new Set(reports.map(r => r.employeeLocation).filter(Boolean))) as string[];
+  locations.sort();
+
+  const filteredReports = (!locationFilter || locationFilter === "all") 
+    ? reports 
+    : reports.filter(r => r.employeeLocation?.toLowerCase().includes(locationFilter.toLowerCase()));
 
   const toggleRow = (id: string) => {
     setExpandedRows(prev => ({ ...prev, [id]: !prev[id] }));
@@ -74,11 +83,11 @@ export function CoachingReportTable({ reports }: { reports: CoachingReportType[]
     wsData.push(["Rincian Kedeputian Wilayah VIII"]);
     wsData.push(["No", "Nama Pimpinan", "Detail Jabatan", "Lokasi Pegawai", "Sesi Selesai", "Sedang Proses", "Belum Mulai"]);
     
-    reports.forEach((r, idx) => {
+    filteredReports.forEach((r, idx) => {
       wsData.push([
         idx + 1,
         r.name || "-",
-        r.positionDetail || r.position || "-",
+        r.positionDetail || "-",
         r.employeeLocation || "-",
         r.selesai,
         r.proses,
@@ -90,10 +99,10 @@ export function CoachingReportTable({ reports }: { reports: CoachingReportType[]
     wsData.push(["", "", "", "", "", "", ""]);
 
     // Excel Bottom Tables
-    reports.forEach((r, idx) => {
-      if (r.position !== 'Deputi Direksi Wilayah' && r.members && r.members.length > 0) {
+    filteredReports.forEach((r, idx) => {
+      if (r.pangkat !== 'Deputi Direksi Wilayah' && r.members && r.members.length > 0) {
         // Title above table
-        wsData.push([`Rincian Anggota: ${r.department || "-"}`]);
+        wsData.push([`Rincian Anggota: ${r.department || "-"} (${r.employeeLocation || "-"})`]);
         
         // Header per Bidang
         wsData.push(["No", "Nama Pimpinan", "Detail Jabatan", "Sesi Selesai", "Sedang Proses", "Belum Mulai"]);
@@ -102,7 +111,7 @@ export function CoachingReportTable({ reports }: { reports: CoachingReportType[]
         wsData.push([
           1,
           r.name || "-",
-          r.positionDetail || r.position || "-",
+          r.positionDetail || "-",
           r.selesai,
           r.proses,
           r.belumMulai
@@ -113,7 +122,7 @@ export function CoachingReportTable({ reports }: { reports: CoachingReportType[]
           wsData.push([
             mIdx + 2, 
             m.name, 
-            (m as any).positionDetail || (m as any).position || "-", 
+            m.positionDetail || "-", 
             (m as any).selesai || 0, 
             (m as any).proses || 0, 
             (m as any).belumMulai || 0
@@ -121,8 +130,8 @@ export function CoachingReportTable({ reports }: { reports: CoachingReportType[]
         });
         
         // Gap between tables
-        wsData.push(["", "", "", "", "", ""]);
-        wsData.push(["", "", "", "", "", ""]);
+        wsData.push(["", "", "", "", "", "", ""]);
+        wsData.push(["", "", "", "", "", "", ""]);
       }
     });
 
@@ -143,10 +152,10 @@ export function CoachingReportTable({ reports }: { reports: CoachingReportType[]
     let currentY = 24;
     
     // Top Table Data
-    const topTableData = reports.map((r, idx) => [
+    const topTableData = filteredReports.map((r, idx) => [
       idx + 1,
       r.name || "-",
-      r.positionDetail || r.position || "-",
+      r.positionDetail || "-",
       r.employeeLocation || "-",
       r.selesai,
       r.proses,
@@ -165,9 +174,9 @@ export function CoachingReportTable({ reports }: { reports: CoachingReportType[]
     
     currentY = (doc as any).lastAutoTable.finalY + 15;
     
-    // Bottom Tables
-    reports.forEach((r, idx) => {
-      if (r.position !== 'Deputi Direksi Wilayah' && r.members && r.members.length > 0) {
+    // Bottom Tables Data
+    filteredReports.forEach((r, idx) => {
+      if (r.pangkat !== 'Deputi Direksi Wilayah' && r.members && r.members.length > 0) {
         if (currentY > 170) {
           doc.addPage();
           currentY = 20;
@@ -175,7 +184,7 @@ export function CoachingReportTable({ reports }: { reports: CoachingReportType[]
 
         doc.setFontSize(11);
         doc.setFont("helvetica", "bold");
-        doc.text(`Rincian Anggota: ${r.department || "-"}`, 14, currentY);
+        doc.text(`Rincian Anggota: ${r.department || "-"} (${r.employeeLocation || "-"})`, 14, currentY);
         currentY += 4;
 
         const tableData: any[] = [];
@@ -184,7 +193,7 @@ export function CoachingReportTable({ reports }: { reports: CoachingReportType[]
         tableData.push([
           1,
           r.name || "-",
-          r.positionDetail || r.position || "-",
+          r.positionDetail || "-",
           r.selesai,
           r.proses,
           r.belumMulai
@@ -194,7 +203,7 @@ export function CoachingReportTable({ reports }: { reports: CoachingReportType[]
           tableData.push([
             String(mIdx + 2), 
             m.name, 
-            (m as any).positionDetail || (m as any).position || "-",
+            m.positionDetail || "-",
             String((m as any).selesai || 0),
             String((m as any).proses || 0),
             String((m as any).belumMulai || 0)
@@ -228,7 +237,61 @@ export function CoachingReportTable({ reports }: { reports: CoachingReportType[]
   return (
     <div className="flex flex-col w-full">
       {/* Action Bar */}
-      <div className="flex justify-end items-center p-4 border-b border-slate-200 dark:border-slate-800 bg-[#f9fdfc] dark:bg-zinc-950/50">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center p-4 gap-4 border-b border-slate-200 dark:border-slate-800 bg-[#f9fdfc] dark:bg-zinc-950/50">
+        <div className="flex items-center gap-2">
+          <label htmlFor="locationFilter" className="text-sm font-semibold text-slate-700 dark:text-slate-300">
+            Filter Lokasi Pegawai:
+          </label>
+          <div className="relative w-72">
+            <div className="relative">
+              <input
+                type="text"
+                placeholder="Semua Lokasi (Ketik untuk mencari...)"
+                value={locationFilter === 'all' ? '' : locationFilter}
+                onChange={(e) => {
+                  setLocationFilter(e.target.value);
+                  setIsDropdownOpen(true);
+                }}
+                onFocus={() => setIsDropdownOpen(true)}
+                className="w-full border border-slate-300 dark:border-slate-700 bg-white dark:bg-zinc-900 text-slate-700 dark:text-slate-300 rounded-md text-sm pl-3 pr-8 py-2 focus:outline-none focus:ring-2 focus:ring-[#57BC90]"
+              />
+              <button 
+                onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                className="absolute right-2 top-1/2 -translate-y-1/2 p-1 hover:bg-slate-100 dark:hover:bg-zinc-800 rounded-full"
+              >
+                <ChevronDown className="w-4 h-4 text-slate-400" />
+              </button>
+            </div>
+            
+            {isDropdownOpen && (
+              <>
+                <div className="fixed inset-0 z-40" onClick={() => setIsDropdownOpen(false)} />
+                <div className="absolute top-full mt-1 left-0 w-full bg-white dark:bg-zinc-900 border border-slate-200 dark:border-slate-800 rounded-md shadow-lg z-50 max-h-60 overflow-y-auto py-1">
+                  <div 
+                    className="px-3 py-2 text-sm cursor-pointer hover:bg-slate-100 dark:hover:bg-zinc-800 text-slate-700 dark:text-slate-300"
+                    onClick={() => { setLocationFilter('all'); setIsDropdownOpen(false); }}
+                  >
+                    Semua Lokasi
+                  </div>
+                  {locations.filter(loc => loc.toLowerCase().includes(locationFilter === 'all' ? '' : locationFilter.toLowerCase())).map(loc => (
+                    <div 
+                      key={loc}
+                      className="px-3 py-2 text-sm cursor-pointer hover:bg-slate-100 dark:hover:bg-zinc-800 text-slate-700 dark:text-slate-300"
+                      onClick={() => { setLocationFilter(loc); setIsDropdownOpen(false); }}
+                    >
+                      {loc}
+                    </div>
+                  ))}
+                  {locations.filter(loc => loc.toLowerCase().includes(locationFilter === 'all' ? '' : locationFilter.toLowerCase())).length === 0 && (
+                    <div className="px-3 py-3 text-sm text-center text-slate-500 italic">
+                      Lokasi tidak ditemukan
+                    </div>
+                  )}
+                </div>
+              </>
+            )}
+          </div>
+        </div>
         <div className="flex gap-2">
           <Button 
             onClick={exportToExcel}
@@ -268,9 +331,9 @@ export function CoachingReportTable({ reports }: { reports: CoachingReportType[]
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100 dark:divide-slate-800/60">
-              {reports.map((report, index) => {
+              {filteredReports.map((report, index) => {
                 const isExpanded = !!expandedRows[report.id];
-                const isClickable = report.position !== 'Deputi Direksi Wilayah';
+                const isClickable = report.pangkat !== 'Deputi Direksi Wilayah';
                 
                 return (
                   <React.Fragment key={report.id}>
@@ -297,7 +360,7 @@ export function CoachingReportTable({ reports }: { reports: CoachingReportType[]
                       </td>
                       <td className="px-4 py-4">
                         <span className="text-slate-600 dark:text-slate-400 text-xs">
-                          {report.positionDetail || report.position || "-"}
+                          {report.positionDetail || "-"}
                         </span>
                       </td>
                       <td className="px-4 py-4">
@@ -334,7 +397,7 @@ export function CoachingReportTable({ reports }: { reports: CoachingReportType[]
                           count={report.belumMulai} 
                           names={report.belumMulaiNames} 
                           activeClass="bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-400" 
-                          inactiveClass="text-slate-300 dark:text-slate-600"
+                          inactiveClass="text-slate-300 dark:text-slate-600" 
                           isLast={true}
                         />
                       </td>
@@ -363,6 +426,9 @@ export function CoachingReportTable({ reports }: { reports: CoachingReportType[]
                                         <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
                                           {mIdx + 1}. {member.name}
                                         </span>
+                                        <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5 truncate max-w-[250px]" title={(member as any).employeeLocation || "-"}>
+                                          {(member as any).employeeLocation || "-"}
+                                        </p>
                                         <span className={`text-[11px] mt-0.5 ${hasSession ? 'text-emerald-600 dark:text-emerald-500' : 'text-slate-400 dark:text-slate-500'}`}>
                                           {member.status}
                                         </span>
