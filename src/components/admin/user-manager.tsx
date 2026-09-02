@@ -247,6 +247,59 @@ export function UserManager({ initialUsers, currentUserId }: { initialUsers: any
     });
   }
 
+  const downloadAccessLog = async () => {
+    const workbook = new ExcelJS.Workbook();
+    const sheet = workbook.addWorksheet('Laporan Akses User');
+
+    sheet.columns = [
+      { header: 'NPP', key: 'npp', width: 15 },
+      { header: 'Nama User', key: 'name', width: 25 },
+      { header: 'Satuan Kerja', key: 'workUnit', width: 25 },
+      { header: 'Lokasi Pegawai', key: 'employeeLocation', width: 20 },
+      { header: 'Bidang', key: 'department', width: 25 },
+      { header: 'Status', key: 'status', width: 15 },
+      { header: 'Waktu Login Terakhir', key: 'lastAccess', width: 25 },
+    ];
+
+    const headerRow = sheet.getRow(1);
+    headerRow.font = { bold: true };
+    headerRow.fill = {
+      type: 'pattern',
+      pattern: 'solid',
+      fgColor: { argb: 'FFE2EFDA' }
+    };
+
+    initialUsers.forEach((u: any) => {
+      let lastAccess = "-";
+      if (u.loginLogs && u.loginLogs.length > 0) {
+        lastAccess = new Intl.DateTimeFormat('id-ID', { 
+          day: 'numeric', month: 'short', year: 'numeric', 
+          hour: '2-digit', minute: '2-digit' 
+        }).format(new Date(u.loginLogs[0].createdAt));
+      }
+      sheet.addRow({
+        npp: u.npp || "-",
+        name: u.name || "-",
+        workUnit: u.workUnit || "-",
+        employeeLocation: u.employeeLocation || "-",
+        department: u.department || "-",
+        status: u.status === 'APPROVED' ? 'Aktif' : 'Menunggu',
+        lastAccess: lastAccess
+      });
+    });
+
+    const buffer = await workbook.xlsx.writeBuffer();
+    const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `laporan_akses_user_${new Date().toISOString().split('T')[0]}.xlsx`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
   return (
     <div className="space-y-6">
       {/* Custom Confirm Dialog */}
@@ -296,7 +349,11 @@ export function UserManager({ initialUsers, currentUserId }: { initialUsers: any
             ))}
           </select>
         </div>
-        <div className="flex items-center gap-2 w-full sm:w-auto shrink-0">
+        <div className="flex items-center gap-2 w-full sm:w-auto shrink-0 flex-wrap justify-end">
+          <Button onClick={downloadAccessLog} variant="outline" className="border-teal-200 text-teal-700 hover:bg-teal-50 dark:border-teal-900 dark:hover:bg-teal-950/30 gap-2 font-bold text-xs h-9 rounded-xl">
+            <Download className="w-4 h-4" />
+            Unduh Excel Last Access
+          </Button>
           <MigrationDialog />
           <CreateUserDialog />
         </div>

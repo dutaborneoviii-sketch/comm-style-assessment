@@ -28,6 +28,11 @@ export async function getUsers() {
       role: true,
       status: true,
       createdAt: true,
+      loginLogs: {
+        orderBy: { createdAt: "desc" },
+        take: 1,
+        select: { createdAt: true }
+      }
     }
   });
 }
