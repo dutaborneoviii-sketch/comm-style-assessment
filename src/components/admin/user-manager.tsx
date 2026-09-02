@@ -360,13 +360,13 @@ export function UserManager({ initialUsers, currentUserId }: { initialUsers: any
                             {user.email && <span className="text-slate-500 dark:text-slate-400 text-xs mt-0.5">{user.email}</span>}
                           </div>
                         </td>
-                        <td className="px-3 py-3 text-slate-600 dark:text-slate-300 max-w-[120px] truncate" title={user.workUnit || ""}>
+                        <td className="px-3 py-3 text-slate-600 dark:text-slate-300" title={user.workUnit || ""}>
                           {user.workUnit || "-"}
                         </td>
-                        <td className="px-3 py-3 text-slate-600 dark:text-slate-300 max-w-[120px] truncate" title={user.employeeLocation || ""}>
+                        <td className="px-3 py-3 text-slate-600 dark:text-slate-300" title={user.employeeLocation || ""}>
                           {user.employeeLocation || "-"}
                         </td>
-                        <td className="px-3 py-3 text-slate-600 dark:text-slate-300 max-w-[150px] truncate" title={user.department || ""}>
+                        <td className="px-3 py-3 text-slate-600 dark:text-slate-300" title={user.department || ""}>
                           {user.department || "-"}
                         </td>
 
@@ -516,13 +516,13 @@ export function UserManager({ initialUsers, currentUserId }: { initialUsers: any
                             {user.email && <span className="text-slate-500 dark:text-slate-400 text-xs mt-0.5">{user.email}</span>}
                           </div>
                         </td>
-                        <td className="px-3 py-3 text-slate-600 dark:text-slate-300 max-w-[120px] truncate" title={user.workUnit || ""}>
+                        <td className="px-3 py-3 text-slate-600 dark:text-slate-300" title={user.workUnit || ""}>
                           {user.workUnit || "-"}
                         </td>
-                        <td className="px-3 py-3 text-slate-600 dark:text-slate-300 max-w-[120px] truncate" title={user.employeeLocation || ""}>
+                        <td className="px-3 py-3 text-slate-600 dark:text-slate-300" title={user.employeeLocation || ""}>
                           {user.employeeLocation || "-"}
                         </td>
-                        <td className="px-3 py-3 text-slate-600 dark:text-slate-300 max-w-[150px] truncate" title={user.department || ""}>
+                        <td className="px-3 py-3 text-slate-600 dark:text-slate-300" title={user.department || ""}>
                           {user.department || "-"}
                         </td>
 
