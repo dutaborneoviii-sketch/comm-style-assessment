@@ -52,7 +52,7 @@ export default async function CoachingReportPage() {
       reports = reports.filter(r => 
         r.workUnit === 'Kedeputian Wilayah VIII' || 
         (r.workUnit && r.workUnit.startsWith('Kantor Cabang')) || 
-        (r.workUnit && r.workUnit.startsWith('Kantor Kabupaten'))
+        (r.workUnit && r.workUnit.startsWith('Kantor Kabupaten') || r.workUnit.startsWith('Kantor Kota'))
       );
     } else if (!isAdmin) {
       reports = reports.filter(r => r.workUnit === currentUser.workUnit);

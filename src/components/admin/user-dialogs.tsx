@@ -148,6 +148,7 @@ export function CreateUserDialog() {
                 <option value="Penjaminan Manfaat dan Pengelolaan Fasilitas Kesehatan (Kabupaten)">Penjaminan Manfaat dan Pengelolaan Fasilitas Kesehatan (Kabupaten)</option>
                 <option value="Kantor Cabang">Kantor Cabang</option>
                 <option value="Kantor Kabupaten">Kantor Kabupaten</option>
+                <option value="Kantor Kota">Kantor Kota</option>
                 <option value="TI Wilayah">TI Wilayah</option>
               </select>
             </div>
@@ -392,6 +393,7 @@ export function EditUserDialog({ user, children }: { user: any, children: React.
                 <option value="Penjaminan Manfaat dan Pengelolaan Fasilitas Kesehatan (Kabupaten)">Penjaminan Manfaat dan Pengelolaan Fasilitas Kesehatan (Kabupaten)</option>
                 <option value="Kantor Cabang">Kantor Cabang</option>
                 <option value="Kantor Kabupaten">Kantor Kabupaten</option>
+                <option value="Kantor Kota">Kantor Kota</option>
                 <option value="TI Wilayah">TI Wilayah</option>
               </select>
             </div>

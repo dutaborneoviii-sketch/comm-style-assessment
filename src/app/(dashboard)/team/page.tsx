@@ -151,7 +151,7 @@ export default async function TeamPage() {
         <div className="flex flex-col md:flex-row md:items-end gap-2 md:gap-4">
           <h1 className="text-3xl font-extrabold text-[#015249] dark:text-white tracking-tight flex items-center gap-3">
             <Users className="w-8 h-8 text-[#57BC90]" />
-            {currentUser?.workUnit?.startsWith('Kantor Cabang') || currentUser?.workUnit === 'Kantor Kabupaten' ? "Anggota Bagian" : "Anggota Bidang"}
+            {currentUser?.workUnit?.startsWith('Kantor Cabang') || currentUser?.workUnit === 'Kantor Kabupaten' || currentUser?.workUnit === 'Kantor Kota' ? "Anggota Bagian" : "Anggota Bidang"}
           </h1>
           <p className="text-slate-500 dark:text-slate-400 text-lg md:mb-1">
             {isKepalaCabupatenOrBagian 
@@ -160,7 +160,7 @@ export default async function TeamPage() {
                 ? (currentUser.positionDetail === 'Kepala Cabang' 
                     ? currentUser.workUnit || "Cabang"
                     : "Memonitoring Seluruh Bidang Kedeputian Wilayah VIII") 
-                : (department ? department : `Anda belum tergabung dalam ${currentUser?.workUnit?.startsWith('Kantor Cabang') || currentUser?.workUnit === 'Kantor Kabupaten' ? 'bagian' : 'bidang'} apapun.`)}
+                : (department ? department : `Anda belum tergabung dalam ${currentUser?.workUnit?.startsWith('Kantor Cabang') || currentUser?.workUnit === 'Kantor Kabupaten' || currentUser?.workUnit === 'Kantor Kota' ? 'bagian' : 'bidang'} apapun.`)}
           </p>
         </div>
         
@@ -184,9 +184,9 @@ export default async function TeamPage() {
             <div className="w-20 h-20 bg-slate-200 dark:bg-slate-800 rounded-full flex items-center justify-center mb-6">
               <Users className="w-10 h-10 text-slate-400" />
             </div>
-            <h3 className="text-2xl font-bold mb-3 text-foreground">{currentUser?.workUnit?.startsWith('Kantor Cabang') || currentUser?.workUnit === 'Kantor Kabupaten' ? 'Bagian' : 'Bidang'} Belum Diatur</h3>
+            <h3 className="text-2xl font-bold mb-3 text-foreground">{currentUser?.workUnit?.startsWith('Kantor Cabang') || currentUser?.workUnit === 'Kantor Kabupaten' || currentUser?.workUnit === 'Kantor Kota' ? 'Bagian' : 'Bidang'} Belum Diatur</h3>
             <p className="text-muted-foreground max-w-md text-base">
-              Profil Anda belum memiliki informasi {currentUser?.workUnit?.startsWith('Kantor Cabang') || currentUser?.workUnit === 'Kantor Kabupaten' ? 'Bagian' : 'Bidang'}. Anggota tim Anda akan muncul di sini secara otomatis berdasarkan {currentUser?.workUnit?.startsWith('Kantor Cabang') || currentUser?.workUnit === 'Kantor Kabupaten' ? 'bagian' : 'bidang'} yang sama.
+              Profil Anda belum memiliki informasi {currentUser?.workUnit?.startsWith('Kantor Cabang') || currentUser?.workUnit === 'Kantor Kabupaten' || currentUser?.workUnit === 'Kantor Kota' ? 'Bagian' : 'Bidang'}. Anggota tim Anda akan muncul di sini secara otomatis berdasarkan {currentUser?.workUnit?.startsWith('Kantor Cabang') || currentUser?.workUnit === 'Kantor Kabupaten' || currentUser?.workUnit === 'Kantor Kota' ? 'bagian' : 'bidang'} yang sama.
             </p>
             <Link href="/profile" className="mt-8">
               <Button size="lg" className="bg-[#015249] hover:bg-[#57BC90] text-white">Perbarui Profil</Button>

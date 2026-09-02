@@ -662,6 +662,7 @@ function MigrationDialog() {
       "Kepesertaan dan Penagihan Iuran (Kabupaten)",
       "Penjaminan Manfaat dan Pengelolaan Fasilitas Kesehatan (Kabupaten)",
       "Kantor Kabupaten",
+      "Kantor Kota",
       "Kantor Cabang",
       "TI Wilayah"
     ];

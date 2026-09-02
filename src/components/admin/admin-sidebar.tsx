@@ -57,7 +57,7 @@ export default function AdminSidebar({ user, viewMode, asistenMode, featuresMap,
   // Staf-like view: regular user OR Asisten Deputi in coachee mode
   const isStafView = (!isAdminView && !isAsistenCoachMode && !isDeputi);
 
-  const isCabangOrKabupaten = user?.workUnit?.startsWith('Kantor Cabang') || user?.workUnit === 'Kantor Kabupaten';
+  const isCabangOrKabupaten = user?.workUnit?.startsWith('Kantor Cabang') || user?.workUnit === 'Kantor Kabupaten' || user?.workUnit === 'Kantor Kota';
   const teamLabel = isCabangOrKabupaten ? "Anggota Bagian" : "Anggota Bidang";
 
   const navGroups = [

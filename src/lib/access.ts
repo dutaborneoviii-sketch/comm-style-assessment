@@ -15,7 +15,7 @@ export function getUserAccess(user: { workUnit?: string | null, pangkat?: string
     if (pangkat === "Asisten Manager") { isCoach = true; isCoachee = true; isAdmin = true; }
     else if (pangkat === "Pelaksana") { isCoachee = true; isAdmin = true; }
   } 
-  else if (workUnit.startsWith("Kantor Cabang") || workUnit === "Kantor Kabupaten") {
+  else if (workUnit.startsWith("Kantor Cabang") || workUnit === "Kantor Kabupaten" || workUnit === "Kantor Kota") {
     if (pangkat === "Manager") { isCoach = true; }
     else if (pangkat === "Asisten Manager") { isCoach = true; isCoachee = true; }
     else if (pangkat === "Pelaksana") { isCoachee = true; }
