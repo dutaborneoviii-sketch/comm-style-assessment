@@ -122,7 +122,7 @@ export async function getCoachingReport() {
     });
     
     Object.entries(counts).forEach(([name, data]) => {
-      membersList.push({ name, pangkat: data.pangkat, positionDetail: data.positionDetail, employeeLocation: data.employeeLocation, selesai: data.selesai, proses: data.proses, belumMulai: 0, status: `Mengikuti ${data.selesai + data.proses}x sesi Coaching` });
+      membersList.push({ name, pangkat: data.pangkat || null, positionDetail: data.positionDetail || null, employeeLocation: data.employeeLocation || null, selesai: data.selesai, proses: data.proses, belumMulai: 0, status: `Mengikuti ${data.selesai + data.proses}x sesi Coaching` });
     });
     
     // Add staff without sessions
@@ -138,11 +138,11 @@ export async function getCoachingReport() {
     return {
       id: leader.id,
       name: leader.name,
-      department: leader.department,
-      pangkat: leader.pangkat,
-      positionDetail: leader.positionDetail,
-      employeeLocation: leader.employeeLocation,
-      workUnit: leader.workUnit,
+      department: leader.department || null,
+      pangkat: leader.pangkat || null,
+      positionDetail: leader.positionDetail || null,
+      employeeLocation: leader.employeeLocation || null,
+      workUnit: leader.workUnit || null,
       totalSesi: leader.coachLogs.length,
       selesai: selesaiLogs.length,
       proses: prosesLogs.length,
