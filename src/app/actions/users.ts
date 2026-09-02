@@ -175,6 +175,8 @@ export async function updateUser(id: string, data: any) {
       data: updateData
     });
     
+    await logAuditAction(session.user.id, "UPDATE_USER", `Mengubah data user: ${data.name || data.npp}`);
+
     revalidatePath("/admin/users");
     return { success: true };
   } catch (error: any) {
@@ -183,6 +185,8 @@ export async function updateUser(id: string, data: any) {
   }
 }
 
+import { logAuditAction } from "@/lib/audit";
+
 export async function deleteUser(id: string) {
   const session = await auth();
   if (!session?.user?.id) return { error: "Sesi tidak valid. Silakan login ulang." };
@@ -190,16 +194,20 @@ export async function deleteUser(id: string) {
   const currentUser = await prisma.user.findUnique({ where: { id: session.user.id } });
   if (!getUserAccess(currentUser as any).isAdmin) return { error: "Akses ditolak. Hanya admin yang dapat menghapus pengguna." };
 
-  // Prevent admin from deleting themselves
   if (id === session.user.id) {
     return { error: "Anda tidak dapat menghapus akun Anda sendiri." };
   }
 
   try {
+    const targetUser = await prisma.user.findUnique({ where: { id } });
     await prisma.user.delete({
       where: { id }
     });
     
+    if (targetUser) {
+      await logAuditAction(session.user.id, "DELETE_USER", `Menghapus user: ${targetUser.name} (${targetUser.npp})`);
+    }
+
     revalidatePath("/admin/users");
     return { success: true };
   } catch (error: any) {

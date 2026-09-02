@@ -77,6 +77,13 @@ export async function deleteCoachingLog(id: string, coacheeId: string) {
       where: { id },
     });
 
+    try {
+      const { logAuditAction } = await import('@/lib/audit');
+      await logAuditAction(session.user.id, "DELETE_COACHING_LOG", `Menghapus log coaching dengan judul: ${log.title}`);
+    } catch (e) {
+      console.error(e);
+    }
+
     revalidatePath(`/team/${coacheeId}`);
     return { success: true };
   } catch (error) {

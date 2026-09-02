@@ -70,10 +70,10 @@ export default async function AdminLogsPage() {
         <CardHeader className="border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50 pb-4">
           <CardTitle className="text-xl font-bold flex items-center gap-2 text-orange-700 dark:text-orange-400">
             <Activity className="w-5 h-5 text-orange-500" />
-            Riwayat Akses Terbaru
+            Riwayat Akses & Aktivitas (Audit Trail)
           </CardTitle>
           <CardDescription>
-            Menampilkan 100 aktivitas login terakhir di sistem Belian.
+            Menampilkan 100 aktivitas terbaru di sistem (Login, Perubahan Data, Hapus Data).
           </CardDescription>
         </CardHeader>
         <CardContent className="p-0">
@@ -97,7 +97,7 @@ export default async function AdminLogsPage() {
                     <TableHead className="font-extrabold whitespace-nowrap px-6 py-5 text-orange-700 dark:text-orange-300 uppercase tracking-wider text-xs">Waktu Akses</TableHead>
                     <TableHead className="font-extrabold whitespace-nowrap px-6 text-orange-700 dark:text-orange-300 uppercase tracking-wider text-xs">Pengguna</TableHead>
                     <TableHead className="font-extrabold whitespace-nowrap px-6 text-orange-700 dark:text-orange-300 uppercase tracking-wider text-xs">IP & Lokasi</TableHead>
-                    <TableHead className="font-extrabold px-6 min-w-[200px] text-orange-700 dark:text-orange-300 uppercase tracking-wider text-xs">Perangkat (User-Agent)</TableHead>
+                    <TableHead className="font-extrabold px-6 min-w-[200px] text-orange-700 dark:text-orange-300 uppercase tracking-wider text-xs">Aktivitas & Perangkat</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -153,8 +153,18 @@ export default async function AdminLogsPage() {
                         </div>
                       </TableCell>
                       <TableCell className="px-6 py-4 align-top">
-                        <div className="w-[250px] sm:w-[350px] lg:w-[450px]">
-                          <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed break-words whitespace-normal bg-slate-50 dark:bg-zinc-900/50 p-2 rounded-lg border border-slate-100 dark:border-slate-800">
+                        <div className="w-[250px] sm:w-[350px] lg:w-[450px] flex flex-col gap-2">
+                          <div className="flex flex-col gap-1">
+                            <span className={`inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold w-fit ${log.action === 'LOGIN' ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-400' : 'bg-rose-100 text-rose-700 dark:bg-rose-900/40 dark:text-rose-400'}`}>
+                              {log.action || 'LOGIN'}
+                            </span>
+                            {log.details && (
+                              <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">
+                                {log.details}
+                              </span>
+                            )}
+                          </div>
+                          <p className="text-[10px] text-slate-400 dark:text-slate-500 leading-relaxed break-words whitespace-normal bg-slate-50 dark:bg-zinc-900/50 p-2 rounded-lg border border-slate-100 dark:border-slate-800 mt-1">
                             {log.userAgent || 'Unknown Device'}
                           </p>
                         </div>

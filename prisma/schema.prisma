@@ -187,6 +187,8 @@ model LoginActivity {
   ipAddress String?
   userAgent String?
   location  String?
+  action    String?  @default("LOGIN") // LOGIN, DELETE_USER, UPDATE_USER, SYSTEM_CHANGE
+  details   String?  // Optional JSON or text details of the action
   createdAt DateTime @default(now())
 }
 
