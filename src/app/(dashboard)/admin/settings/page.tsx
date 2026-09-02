@@ -36,8 +36,8 @@ export default async function SettingsPage() {
     const u = await prisma.user.findUnique({ where: { id: session.user.id } });
     if (!u) throw new Error("User not found");
     const isAdmin = u.role === "ADMIN";
-    const isAsistenDeputi = u?.pangkat === 'Manager' || u?.pangkat === 'Asisten Deputi' || u?.positionDetail === 'Asisten Deputi' || u?.positionDetail === 'Kepala Kabupaten';
-    const isSDMAsistenDeputi = (isAsistenDeputi && u?.department?.includes('SDMUK')) || u?.positionDetail?.includes('Asisten Deputi Bidang Sumber Daya Manusia');
+    const isAsistenDeputi = u?.pangkat === 'Manager' || u?.pangkat === 'Asisten Deputi' || u?.positionDetail?.startsWith('Asisten Deputi') || u?.positionDetail === 'Kepala Kabupaten';
+    const isSDMAsistenDeputi = (isAsistenDeputi && u?.department?.includes('SDMUK')) || u?.positionDetail?.includes('Asisten Deputi SDM, Umum dan Komunikasi');
     if (!isAdmin && !isSDMAsistenDeputi) throw new Error("Forbidden");
 
     const cooldown = formData.get("cooldown") as string;

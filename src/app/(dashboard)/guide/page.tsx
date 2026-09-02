@@ -23,7 +23,7 @@ export default async function GuidePage() {
   });
 
   const isAdmin = user?.role === "ADMIN";
-  const isSDMAsistenDeputi = (user?.positionDetail === 'Asisten Deputi' && user?.department?.includes('SDMUK')) || user?.positionDetail?.includes('Asisten Deputi Bidang Sumber Daya Manusia');
+  const isSDMAsistenDeputi = (user?.positionDetail?.startsWith('Asisten Deputi') && user?.department?.includes('SDMUK')) || user?.positionDetail?.includes('Asisten Deputi SDM, Umum dan Komunikasi');
   const showManagementButton = isAdmin || isSDMAsistenDeputi;
 
   return (

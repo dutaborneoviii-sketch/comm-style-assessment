@@ -189,7 +189,7 @@ export default async function CoachingStrategyPage({ params }: { params: { id: s
   const asistenMode = cookies().get('asisten-mode')?.value || 'coach';
   
   const isViewModeUser = currentUser?.role === 'ADMIN' && viewMode === 'user';
-  const isAsistenModeCoachee = (currentUser?.positionDetail === 'Asisten Deputi' || currentUser?.positionDetail === 'Kepala Kabupaten') && asistenMode === 'coachee';
+  const isAsistenModeCoachee = (currentUser?.positionDetail?.startsWith('Asisten Deputi') || currentUser?.positionDetail === 'Kepala Kabupaten') && asistenMode === 'coachee';
   
   if (currentUser) {
     if (isViewModeUser) {

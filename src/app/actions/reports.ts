@@ -79,9 +79,9 @@ export async function getCoachingReport() {
       } else if (leader.pangkat === 'Senior Manager') {
         targetPangkat = ['Manager'];
       } else {
-        targetPangkat = ['Manager', 'Asisten Manager', 'Pelaksana', 'PTT/PATT', 'Asisten Deputi', 'Kepala Kabupaten', 'Kepala Kantor Kabupaten', 'Staf Pelaksana'];
+        targetPangkat = ['Manager', 'Asisten Manager', 'Pelaksana', 'PTT/PATT', 'Asisten Deputi', 'Kepala Kabupaten', 'Kepala Kantor Kabupaten', 'Kepala Kantor Kota', 'Staf Pelaksana'];
       }
-    } else if (leader.pangkat === 'Manager' || leader.positionDetail === 'Asisten Deputi' || leader.positionDetail === 'Kepala Kabupaten' || leader.positionDetail === 'Kepala Kantor Kabupaten') {
+    } else if (leader.pangkat === 'Manager' || leader.positionDetail?.startsWith('Asisten Deputi') || leader.positionDetail === 'Kepala Kabupaten' || leader.positionDetail === 'Kepala Kantor Kabupaten' || leader?.positionDetail === 'Kepala Kantor Kota') {
       targetPangkat = ['Asisten Manager', 'Pelaksana', 'PTT/PATT', 'Staf Pelaksana'];
     } else if (leader.pangkat === 'Asisten Manager' || leader.positionDetail === 'Asisten Manager') {
       targetPangkat = ['Pelaksana', 'PTT/PATT', 'Staf Pelaksana'];
@@ -95,8 +95,8 @@ export async function getCoachingReport() {
       if (!isTarget) return false;
       
       const isSameUnit = !leader.workUnit || s.workUnit === leader.workUnit;
-      const isSameDept = (isTopLevel || leader.positionDetail === 'Kepala Kabupaten' || leader.positionDetail === 'Kepala Kantor Kabupaten') ? true : (!leader.department || s.department === leader.department);
-      const isSameLoc = (leader.positionDetail === 'Kepala Kabupaten' || leader.positionDetail === 'Kepala Kantor Kabupaten') ? s.employeeLocation === leader.employeeLocation : true;
+      const isSameDept = (isTopLevel || leader.positionDetail === 'Kepala Kabupaten' || leader.positionDetail === 'Kepala Kantor Kabupaten' || leader?.positionDetail === 'Kepala Kantor Kota') ? true : (!leader.department || s.department === leader.department);
+      const isSameLoc = (leader.positionDetail === 'Kepala Kabupaten' || leader.positionDetail === 'Kepala Kantor Kabupaten' || leader?.positionDetail === 'Kepala Kantor Kota') ? s.employeeLocation === leader.employeeLocation : true;
       
       return isSameUnit && isSameDept && isSameLoc;
     });

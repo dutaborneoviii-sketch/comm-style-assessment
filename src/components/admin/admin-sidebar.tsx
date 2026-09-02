@@ -44,9 +44,9 @@ export default function AdminSidebar({ user, viewMode, asistenMode, featuresMap,
   
   // Specific checks for UI elements based on roles
   const isDeputi = user?.pangkat === 'Deputi Direksi Wilayah' || user?.pangkat === 'Kepala Cabang' || user?.pangkat === 'Senior Manager' || user?.positionDetail === 'Kepala Cabang';
-  const isAsistenDeputi = user?.pangkat === 'Manager' || user?.pangkat === 'Asisten Deputi' || user?.positionDetail === 'Asisten Deputi' || user?.pangkat === 'Kepala Kabupaten' || user?.positionDetail === 'Kepala Kabupaten' || user?.pangkat === 'Kepala Kantor Kabupaten';
+  const isAsistenDeputi = user?.pangkat === 'Manager' || user?.pangkat === 'Asisten Deputi' || user?.positionDetail?.startsWith('Asisten Deputi') || user?.pangkat === 'Kepala Kabupaten' || user?.positionDetail === 'Kepala Kabupaten' || user?.pangkat === 'Kepala Kantor Kabupaten' || user?.positionDetail === 'Kepala Kantor Kota';
   
-  const isAsdepSDM = (isAsistenDeputi && (user?.department?.includes('SDMUK') || user?.department?.includes('SDM, Umum dan Komunikasi'))) || user?.positionDetail?.includes('Asisten Deputi Bidang Sumber Daya Manusia');
+  const isAsdepSDM = (isAsistenDeputi && (user?.department?.includes('SDMUK') || user?.department?.includes('SDM, Umum dan Komunikasi'))) || user?.positionDetail?.includes('Asisten Deputi SDM, Umum dan Komunikasi');
   
   const showMenuAplikasi = isAdminView || (isAsistenCoachMode && isAsdepSDM && featuresMap?.manajemen_menu_aplikasi);
   const showBankSoal = isAdminView || (isAsistenCoachMode && isAsdepSDM && featuresMap?.manajemen_bank_soal);

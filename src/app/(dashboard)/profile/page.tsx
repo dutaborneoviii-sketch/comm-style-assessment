@@ -73,8 +73,8 @@ export default async function ProfilePage() {
   }
 
   const latestAssessment = user.assessments[0];
-  const isAsistenDeputi = user?.pangkat === 'Manager' || user?.pangkat === 'Asisten Deputi' || user?.positionDetail === 'Asisten Deputi' || user?.pangkat === 'Kepala Kabupaten' || user?.positionDetail === 'Kepala Kabupaten' || user?.pangkat === 'Kepala Kantor Kabupaten';
-  const isAsdepSDM = (isAsistenDeputi && (user?.department?.includes('SDMUK') || user?.department?.includes('SDM, Umum dan Komunikasi'))) || user?.positionDetail?.includes('Asisten Deputi Bidang Sumber Daya Manusia');
+  const isAsistenDeputi = user?.pangkat === 'Manager' || user?.pangkat === 'Asisten Deputi' || user?.positionDetail?.startsWith('Asisten Deputi') || user?.pangkat === 'Kepala Kabupaten' || user?.positionDetail === 'Kepala Kabupaten' || user?.pangkat === 'Kepala Kantor Kabupaten' || user?.positionDetail === 'Kepala Kantor Kota';
+  const isAsdepSDM = (isAsistenDeputi && (user?.department?.includes('SDMUK') || user?.department?.includes('SDM, Umum dan Komunikasi'))) || user?.positionDetail?.includes('Asisten Deputi SDM, Umum dan Komunikasi');
   const getStyleHex = (styleName: string) => {
     if (!styleName) return "#6366f1";
     const s = styleName.toLowerCase();
@@ -94,7 +94,7 @@ export default async function ProfilePage() {
   let chartTitle = user.department || "Keseluruhan";
 
   const isTopLevel = user.pangkat === 'Senior Manager' || user.pangkat === 'Deputi Direksi Wilayah' || user.positionDetail === 'Deputi Direksi Wilayah' || user.positionDetail === 'Kepala Cabang';
-  const isMidLevel = user.pangkat === 'Manager' || user.positionDetail === 'Asisten Deputi' || user.positionDetail === 'Kepala Kabupaten' || user.positionDetail === 'Kepala Kantor Kabupaten';
+  const isMidLevel = user.pangkat === 'Manager' || user.positionDetail?.startsWith('Asisten Deputi') || user.positionDetail === 'Kepala Kabupaten' || user.positionDetail === 'Kepala Kantor Kabupaten' || user?.positionDetail === 'Kepala Kantor Kota';
   const isLowLevel = user.pangkat === 'Asisten Manager' || user.positionDetail === 'Asisten Manager';
   const isManager = access.isCoach && !isViewModeUser && !isAsistenModeCoachee;
 
@@ -126,7 +126,7 @@ export default async function ProfilePage() {
         };
         chartTitle = "Seluruh Anggota di " + (user.workUnit || "Wilayah");
       } else {
-        targetPangkat = ['Manager', 'Asisten Manager', 'Pelaksana', 'PTT/PATT', 'Asisten Deputi', 'Kepala Kabupaten', 'Kepala Kantor Kabupaten', 'Staf Pelaksana'];
+        targetPangkat = ['Manager', 'Asisten Manager', 'Pelaksana', 'PTT/PATT', 'Asisten Deputi', 'Kepala Kabupaten', 'Kepala Kantor Kabupaten', 'Kepala Kantor Kota', 'Staf Pelaksana'];
         userFilter = {
           OR: [
             { pangkat: { in: targetPangkat } },
@@ -138,7 +138,7 @@ export default async function ProfilePage() {
       }
     } else if (isMidLevel || isLowLevel) {
       targetPangkat = isMidLevel ? ['Asisten Manager', 'Pelaksana', 'PTT/PATT', 'Staf Pelaksana'] : ['Pelaksana', 'PTT/PATT', 'Staf Pelaksana'];
-      const isKepalaUnit = user.positionDetail === 'Kepala Kabupaten' || user.positionDetail === 'Kepala Kantor Kabupaten';
+      const isKepalaUnit = user.positionDetail === 'Kepala Kabupaten' || user.positionDetail === 'Kepala Kantor Kabupaten' || user?.positionDetail === 'Kepala Kantor Kota';
       
       userFilter = {
         ...(isKepalaUnit ? {} : { department: user.department || undefined }),

@@ -32,7 +32,7 @@ export default async function CoachingMasterPage() {
   const asistenMode = cookies().get('asisten-mode')?.value || 'coach';
   
   const isViewModeUser = currentUser?.role === 'ADMIN' && viewMode === 'user';
-  const isAsistenModeCoachee = (currentUser?.positionDetail === 'Asisten Deputi' || currentUser?.positionDetail === 'Kepala Kabupaten' || currentUser?.positionDetail === 'Kepala Kantor Kabupaten') && asistenMode === 'coachee';
+  const isAsistenModeCoachee = (currentUser?.positionDetail?.startsWith('Asisten Deputi') || currentUser?.positionDetail === 'Kepala Kabupaten' || currentUser?.positionDetail === 'Kepala Kantor Kabupaten' || currentUser?.positionDetail === 'Kepala Kantor Kota') && asistenMode === 'coachee';
   
   if (currentUser) {
     if (isViewModeUser) {
@@ -51,7 +51,7 @@ export default async function CoachingMasterPage() {
   
   const isDeputi = currentUser?.pangkat === 'Deputi Direksi Wilayah' || currentUser?.positionDetail === 'Deputi Direksi Wilayah';
   const isTopLevel = isDeputi || currentUser?.pangkat === 'Senior Manager' || currentUser?.positionDetail === 'Kepala Cabang';
-  const isKepalaKabupaten = currentUser?.positionDetail === 'Kepala Kabupaten' || currentUser?.positionDetail === 'Kepala Kantor Kabupaten';
+  const isKepalaKabupaten = currentUser?.positionDetail === 'Kepala Kabupaten' || currentUser?.positionDetail === 'Kepala Kantor Kabupaten' || currentUser?.positionDetail === 'Kepala Kantor Kota';
   const isManager = currentUser?.pangkat === 'Manager';
 
   let targetPangkat: string[] = [];
@@ -61,9 +61,9 @@ export default async function CoachingMasterPage() {
     } else if (currentUser?.pangkat === 'Senior Manager') {
       targetPangkat = ['Manager'];
     } else {
-      targetPangkat = ['Manager', 'Asisten Manager', 'Pelaksana', 'PTT/PATT', 'Asisten Deputi', 'Kepala Kabupaten', 'Kepala Kantor Kabupaten', 'Staf Pelaksana'];
+      targetPangkat = ['Manager', 'Asisten Manager', 'Pelaksana', 'PTT/PATT', 'Asisten Deputi', 'Kepala Kabupaten', 'Kepala Kantor Kabupaten', 'Kepala Kantor Kota', 'Staf Pelaksana'];
     }
-  } else if (isManager || currentUser?.positionDetail === 'Asisten Deputi' || isKepalaKabupaten) {
+  } else if (isManager || currentUser?.positionDetail?.startsWith('Asisten Deputi') || isKepalaKabupaten) {
     targetPangkat = ['Asisten Manager', 'Pelaksana', 'PTT/PATT', 'Staf Pelaksana'];
   } else if (currentUser?.pangkat === 'Asisten Manager' || currentUser?.positionDetail === 'Asisten Manager') {
     targetPangkat = ['Pelaksana', 'PTT/PATT', 'Staf Pelaksana'];

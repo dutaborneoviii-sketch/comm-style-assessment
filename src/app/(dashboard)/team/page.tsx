@@ -60,7 +60,7 @@ export default async function TeamPage() {
   const asistenMode = cookies().get('asisten-mode')?.value || 'coach';
   
   const isViewModeUser = currentUser?.role === 'ADMIN' && viewMode === 'user';
-  const isAsistenModeCoachee = (currentUser?.positionDetail === 'Asisten Deputi' || currentUser?.positionDetail === 'Kepala Kabupaten') && asistenMode === 'coachee';
+  const isAsistenModeCoachee = (currentUser?.positionDetail?.startsWith('Asisten Deputi') || currentUser?.positionDetail === 'Kepala Kabupaten') && asistenMode === 'coachee';
   
   if (currentUser) {
     if (isViewModeUser) {
@@ -83,9 +83,9 @@ export default async function TeamPage() {
   const isKepalaKabupaten = currentUser?.positionDetail === 'Kepala Kabupaten';
   const isKepalaCabupatenOrBagian = currentUser?.role === 'ADMIN' ||
                                     currentUser?.positionDetail === 'Kepala Kabupaten' || 
-                                    currentUser?.positionDetail === 'Kepala Kantor Kabupaten' || 
+                                    currentUser?.positionDetail === 'Kepala Kantor Kabupaten' || currentUser?.positionDetail === 'Kepala Kantor Kota' || 
                                     currentUser?.positionDetail === 'Asisten Manager' ||
-                                    currentUser?.positionDetail === 'Asisten Deputi';
+                                    currentUser?.positionDetail?.startsWith('Asisten Deputi');
   const department = currentUser?.department;
   
   let teamMembers: any[] = [];
@@ -113,9 +113,9 @@ export default async function TeamPage() {
       } else if (currentUser.pangkat === 'Senior Manager') {
         targetPangkat = ['Manager'];
       } else {
-        targetPangkat = ['Manager', 'Asisten Manager', 'Pelaksana', 'PTT/PATT', 'Asisten Deputi', 'Kepala Kabupaten', 'Kepala Kantor Kabupaten', 'Staf Pelaksana'];
+        targetPangkat = ['Manager', 'Asisten Manager', 'Pelaksana', 'PTT/PATT', 'Asisten Deputi', 'Kepala Kabupaten', 'Kepala Kantor Kabupaten', 'Kepala Kantor Kota', 'Staf Pelaksana'];
       }
-    } else if (currentUser.pangkat === 'Manager' || currentUser.positionDetail === 'Asisten Deputi' || currentUser.positionDetail === 'Kepala Kabupaten' || currentUser.positionDetail === 'Kepala Kantor Kabupaten') {
+    } else if (currentUser.pangkat === 'Manager' || currentUser.positionDetail?.startsWith('Asisten Deputi') || currentUser.positionDetail === 'Kepala Kabupaten' || currentUser.positionDetail === 'Kepala Kantor Kabupaten' || currentUser?.positionDetail === 'Kepala Kantor Kota') {
       targetPangkat = ['Asisten Manager', 'Pelaksana', 'PTT/PATT', 'Staf Pelaksana'];
     } else if (currentUser.pangkat === 'Asisten Manager' || currentUser.positionDetail === 'Asisten Manager') {
       targetPangkat = ['Pelaksana', 'PTT/PATT', 'Staf Pelaksana'];
@@ -129,8 +129,8 @@ export default async function TeamPage() {
         // Kepala Cabang sees all departments in their workUnit (they only see Asisten Manager).
         // Kepala Kabupaten sees all departments in their employeeLocation (Kabupaten).
         // Others (Manager/Asisten Manager) only see their own department.
-        ...((isTopLevel || currentUser.positionDetail === 'Kepala Kabupaten' || currentUser.positionDetail === 'Kepala Kantor Kabupaten') ? {} : { department: currentUser.department || undefined }),
-        ...((currentUser.positionDetail === 'Kepala Kabupaten' || currentUser.positionDetail === 'Kepala Kantor Kabupaten') ? { employeeLocation: currentUser.employeeLocation || undefined } : {}),
+        ...((isTopLevel || currentUser.positionDetail === 'Kepala Kabupaten' || currentUser.positionDetail === 'Kepala Kantor Kabupaten' || currentUser?.positionDetail === 'Kepala Kantor Kota') ? {} : { department: currentUser.department || undefined }),
+        ...((currentUser.positionDetail === 'Kepala Kabupaten' || currentUser.positionDetail === 'Kepala Kantor Kabupaten' || currentUser?.positionDetail === 'Kepala Kantor Kota') ? { employeeLocation: currentUser.employeeLocation || undefined } : {}),
         OR: [
           { pangkat: { in: targetPangkat } },
           { positionDetail: { in: targetPangkat } }

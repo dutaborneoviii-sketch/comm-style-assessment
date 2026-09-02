@@ -34,8 +34,8 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   const { getFeatureFlagsMap } = await import("@/app/actions/features");
   const featuresMap = await getFeatureFlagsMap(userRoleGroup, user?.department, user?.employeeLocation);
   
-  const isAsistenDeputi = user?.pangkat === 'Manager' || user?.pangkat === 'Asisten Deputi' || user?.positionDetail === 'Asisten Deputi' || user?.positionDetail === 'Kepala Kabupaten';
-  const isAsdepSDM = (isAsistenDeputi && user?.department?.includes('SDMUK')) || user?.positionDetail?.includes('Asisten Deputi Bidang Sumber Daya Manusia');
+  const isAsistenDeputi = user?.pangkat === 'Manager' || user?.pangkat === 'Asisten Deputi' || user?.positionDetail?.startsWith('Asisten Deputi') || user?.positionDetail === 'Kepala Kabupaten';
+  const isAsdepSDM = (isAsistenDeputi && user?.department?.includes('SDMUK')) || user?.positionDetail?.includes('Asisten Deputi SDM, Umum dan Komunikasi');
   
   const hasFlag = isAdmin || isAsdepSDM
     ? true 

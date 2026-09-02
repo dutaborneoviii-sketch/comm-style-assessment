@@ -22,8 +22,8 @@ export default async function CoachingReportPage() {
   const { isFeatureEnabled } = await import("@/app/actions/features");
   const isEnabled = await isFeatureEnabled("rekapitulasi_coaching", userRoleGroup, currentUser.department, currentUser.employeeLocation);
 
-  const isAsistenDeputi = currentUser.pangkat === 'Manager' || currentUser.pangkat === 'Asisten Deputi' || currentUser.positionDetail === 'Asisten Deputi' || currentUser.positionDetail === 'Kepala Kabupaten';
-  const isAsdepSDM = (isAsistenDeputi && currentUser.department?.includes('SDMUK')) || currentUser.positionDetail?.includes('Asisten Deputi Bidang Sumber Daya Manusia');
+  const isAsistenDeputi = currentUser.pangkat === 'Manager' || currentUser.pangkat === 'Asisten Deputi' || currentUser.positionDetail?.startsWith('Asisten Deputi') || currentUser.positionDetail === 'Kepala Kabupaten';
+  const isAsdepSDM = (isAsistenDeputi && currentUser.department?.includes('SDMUK')) || currentUser.positionDetail?.includes('Asisten Deputi SDM, Umum dan Komunikasi');
   
   if (!isAdmin && !isEnabled && !isAsdepSDM) redirect("/profile");
 
@@ -37,7 +37,7 @@ export default async function CoachingReportPage() {
 
   const allowedPositions = [
     'Senior Manager', 'Manager', 'Asisten Manager', 
-    'Deputi Direksi Wilayah', 'Asisten Deputi', 'Kepala Cabang', 'Kepala Kabupaten', 'Kepala Kantor Kabupaten'
+    'Deputi Direksi Wilayah', 'Asisten Deputi', 'Kepala Cabang', 'Kepala Kabupaten', 'Kepala Kantor Kabupaten', 'Kepala Kantor Kota'
   ];
   
   try {

@@ -33,7 +33,7 @@ export function getUserAccess(user: { workUnit?: string | null, pangkat?: string
   }
   
   // Backward compatibility with previous logic
-  if (!isCoach && ['Deputi Direksi Wilayah', 'Asisten Deputi', 'Kepala Kabupaten', 'Kepala Cabang', 'Kepala Kantor Kabupaten', 'Asisten Manager'].includes(user?.positionDetail || '')) {
+  if (!isCoach && ['Deputi Direksi Wilayah', 'Asisten Deputi', 'Kepala Kabupaten', 'Kepala Cabang', 'Kepala Kantor Kabupaten', 'Kepala Kantor Kota', 'Asisten Manager'].some(pos => user?.positionDetail?.startsWith(pos))) {
       isCoach = true;
   }
 
