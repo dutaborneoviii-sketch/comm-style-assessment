@@ -2,6 +2,7 @@
 
 import { Search, Bell, DownloadCloud } from "lucide-react";
 import { ViewModeToggle } from "./view-mode-toggle";
+import { TripleRoleToggle } from "./triple-role-toggle";
 import { AsistenModeToggle } from "./asisten-mode-toggle";
 import { NotificationMenu, NotificationType } from "../notification-menu";
 import { ProfileDropdown } from "./profile-dropdown";
@@ -32,16 +33,24 @@ export default function AdminHeader({ user, viewMode, asistenMode, notifications
         <div className="flex items-center gap-4">
           <NotificationMenu notifications={notifications} />
 
-          {user?.role === 'ADMIN' && (
+          {access.isAdmin && access.isCoach && access.isCoachee ? (
             <div className="bg-white/10 p-1.5 rounded-full flex items-center gap-2 border border-white/20">
-               <ViewModeToggle currentMode={viewMode} />
+               <TripleRoleToggle viewMode={viewMode} asistenMode={asistenMode || 'coach'} />
             </div>
-          )}
-          
-          {access.isCoach && access.isCoachee && (!access.isAdmin || viewMode !== 'user') && (
-            <div className="bg-white/10 p-1.5 rounded-full flex items-center gap-2 border border-white/20">
-               <AsistenModeToggle currentMode={(asistenMode === 'coachee' ? 'coachee' : 'coach')} />
-            </div>
+          ) : (
+            <>
+              {access.isAdmin && (
+                <div className="bg-white/10 p-1.5 rounded-full flex items-center gap-2 border border-white/20">
+                   <ViewModeToggle currentMode={viewMode} />
+                </div>
+              )}
+              
+              {access.isCoach && access.isCoachee && (!access.isAdmin || viewMode !== 'user') && (
+                <div className="bg-white/10 p-1.5 rounded-full flex items-center gap-2 border border-white/20">
+                   <AsistenModeToggle currentMode={(asistenMode === 'coachee' ? 'coachee' : 'coach')} />
+                </div>
+              )}
+            </>
           )}
 
           <div className="ml-2 flex items-center">
