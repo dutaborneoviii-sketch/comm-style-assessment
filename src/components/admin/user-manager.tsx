@@ -36,7 +36,11 @@ export function UserManager({ initialUsers, currentUserId }: { initialUsers: any
   const router = useRouter();
   const [users, setUsers] = useState(initialUsers);
   const [search, setSearch] = useState("");
+  const [locationFilter, setLocationFilter] = useState("all");
   const [isDeleting, setIsDeleting] = useState<string | null>(null);
+
+  const uniqueLocations = Array.from(new Set(initialUsers.map((u) => u.employeeLocation).filter(Boolean))) as string[];
+  uniqueLocations.sort();
   const [isApproving, setIsApproving] = useState<string | null>(null);
   const [isToggling, setIsToggling] = useState<string | null>(null);
   const [isResetting, setIsResetting] = useState<string | null>(null);
@@ -54,14 +58,18 @@ export function UserManager({ initialUsers, currentUserId }: { initialUsers: any
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
 
-  // Search filter
-  const filteredUsers = initialUsers.filter((user) => 
-    user.name?.toLowerCase().includes(search.toLowerCase()) || 
-    user.email?.toLowerCase().includes(search.toLowerCase()) ||
-    user.department?.toLowerCase().includes(search.toLowerCase()) ||
-    user.workUnit?.toLowerCase().includes(search.toLowerCase()) ||
-    user.npp?.toLowerCase().includes(search.toLowerCase())
-  );
+  // Search and Location filter
+  const filteredUsers = initialUsers.filter((user) => {
+    const matchesSearch = user.name?.toLowerCase().includes(search.toLowerCase()) || 
+      user.email?.toLowerCase().includes(search.toLowerCase()) ||
+      user.department?.toLowerCase().includes(search.toLowerCase()) ||
+      user.workUnit?.toLowerCase().includes(search.toLowerCase()) ||
+      user.npp?.toLowerCase().includes(search.toLowerCase());
+    
+    const matchesLocation = locationFilter === "all" || user.employeeLocation === locationFilter;
+    
+    return matchesSearch && matchesLocation;
+  });
 
   const registeredUsers = filteredUsers.filter(u => u.status === 'APPROVED' || u.status === 'INACTIVE' || u.status === 'ACTIVE');
   const pendingUsers = filteredUsers.filter(u => u.status === 'PENDING');
@@ -72,6 +80,11 @@ export function UserManager({ initialUsers, currentUserId }: { initialUsers: any
   // Reset page when searching
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearch(e.target.value);
+    setCurrentPage(1);
+  };
+
+  const handleLocationChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setLocationFilter(e.target.value);
     setCurrentPage(1);
   };
 
@@ -260,16 +273,30 @@ export function UserManager({ initialUsers, currentUserId }: { initialUsers: any
       </Dialog>
 
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <div className="relative w-full sm:max-w-xs">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-          <Input 
-            placeholder="Cari nama, NPP, bidang, atau satuan kerja..." 
-            value={search}
-            onChange={handleSearchChange}
-            className="pl-9 bg-white dark:bg-zinc-950 border-slate-200 dark:border-slate-800"
-          />
+        <div className="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto">
+          <div className="relative w-full sm:w-80">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+            <Input 
+              placeholder="Cari nama, NPP, bidang, atau satuan kerja..." 
+              value={search}
+              onChange={handleSearchChange}
+              className="pl-9 bg-white dark:bg-zinc-950 border-slate-200 dark:border-slate-800"
+            />
+          </div>
+          <select
+            value={locationFilter}
+            onChange={handleLocationChange}
+            className="flex h-10 w-full sm:w-60 rounded-md border border-slate-200 dark:border-slate-800 bg-white dark:bg-zinc-950 px-3 py-2 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-slate-950 text-slate-900 dark:text-slate-100"
+          >
+            <option value="all">Semua Lokasi Pegawai</option>
+            {uniqueLocations.map((loc) => (
+              <option key={loc} value={loc}>
+                {loc}
+              </option>
+            ))}
+          </select>
         </div>
-        <div className="flex items-center gap-2 w-full sm:w-auto">
+        <div className="flex items-center gap-2 w-full sm:w-auto shrink-0">
           <MigrationDialog />
           <CreateUserDialog />
         </div>
@@ -301,8 +328,7 @@ export function UserManager({ initialUsers, currentUserId }: { initialUsers: any
                     <th className="px-3 py-3 font-semibold">Satuan Kerja</th>
                     <th className="px-3 py-3 font-semibold">Lokasi Pegawai</th>
                     <th className="px-3 py-3 font-semibold">Bidang</th>
-                    <th className="px-3 py-3 font-semibold">Pangkat</th>
-                    <th className="px-3 py-3 font-semibold">Detail Jabatan</th>
+
                     <th className="px-3 py-3 font-semibold">Peran</th>
                     <th className="px-3 py-3 font-semibold">Status</th>
                     <th className="px-3 py-3 font-semibold text-right">Aksi</th>
@@ -343,22 +369,7 @@ export function UserManager({ initialUsers, currentUserId }: { initialUsers: any
                         <td className="px-3 py-3 text-slate-600 dark:text-slate-300 max-w-[150px] truncate" title={user.department || ""}>
                           {user.department || "-"}
                         </td>
-                        <td className="px-3 py-3">
-                          {user.pangkat ? (
-                            <span className={`inline-flex items-center px-2 py-1 rounded-md text-xs font-medium ${
-                              user.pangkat === 'Atasan' 
-                                ? 'bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-400' 
-                                : 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300'
-                            }`}>
-                              {user.pangkat}
-                            </span>
-                          ) : (
-                            <span className="text-slate-400 dark:text-slate-500">-</span>
-                          )}
-                        </td>
-                        <td className="px-3 py-3 text-slate-600 dark:text-slate-300 max-w-[150px] truncate" title={user.positionDetail || ""}>
-                          {user.positionDetail || "-"}
-                        </td>
+
                         <td className="px-3 py-3">
                           <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${
                             user.role === "ADMIN" 
@@ -481,8 +492,7 @@ export function UserManager({ initialUsers, currentUserId }: { initialUsers: any
                     <th className="px-3 py-3 font-semibold">Satuan Kerja</th>
                     <th className="px-3 py-3 font-semibold">Lokasi Pegawai</th>
                     <th className="px-3 py-3 font-semibold">Bidang</th>
-                    <th className="px-3 py-3 font-semibold">Pangkat</th>
-                    <th className="px-3 py-3 font-semibold">Detail Jabatan</th>
+
                     <th className="px-3 py-3 font-semibold">Tgl Daftar</th>
                     <th className="px-3 py-3 font-semibold text-right">Aksi</th>
                   </tr>
@@ -515,12 +525,7 @@ export function UserManager({ initialUsers, currentUserId }: { initialUsers: any
                         <td className="px-3 py-3 text-slate-600 dark:text-slate-300 max-w-[150px] truncate" title={user.department || ""}>
                           {user.department || "-"}
                         </td>
-                        <td className="px-3 py-3 text-slate-600 dark:text-slate-300">
-                          {user.pangkat || "-"}
-                        </td>
-                        <td className="px-3 py-3 text-slate-600 dark:text-slate-300 max-w-[150px] truncate" title={user.positionDetail || ""}>
-                          {user.positionDetail || "-"}
-                        </td>
+
                         <td className="px-3 py-3 text-slate-500 dark:text-slate-400 text-xs" suppressHydrationWarning>
                           {user.createdAt ? new Intl.DateTimeFormat('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }).format(new Date(user.createdAt)) : "-"}
                         </td>
