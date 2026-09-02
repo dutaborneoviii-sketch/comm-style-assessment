@@ -125,6 +125,8 @@ export default async function TeamPage() {
       where: {
         id: { not: session.user.id },
         workUnit: currentUser.workUnit || undefined,
+        // Hide Claim Advisor Pratama from Kantor Cabang Anggota Bagian page
+        ...(currentUser.workUnit?.startsWith("Kantor Cabang") ? { positionDetail: { not: "Claim Advisor Pratama" } } : {}),
         // Top level (Deputi/Senior Manager) sees all departments in their workUnit, 
         // Kepala Cabang sees all departments in their workUnit (they only see Asisten Manager).
         // Kepala Kabupaten sees all departments in their employeeLocation (Kabupaten).

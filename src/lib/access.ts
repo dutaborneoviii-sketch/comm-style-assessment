@@ -17,7 +17,14 @@ export function getUserAccess(user: { workUnit?: string | null, pangkat?: string
   } 
   else if (workUnit.startsWith("Kantor Cabang") || workUnit === "Kantor Kabupaten" || workUnit === "Kantor Kota") {
     if (pangkat === "Manager") { isCoach = true; }
-    else if (pangkat === "Asisten Manager") { isCoach = true; isCoachee = true; }
+    else if (pangkat === "Asisten Manager") {
+      if (user?.positionDetail === "Claim Advisor Pratama") {
+        isCoachee = true;
+      } else {
+        isCoach = true; 
+        isCoachee = true; 
+      }
+    }
     else if (pangkat === "Pelaksana") { isCoachee = true; }
     else if (pangkat === "PTT/PATT") {
       // Checked for Coachee EXCEPT Balikpapan and Tarakan
