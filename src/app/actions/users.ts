@@ -5,6 +5,9 @@ import { prisma } from "@/lib/prisma";
 import bcrypt from "bcryptjs";
 import { revalidatePath } from "next/cache";
 import { getUserAccess } from "@/lib/access";
+import { logAuditAction } from "@/lib/audit";
+import { sendResetPasswordEmail } from '@/lib/mailer';
+import * as XLSX from "xlsx";
 
 export async function getUsers() {
   const session = await auth();
@@ -186,7 +189,6 @@ export async function updateUser(id: string, data: any) {
   }
 }
 
-import { logAuditAction } from "@/lib/audit";
 
 export async function deleteUser(id: string) {
   const session = await auth();
@@ -237,7 +239,6 @@ function generateRandomPassword(): string {
   return password.split('').sort(() => 0.5 - Math.random()).join('');
 }
 
-import { sendResetPasswordEmail } from '@/lib/mailer';
 
 export async function changeSelfPassword(formData: FormData) {
   const session = await auth();
@@ -371,7 +372,6 @@ export async function resetUserAssessment(id: string) {
   }
 }
 
-import * as XLSX from "xlsx";
 
 export async function migrateUsers(base64Data: string) {
   const session = await auth();
