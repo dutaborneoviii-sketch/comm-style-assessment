@@ -3,75 +3,72 @@ generator client {
 }
 
 datasource db {
-  provider  = "postgresql"
-  url       = env("DATABASE_URL")
-  directUrl = env("DIRECT_URL")
+  provider = "mysql"
+  url      = env("DATABASE_URL")
 }
 
 model Department {
-  name         String        @id
-  users        User[]
+  name  String @id
+  users User[]
 }
 
 model User {
-  id            String          @id @default(cuid())
-  name          String?
-  npp           String?         @unique
-  email         String?         @unique
-  emailVerified DateTime?
-  image         String?
-  password      String?
-  workUnit      String?
+  id               String          @id @default(cuid())
+  name             String?
+  npp              String?         @unique
+  email            String?         @unique
+  emailVerified    DateTime?
+  image            String?         @db.Text
+  password         String?
+  workUnit         String?
   employeeLocation String?
-  department    String?
-  departmentRel Department?     @relation(fields: [department], references: [name], onDelete: SetNull)
-  pangkat       String?
-  positionDetail String?
-  accounts      Account[]
-  sessions      Session[]
-  assessments   Assessment[]
-  coachLogs     CoachingLog[] @relation("CoachLogs")
-  coacheeLogs   CoachingLog[] @relation("CoacheeLogs")
-  role          String          @default("USER")
-  status        String          @default("PENDING")
-  createdAt     DateTime        @default(now())
-  updatedAt     DateTime        @updatedAt
-  passwordUpdatedAt DateTime    @default(now())
-  loginLogs     LoginActivity[]
+  department       String?
+  departmentRel    Department?     @relation(fields: [department], references: [name], onDelete: SetNull)
+  pangkat          String?
+  positionDetail   String?
+  accounts         Account[]
+  sessions         Session[]
+  assessments      Assessment[]
+  coachLogs        CoachingLog[]   @relation("CoachLogs")
+  coacheeLogs      CoachingLog[]   @relation("CoacheeLogs")
+  role             String          @default("USER")
+  status           String          @default("PENDING")
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+  passwordUpdatedAt DateTime       @default(now())
+  loginLogs        LoginActivity[]
 }
 
 model CoachingLog {
-  id          String   @id @default(cuid())
-  coachId     String
-  coacheeId   String
-  date        DateTime
-  title       String
-  notes       String
-  actionItems ActionItem[]
-  response    String?
+  id              String       @id @default(cuid())
+  coachId         String
+  coacheeId       String
+  date            DateTime
+  title           String
+  notes           String       @db.Text
+  actionItems     ActionItem[]
+  response        String?      @db.Text
   nextSessionDate DateTime?
-  isClosed    Boolean  @default(false)
-  isDraft     Boolean  @default(false)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  isClosed        Boolean      @default(false)
+  isDraft         Boolean      @default(false)
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
 
-  coach       User     @relation("CoachLogs", fields: [coachId], references: [id], onDelete: Cascade)
-  coachee     User     @relation("CoacheeLogs", fields: [coacheeId], references: [id], onDelete: Cascade)
+  coach   User @relation("CoachLogs", fields: [coachId], references: [id], onDelete: Cascade)
+  coachee User @relation("CoacheeLogs", fields: [coacheeId], references: [id], onDelete: Cascade)
 }
 
 model ActionItem {
-  id             String      @id @default(cuid())
-  coachingLogId  String
-  text           String
-  dueDate        DateTime?
-  followUpNotes  String?
-  evidenceUrl    String?
-  evidenceName   String?
-  
-  createdAt      DateTime    @default(now())
-  updatedAt      DateTime    @updatedAt
-  
-  coachingLog    CoachingLog @relation(fields: [coachingLogId], references: [id], onDelete: Cascade)
+  id            String      @id @default(cuid())
+  coachingLogId String
+  text          String      @db.Text
+  dueDate       DateTime?
+  followUpNotes String?     @db.Text
+  evidenceUrl   String?     @db.Text
+  evidenceName  String?
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  coachingLog   CoachingLog @relation(fields: [coachingLogId], references: [id], onDelete: Cascade)
 }
 
 model Account {
@@ -80,65 +77,56 @@ model Account {
   type              String
   provider          String
   providerAccountId String
-  refresh_token     String?
-  access_token      String?
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
   expires_at        Int?
   token_type        String?
   scope             String?
-  id_token          String?
+  id_token          String? @db.Text
   session_state     String?
- 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
- 
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
- 
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   @@unique([provider, providerAccountId])
 }
- 
+
 model Session {
   id           String   @id @default(cuid())
   sessionToken String   @unique
   userId       String
   expires      DateTime
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
- 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 }
- 
+
 model VerificationToken {
   identifier String
   token      String
   expires    DateTime
- 
   @@unique([identifier, token])
 }
 
 model Assessment {
-  id        String   @id @default(cuid())
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
-  countA    Int
-  countB    Int
-  countC    Int
-  countD    Int
-  
-  primaryStyle String
+  id             String   @id @default(cuid())
+  userId         String
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  countA         Int
+  countB         Int
+  countC         Int
+  countD         Int
+  primaryStyle   String
   secondaryStyle String?
-  isCombination Boolean @default(false)
-  
-  createdAt DateTime @default(now())
+  isCombination  Boolean  @default(false)
+  createdAt      DateTime @default(now())
 }
 
 model Question {
   id        String   @id @default(cuid())
   order     Int
-  text      String
+  text      String   @db.Text
   isActive  Boolean  @default(true)
   options   Option[]
-  
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
@@ -147,8 +135,8 @@ model Option {
   id         String   @id @default(cuid())
   questionId String
   question   Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
-  letter     String   // A, B, C, D
-  text       String
+  letter     String
+  text       String   @db.Text
 }
 
 model FeatureFlag {
@@ -159,25 +147,23 @@ model FeatureFlag {
   location    String   @default("GLOBAL")
   enabled     Boolean  @default(false)
   label       String
-  description String?
-
+  description String?  @db.Text
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
-
   @@unique([featureKey, roleGroup, department, location])
 }
 
 model SystemSetting {
   id        String   @id @default(cuid())
-  key       String   @unique // e.g. "assessment_cooldown_months"
-  value     String   // e.g. "3"
+  key       String   @unique
+  value     String   @db.Text
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
 model CommunicationDictionary {
-  id        String   @id // e.g. "directive", "dirAna"
-  content   String   // JSON string
+  id        String   @id
+  content   String   @db.LongText
   updatedAt DateTime @updatedAt
 }
 
@@ -186,10 +172,9 @@ model LoginActivity {
   userId    String
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   ipAddress String?
-  userAgent String?
+  userAgent String?  @db.Text
   location  String?
-  action    String?  @default("LOGIN") // LOGIN, DELETE_USER, UPDATE_USER, SYSTEM_CHANGE
-  details   String?  // Optional JSON or text details of the action
+  action    String?  @default("LOGIN")
+  details   String?  @db.Text
   createdAt DateTime @default(now())
 }
-
