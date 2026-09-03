@@ -168,6 +168,7 @@ export async function updateUser(id: string, data: any) {
 
     if (data.password && data.password.trim() !== "") {
       updateData.password = await bcrypt.hash(data.password, 10);
+      updateData.passwordUpdatedAt = new Date();
     }
 
     await prisma.user.update({
@@ -272,7 +273,7 @@ export async function changeSelfPassword(formData: FormData) {
     const hashedNewPassword = await bcrypt.hash(newPassword, 10);
     await prisma.user.update({
       where: { id: session.user.id },
-      data: { password: hashedNewPassword }
+      data: { password: hashedNewPassword, passwordUpdatedAt: new Date() }
     });
     return { success: true };
   } catch (error: any) {
@@ -333,7 +334,7 @@ export async function resetUserPassword(id: string) {
   try {
     await prisma.user.update({
       where: { id },
-      data: { password: hashedPassword }
+      data: { password: hashedPassword, passwordUpdatedAt: new Date() }
     });
 
     let emailSent = false;

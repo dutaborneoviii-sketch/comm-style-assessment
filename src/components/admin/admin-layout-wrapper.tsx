@@ -4,6 +4,7 @@ import { useState } from 'react';
 import AdminSidebar from './admin-sidebar';
 import AdminHeader from './admin-header';
 import { usePathname } from 'next/navigation';
+import { ForceChangePassword } from './force-change-password';
 
 interface AdminLayoutWrapperProps {
   children: React.ReactNode;
@@ -25,6 +26,7 @@ export default function AdminLayoutWrapper({ children, user, viewMode, asistenMo
 
   return (
     <div className="flex h-screen print:h-auto print:block overflow-hidden print:overflow-visible bg-[#f4f7fe] print:bg-white dark:bg-[#0b0f19] font-sans">
+      <ForceChangePassword user={user} />
       <div className="print:hidden shrink-0 h-full">
         <AdminSidebar 
           user={user} 
