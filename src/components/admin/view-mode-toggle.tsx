@@ -21,7 +21,7 @@ export function ViewModeToggle({ currentMode }: { currentMode: 'admin' | 'user' 
         className={`absolute top-0.5 bottom-0.5 rounded-full bg-gradient-to-r transition-all duration-300 shadow-md ${
           currentMode === 'admin' 
             ? 'left-0.5 w-[75px] from-[#77C9D4] to-[#57BC90]' 
-            : 'left-[77.5px] w-[65px] from-emerald-600 to-teal-600'
+            : 'left-[77.5px] w-[90px] from-emerald-600 to-teal-600'
         }`}
       />
       
@@ -37,16 +37,16 @@ export function ViewModeToggle({ currentMode }: { currentMode: 'admin' | 'user' 
         Admin
       </button>
 
-      {/* Staff Button */}
+      {/* Coachee Button */}
       <button
         onClick={() => handleToggle('user')}
         className={`relative z-10 flex items-center gap-1.5 px-3 py-1 text-xs font-black tracking-wide uppercase transition-colors duration-300 rounded-full ${
           currentMode === 'user' ? 'text-white' : 'text-slate-500 hover:text-slate-700'
         }`}
-        style={{ width: '65px' }}
+        style={{ width: '90px' }}
       >
         <User className="w-3.5 h-3.5" />
-        Staf
+        Coachee
       </button>
     </div>
   );
