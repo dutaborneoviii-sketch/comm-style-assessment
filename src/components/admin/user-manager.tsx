@@ -9,7 +9,8 @@ import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Trash2, Search, Edit, Shield, User as UserIcon, CheckCircle2, XCircle, Power, PowerOff, KeyRound, AlertTriangle, Upload, FileUp, Download, Check, AlertCircle, Copy, RefreshCw } from "lucide-react";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Trash2, Search, Edit, Shield, User as UserIcon, CheckCircle2, XCircle, Power, PowerOff, KeyRound, AlertTriangle, Upload, FileUp, Download, Check, AlertCircle, Copy, RefreshCw, Wrench, ChevronDown, CheckSquare, Square } from "lucide-react";
 import * as XLSX from "xlsx";
 import ExcelJS from "exceljs";
 import { employeeLocations } from "@/lib/locations";
@@ -38,6 +39,7 @@ export function UserManager({ initialUsers, currentUserId }: { initialUsers: any
   const [search, setSearch] = useState("");
   const [locationFilter, setLocationFilter] = useState("all");
   const [isDeleting, setIsDeleting] = useState<string | null>(null);
+  const [userToEdit, setUserToEdit] = useState<any | null>(null);
 
   const uniqueLocations = Array.from(new Set(initialUsers.map((u) => u.employeeLocation).filter(Boolean))) as string[];
   uniqueLocations.sort();
@@ -302,6 +304,8 @@ export function UserManager({ initialUsers, currentUserId }: { initialUsers: any
 
   return (
     <div className="space-y-6">
+      {userToEdit && <EditUserDialog user={userToEdit} open={true} onOpenChange={(open) => !open && setUserToEdit(null)} />}
+      
       {/* Custom Confirm Dialog */}
       <Dialog open={confirm.open} onOpenChange={(open) => { if (!open) closeConfirm(); }}>
         <DialogContent className="sm:max-w-[440px] bg-white dark:bg-zinc-950">
@@ -447,56 +451,42 @@ export function UserManager({ initialUsers, currentUserId }: { initialUsers: any
                           </span>
                         </td>
                         <td className="px-3 py-3 text-right">
-                          <div className="flex items-center justify-end gap-1">
-                            <Button 
-                              variant="ghost" 
-                              size="icon" 
-                              onClick={() => handleToggleStatus(user.id, user.status, user.name)}
-                              disabled={isToggling === user.id || currentUserId === user.id}
-                              className={`h-8 w-8 ${user.status === 'INACTIVE' ? 'text-emerald-500 hover:text-emerald-600' : 'text-amber-500 hover:text-amber-600'}`}
-                              title={currentUserId === user.id ? "Tidak dapat menonaktifkan akun sendiri" : user.status === 'INACTIVE' ? "Aktifkan User" : "Nonaktifkan User"}
-                            >
-                              {user.status === 'INACTIVE' ? <Power className="w-4 h-4" /> : <PowerOff className="w-4 h-4" />}
-                            </Button>
-
-                            <EditUserDialog user={user}>
-                              <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-500 hover:text-[#015249]" title="Edit Profil">
-                                <Edit className="w-4 h-4" />
-                              </Button>
-                            </EditUserDialog>
-
-                            <Button 
-                              variant="ghost" 
-                              size="icon" 
-                              onClick={() => handleResetPassword(user.id, user.name)}
-                              disabled={isResetting === user.id}
-                              className="h-8 w-8 text-slate-500 hover:text-amber-600"
-                              title="Reset Password"
-                            >
-                              <KeyRound className="w-4 h-4" />
-                            </Button>
-                            
-                            <Button 
-                              variant="ghost" 
-                              size="icon" 
-                              onClick={() => handleResetAssessment(user.id, user.name)}
-                              disabled={isResettingAssessment === user.id}
-                              className="h-8 w-8 text-slate-500 hover:text-blue-600"
-                              title="Reset Asesmen (Isi Ulang Kuisioner)"
-                            >
-                              <RefreshCw className="w-4 h-4" />
-                            </Button>
-
-                            <Button 
-                              variant="ghost" 
-                              size="icon" 
-                              onClick={() => handleDelete(user.id, user.name)}
-                              disabled={isDeleting === user.id || currentUserId === user.id}
-                              className="h-8 w-8 text-slate-500 hover:text-red-600"
-                              title={currentUserId === user.id ? "Tidak dapat menghapus akun sendiri" : "Hapus Pengguna"}
-                            >
-                              <Trash2 className="w-4 h-4" />
-                            </Button>
+                          <div className="flex justify-end">
+                            <DropdownMenu>
+                              <DropdownMenuTrigger asChild>
+                                <Button variant="default" className="h-8 p-0 overflow-hidden bg-[#2ca95a] hover:bg-[#208a46] text-white rounded shadow-sm flex items-center border border-[#208a46]">
+                                  <div className="px-2.5 h-full flex items-center bg-[#2ca95a] group-hover:bg-[#208a46]">
+                                    <Wrench className="w-4 h-4" />
+                                  </div>
+                                  <div className="px-1.5 h-full flex items-center border-l border-white/20 bg-[#24954e] hover:bg-[#1a773d] transition-colors">
+                                    <ChevronDown className="w-4 h-4" />
+                                  </div>
+                                </Button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent align="end" className="w-48">
+                                <DropdownMenuItem onClick={() => handleToggleStatus(user.id, user.status, user.name)} disabled={currentUserId === user.id}>
+                                  {user.status === 'INACTIVE' ? <Square className="w-4 h-4 mr-2" /> : <CheckSquare className="w-4 h-4 mr-2" />}
+                                  Status Aktif
+                                </DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => setUserToEdit(user)}>
+                                  <Edit className="w-4 h-4 mr-2" />
+                                  Ubah Profil
+                                </DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => handleResetPassword(user.id, user.name)} disabled={isResetting === user.id}>
+                                  <KeyRound className="w-4 h-4 mr-2" />
+                                  Reset Password
+                                </DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => handleResetAssessment(user.id, user.name)} disabled={isResettingAssessment === user.id}>
+                                  <RefreshCw className="w-4 h-4 mr-2" />
+                                  Reset Asesmen
+                                </DropdownMenuItem>
+                                <DropdownMenuSeparator />
+                                <DropdownMenuItem onClick={() => handleDelete(user.id, user.name)} disabled={isDeleting === user.id || currentUserId === user.id} className="text-red-600 focus:bg-red-50 focus:text-red-700 dark:focus:bg-red-950 dark:focus:text-red-400">
+                                  <Trash2 className="w-4 h-4 mr-2" />
+                                  Hapus Pengguna
+                                </DropdownMenuItem>
+                              </DropdownMenuContent>
+                            </DropdownMenu>
                           </div>
                         </td>
                       </tr>

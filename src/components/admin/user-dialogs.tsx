@@ -260,8 +260,11 @@ export function CreateUserDialog() {
   );
 }
 
-export function EditUserDialog({ user, children }: { user: any, children: React.ReactNode }) {
-  const [open, setOpen] = useState(false);
+export function EditUserDialog({ user, children, open: controlledOpen, onOpenChange: setControlledOpen }: { user: any, children?: React.ReactNode, open?: boolean, onOpenChange?: (open: boolean) => void }) {
+  const [uncontrolledOpen, setUncontrolledOpen] = useState(false);
+  const open = controlledOpen !== undefined ? controlledOpen : uncontrolledOpen;
+  const setOpen = setControlledOpen || setUncontrolledOpen;
+  
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [selectedWorkUnit, setSelectedWorkUnit] = useState(user.workUnit || "");
@@ -285,7 +288,7 @@ export function EditUserDialog({ user, children }: { user: any, children: React.
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger render={children as React.ReactElement} />
+      {children && <DialogTrigger render={children as React.ReactElement} />}
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>Edit Data Pengguna</DialogTitle>
