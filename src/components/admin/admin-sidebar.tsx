@@ -104,7 +104,6 @@ export default function AdminSidebar({ user, viewMode, asistenMode, featuresMap,
         { href: "/admin/features", label: "Menu Aplikasi", icon: ToggleLeft, show: showMenuAplikasi },
         { href: "/admin/logs", label: "Log Aktivitas User", icon: Activity, show: isAdminView },
         { href: "/admin/email-settings", label: "Pengaturan Email", icon: Mail, show: isAdminView },
-        { href: "/admin/manual", label: "User Manual", icon: HelpCircle, show: isAdminView },
       ].filter(item => item.show)
     }
   ];
